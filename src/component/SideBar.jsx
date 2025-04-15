@@ -41,7 +41,7 @@ const SideBar = () => {
         ] 
       },
       { name: 'Attendance', icon: <Clock size={20} />, children: [] },
-      { name: 'Onboarding', icon: <Rocket size={20} />, children: [] },
+
     ];
     return (
         <div className='h-screen bg-gray-900'>
