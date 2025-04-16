@@ -8,7 +8,6 @@ const ProtectedAuth = ({ isPrivate }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true); // For loading indicator
 
-  console.log(data);
   
 
   useEffect(() => {
@@ -25,7 +24,7 @@ const ProtectedAuth = ({ isPrivate }) => {
           if (isPrivate) navigate("/login", { replace: true });
         }
       } catch (error) {
-        console.error("🚨 Error in login check:", error);
+        // console.error("🚨 Error in login check:", error);
         if (isPrivate) navigate("/login", { replace: true });
       } finally {
         setLoading(false); // Loading is done

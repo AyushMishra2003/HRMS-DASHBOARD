@@ -19,7 +19,7 @@ const axiosBaseQuery = async ({ url, method, data }) => {
         ? { data, headers: { "Content-Type": "multipart/form-data" } } 
         : { data }),
     });
-    console.log(response);
+    // console.log(response);
 
     if (response?.data?.message) {
       toast.success(response.data.message);

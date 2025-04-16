@@ -14,6 +14,13 @@ export const employeeDetailApi = createApi({
             }),
             providesTags: ["employee"], 
         }), 
+        getEmployeeProfile: builder.query({
+            query: () => ({
+                url: "/employee/profile",
+                method: "GET",
+            }),
+            providesTags: ["employee"], 
+        }), 
         addEmployee:builder.mutation({
             query:(formData)=>(
                 {
@@ -69,4 +76,5 @@ export const {useGetAllEmployeeQuery,
     useEmployeeEditMutation,
     useEmployeeLoginMutation,
     useGetOneEmployeeQuery,
+    useGetEmployeeProfileQuery
 } = employeeDetailApi;

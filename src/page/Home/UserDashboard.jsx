@@ -1,8 +1,15 @@
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { Bell, Calendar, MessageSquare, User, Check, X, Calendar as CalendarIcon } from 'lucide-react';
+import { useUserContext } from '../UseContext/useContext.jsx';
+import { useEffect } from "react";
+import { useGetAttendanceDetailQuery } from '../../rtk/attendance.js';
+
 
 const Dashboard=({data})=> {
-  // Mock data for notices
+  const{data:attandance,isLoading}=useGetAttendanceDetailQuery();
+     console.log("mai ham page  pe hu",attandance?.attandanceData?.length)
+
+  const { setEmployeeId, setUser } = useUserContext();
   const [notices] = useState([
     { id: 1, title: "Team Meeting", content: "Monthly team meeting on Friday at 3 PM", date: "2025-04-12", priority: "high" },
     { id: 2, title: "System Maintenance", content: "Scheduled downtime on Saturday from 10 PM to 2 AM", date: "2025-04-15", priority: "medium" },
@@ -20,6 +27,13 @@ const Dashboard=({data})=> {
     leave: 3
   });
 
+  useEffect(() => {
+    if (data?.id) {
+      setEmployeeId(data.id);
+      setUser(data); // optional
+      // console.log("✅ Employee ID set:", data.id);
+    }
+  }, [data]);
   // Generate attendance data for the last 2 months
   const generateAttendanceData = () => {
     const today = new Date();

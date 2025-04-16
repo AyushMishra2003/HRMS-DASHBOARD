@@ -9,7 +9,6 @@ const Layout = () => {
       {/* Sidebar - fixed height, full height */}
       <SideBar/>
       <div className="flex flex-col flex-1">
-        
          <TopHeader/>
 
         {/* Page Content */}

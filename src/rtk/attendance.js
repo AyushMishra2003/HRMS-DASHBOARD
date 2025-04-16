@@ -9,18 +9,28 @@ export const attendanceDetailApi = createApi({
   endpoints: (builder) => ({
     employeeCheckIn: builder.mutation({
       query: (id) => ({
-        url: `employee/attendance/${id}`,
+        url: `employee/attendance/checkIn/${id}`,
         method: "POST",
       }),
       invalidatesTags: ["attendance"],
     }),
     employeeChekOut: builder.mutation({
-      query: (id) => ({
-        url: `employee/attendance/logout/${id}`,
-        method: "POST",
+      query: (id) => (
+        console.log("rtk"),
+        
+        {
+        url: `employee/attendance/checkout/${id}`,
+        method: "PUT",
       }),
       invalidatesTags: ["attendance"],
     }),
+    getAttendanceDetail: builder.query({
+      query: () => ({
+          url: "/employee/attendance/get/monthly/detail",
+          method: "GET",
+      }),
+      providesTags: ["attendance"], 
+  }), 
     employeeAllDetail:builder.mutation({
         query:(id)=>(
             console.log("rtk+++",id),
@@ -33,5 +43,5 @@ export const attendanceDetailApi = createApi({
   }),
 });
 
-export const { useEmployeeCheckInMutation, useEmployeeChekOutMutation,useEmployeeAllDetailMutation } =
+export const { useEmployeeCheckInMutation, useEmployeeChekOutMutation,useEmployeeAllDetailMutation,useGetAttendanceDetailQuery } =
   attendanceDetailApi;

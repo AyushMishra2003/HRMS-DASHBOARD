@@ -5,6 +5,7 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { store } from './rtk/store.js'
+import { UserProvider } from './page/UseContext/useContext.jsx'
 
 import { Toaster } from 'sonner';
 
@@ -14,7 +15,9 @@ createRoot(document.getElementById('root')).render(
   <BrowserRouter>
   <StrictMode>
     <Toaster/>
+    <UserProvider>
     <App />
+    </UserProvider>
   </StrictMode>
   </BrowserRouter>
   </Provider>,

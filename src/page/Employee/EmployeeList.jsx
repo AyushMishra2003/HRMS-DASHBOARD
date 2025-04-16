@@ -36,6 +36,7 @@ const employeeDetail=(employee)=>{
      navigate(`/employee/details/${id}`,{ state: { employeeData: employee } })
 }
 
+
   return (
     <div className="border-red-500 bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 p-4 relative">
       {/* Card Content */}

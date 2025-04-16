@@ -8,7 +8,6 @@ const Home = () => {
    
   const {data,isLoading,error}=useIsLoginQuery()
 
-  console.log(data,isLoading,error);
   
   if(isLoading){
       return <ClipLoader/>

@@ -1,13 +1,12 @@
 import { useForm } from 'react-hook-form';
-
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAddEmployeeMutation, useEmployeeEditMutation } from '../../rtk/employeeApi';
-
+import { ClipLoader } from 'react-spinners';
 
 const EmployeeAdd = () => {
   const[employeeEdit]=useEmployeeEditMutation();
-  const[addEmployee]=useAddEmployeeMutation();
+  const[addEmployee,{ isLoading, isError, isSuccess }]=useAddEmployeeMutation();
   const location = useLocation();
   const employeeData = location.state?.editEmployee;
   // console.log("new vala",employeeData);
@@ -101,6 +100,11 @@ const EmployeeAdd = () => {
     }
   };
   
+  if(isLoading){
+    <div className='flex justify-center items-center h-screen'>
+         <ClipLoader color='blue' size={30}/>   
+    </div>
+  }
 
   return (
     <div className="container mx-auto mt-1 p-4 bg-white shadow-lg rounded-lg pb-8">
