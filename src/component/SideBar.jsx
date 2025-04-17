@@ -3,11 +3,12 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight, LayoutDashboard, UserPlus, Rocket, Users, FileText, Clock, Calendar, Settings, Bell, Globe, MessageSquare, LogOut, Plus, ChevronLeft }
  from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useIsLoginQuery } from '../rtk/login';
 
 
 
 const SideBar = () => {
-
+const {data,isLoading,error}=useIsLoginQuery()
     const [expandedNav, setExpandedNav] = useState('Employee');
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [currentPage, setCurrentPage] = useState('Dashboard');
@@ -24,6 +25,8 @@ const SideBar = () => {
       setCurrentPage(pageName);
     };
   
+    data?.role==="employee"
+
     const navItems = [
       { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [] ,url:"/" },
       { name: 'Recruitment', icon: <UserPlus size={20} />, children: [], url: "/about" },
@@ -34,7 +37,7 @@ const SideBar = () => {
         children: [
           {name:'Employee List',url:"/employee/list"},
           {name:'Employee Add',url:"/employee/add"},
-          {name:'Employee Attendance',url:"/employee/list"},
+          {name:'Employee Attendance',url:"/employee/lists"},
           {name:'Work Type',url:"/employee/work"},
           {name:'Employee Policy',url:"/employee/policy"},
          
@@ -43,6 +46,12 @@ const SideBar = () => {
       { name: 'Attendance', icon: <Clock size={20} />, children: [] },
 
     ];
+
+    const filteredNavItems = data?.role === "Admin"
+  ? navItems
+  : navItems.filter(item => item.name !== "Employee" && item.name !== "Recruitment");
+
+
     return (
         <div className='h-screen bg-gray-900'>
 
@@ -62,7 +71,7 @@ const SideBar = () => {
 
                 {/* Navigation */}
                 <nav className="mt-4">
-                    {navItems.map((item) => (
+                    {filteredNavItems.map((item) => (
                         <div key={item.name}>
                             <Link to={item?.url}
                                 className={`flex items-center px-4 py-3 cursor-pointer hover:bg-gray-800 ${currentPage === item.name ? 'bg-blue-900' : ''}`}

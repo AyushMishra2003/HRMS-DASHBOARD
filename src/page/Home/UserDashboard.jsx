@@ -7,7 +7,7 @@ import { useGetAttendanceDetailQuery } from '../../rtk/attendance.js';
 
 const Dashboard=({data})=> {
   const{data:attandance,isLoading}=useGetAttendanceDetailQuery();
-     console.log("mai ham page  pe hu",attandance?.attandanceData?.length)
+    //  console.log("mai ham page  pe hu",attandance?.attandanceData)
 
   const { setEmployeeId, setUser } = useUserContext();
   const [notices] = useState([
@@ -35,69 +35,75 @@ const Dashboard=({data})=> {
     }
   }, [data]);
   // Generate attendance data for the last 2 months
-  const generateAttendanceData = () => {
-    const today = new Date();
-    const attendanceData = [];
-    
-    // Go back 2 months
-    for (let i = 0; i < 2; i++) {
-      const month = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      const monthName = month.toLocaleString('default', { month: 'long' });
-      const year = month.getFullYear();
-      
-      const daysInMonth = new Date(year, month.getMonth() + 1, 0).getDate();
-      const days = [];
-      
-      for (let day = 1; day <= daysInMonth; day++) {
-        const currentDate = new Date(year, month.getMonth(), day);
-        
-        // Skip future dates
-        if (currentDate > today) continue;
-        
-        // Skip weekends
-        const dayOfWeek = currentDate.getDay();
-        if (dayOfWeek === 0 || dayOfWeek === 6) continue;
-        
-        // Random attendance status
-        const rand = Math.random();
-        let status;
-        if (rand > 0.85) status = "absent"; // 15% chance of absent
-        else if (rand > 0.75) status = "leave"; // 10% chance of leave
-        else status = "present"; // 75% chance of present
-        
-        days.push({
-          day,
-          status,
-          date: currentDate.toISOString().split('T')[0]
-        });
+  const groupByMonthYear = (data) => {
+    const grouped = {};
+  
+    data.forEach(item => {
+      const date = new Date(item.date);
+      const month = date.toLocaleString('default', { month: 'long' });
+      const year = date.getFullYear();
+      const day = date.getDate();
+  
+      const key = `${month}-${year}`;
+      if (!grouped[key]) {
+        grouped[key] = {
+          month,
+          year,
+          days: []
+        };
       }
-      
-      attendanceData.push({
-        month: monthName,
-        year,
-        days
+  
+      grouped[key].days.push({
+        day,
+        status: item.status,
+        date: item.date
       });
-    }
-    
-    return attendanceData.reverse(); // Most recent month first
+    });
+  
+    return Object.values(grouped).sort((a, b) => {
+      const dateA = new Date(`${a.month} 1, ${a.year}`);
+      const dateB = new Date(`${b.month} 1, ${b.year}`);
+      return dateB - dateA; // latest first
+    });
   };
 
-  const attendanceData = generateAttendanceData();
+  const mapAttendanceStatus = (attendanceArray) => {
+    return attendanceArray.map(record => {
+      let status = "absent"; // default
+  
+      if (record.leave === true) {
+        status = "leave";
+      } else if (record.isFullDay || record.isHalfDay) {
+        status = "present";
+      }
+  
+      return {
+        ...record,
+        status,
+        date: new Date(record.createdAt).toISOString().split('T')[0] // format: yyyy-mm-dd
+      };
+    });
+  };
+  
 
-  // Calculate stats
+const rawData = attandance?.attandanceData || [];
+const mapped = mapAttendanceStatus(rawData);
+const attendanceData = groupByMonthYear(mapped);
+
+  
+
   const calculateStats = () => {
     let present = 0;
     let absent = 0;
     let leave = 0;
     let total = 0;
+    console.log(attandance?.attandanceData);
     
-    attendanceData.forEach(month => {
-      month.days.forEach(day => {
-        total++;
-        if (day.status === "present") present++;
-        else if (day.status === "absent") absent++;
-        else if (day.status === "leave") leave++;
-      });
+    attandance?.attandanceData.forEach(month => {
+        total++
+      if (month.status ==="present") present++;
+        else if (month.checkIn ==false) absent++;
+        else if (month.status === "status") leave++;
     });
     
     return { present, absent, leave, total };
@@ -119,7 +125,7 @@ const Dashboard=({data})=> {
           </div>
           <div className="hidden md:block">
             <div className="text-sm text-gray-600">
-              Today: {new Date().toLocaleDateString()}
+              Today: {new Date().toLocaleDateString("en-GB")}
             </div>
           </div>
         </div>
