@@ -43,7 +43,10 @@ const {data,isLoading,error}=useIsLoginQuery()
          
         ] 
       },
-      { name: 'Attendance', icon: <Clock size={20} />, children: [] },
+      { name: 'Attendance', icon: <Clock size={20} />,
+       children: [
+          {name:"AttendanceList",url:"/attendance/list"}
+      ] },   
 
     ];
 

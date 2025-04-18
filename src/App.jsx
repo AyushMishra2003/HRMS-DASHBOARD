@@ -14,7 +14,7 @@ import EmployeeWork from "./page/Employee/EmployeeWork";
 import EmployeeWorkType from "./page/Employee/EmployeeWork";
 import AuthLogin from "./page/Auth/Login";
 import ProtectedAuth from "./page/Auth/ProtectedAuth";
-
+import AttendanceList from "./page/IndivisualEmployee/attendanceList";
 const App = () => {
   return (
     <div>
@@ -32,6 +32,7 @@ const App = () => {
             <Route path="/employee/bank/:id" element={<EmployeeBankInfo />} />
             <Route path="/employee/policy" element={<Policy />} />
             <Route path="/employee/add/policy"element={<EmployeeAddPolicy />}/>
+             <Route path="/attendance/list" element={<AttendanceList/>}/>
           </Route>
         </Route>
 

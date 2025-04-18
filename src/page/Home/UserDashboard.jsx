@@ -97,7 +97,6 @@ const attendanceData = groupByMonthYear(mapped);
     let absent = 0;
     let leave = 0;
     let total = 0;
-    console.log(attandance?.attandanceData);
     
     attandance?.attandanceData.forEach(month => {
         total++
