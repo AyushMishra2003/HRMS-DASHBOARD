@@ -15,6 +15,8 @@ import EmployeeWorkType from "./page/Employee/EmployeeWork";
 import AuthLogin from "./page/Auth/Login";
 import ProtectedAuth from "./page/Auth/ProtectedAuth";
 import AttendanceList from "./page/IndivisualEmployee/attendanceList";
+import EmployeeAttendance from "./page/EmployeeAttendance/EmployeeAttendance";
+import EmployeeLeave from "./page/EmployeeLeave/EmployeeLeave";
 const App = () => {
   return (
     <div>
@@ -33,9 +35,10 @@ const App = () => {
             <Route path="/employee/policy" element={<Policy />} />
             <Route path="/employee/add/policy"element={<EmployeeAddPolicy />}/>
              <Route path="/attendance/list" element={<AttendanceList/>}/>
+             <Route path="/attendance/employee" element={<EmployeeAttendance/>}/>
+             <Route path="/leave" element={<EmployeeLeave/>}/>
           </Route>
         </Route>
-
         <Route element={<ProtectedAuth isPrivate={false} />}>
           <Route path="/login" element={<AuthLogin />} />
         </Route>

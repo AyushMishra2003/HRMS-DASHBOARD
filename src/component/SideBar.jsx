@@ -4,6 +4,7 @@ import { ChevronDown, ChevronRight, LayoutDashboard, UserPlus, Rocket, Users, Fi
  from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useIsLoginQuery } from '../rtk/login';
+import { FaUmbrellaBeach } from 'react-icons/fa';
 
 
 
@@ -37,7 +38,7 @@ const {data,isLoading,error}=useIsLoginQuery()
         children: [
           {name:'Employee List',url:"/employee/list"},
           {name:'Employee Add',url:"/employee/add"},
-          {name:'Employee Attendance',url:"/employee/lists"},
+        //   {name:'Employee Attendance',url:"/employee/lists"},
           {name:'Work Type',url:"/employee/work"},
           {name:'Employee Policy',url:"/employee/policy"},
          
@@ -45,9 +46,14 @@ const {data,isLoading,error}=useIsLoginQuery()
       },
       { name: 'Attendance', icon: <Clock size={20} />,
        children: [
-          {name:"AttendanceList",url:"/attendance/list"}
-      ] },   
-
+      ...(data?.role==="employee"?[{name:"Attendance List",url:"/attendance/list"}]:[]),
+      ...(data?.role==="Admin"?[{name:"Employee Attendance",url:"/attendance/employee"}]:[])    
+      ] },  
+      { name: "Leave", icon: <Users size={20} />,
+       children:   [
+            {name:"Leave",url:"/leave"},
+          ]  
+      },
     ];
 
     const filteredNavItems = data?.role === "Admin"

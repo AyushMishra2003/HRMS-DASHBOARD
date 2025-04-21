@@ -17,31 +17,46 @@ export const attendanceDetailApi = createApi({
     employeeChekOut: builder.mutation({
       query: (id) => (
         console.log("rtk"),
-        
         {
-        url: `employee/attendance/checkout/${id}`,
-        method: "PUT",
-      }),
+          url: `employee/attendance/checkout/${id}`,
+          method: "PUT",
+        }
+      ),
       invalidatesTags: ["attendance"],
     }),
+
     getAttendanceDetail: builder.query({
       query: () => ({
-          url: "/employee/attendance/get/monthly/detail",
-          method: "GET",
+        url: "/employee/attendance/get/monthly/detail",
+        method: "GET",
       }),
-      providesTags: ["attendance"], 
-  }), 
-    employeeAllDetail:builder.mutation({
-        query:(id)=>(
-            console.log("rtk+++",id),
- 
-          {
-          url:`employee/attendance/all/detail/${id}`,
+      providesTags: ["attendance"],
+    }),
+
+    attendanceFilter: builder.query({
+      query: (range = "all") => ({
+        url: `/employee/attendance/filter?range=${range}`,
+        method: "GET",
+      }),
+      providesTags: ["attendance"],
+    }),
+    
+    employeeAllDetail: builder.mutation({
+      query: (id) => (
+        console.log("rtk+++", id),
+        {
+          url: `employee/attendance/all/detail/${id}`,
           method: "GET",
-        })
-    })
+        }
+      ),
+    }),
   }),
 });
 
-export const { useEmployeeCheckInMutation, useEmployeeChekOutMutation,useEmployeeAllDetailMutation,useGetAttendanceDetailQuery } =
-  attendanceDetailApi;
+export const {
+  useEmployeeCheckInMutation,
+  useEmployeeChekOutMutation,
+  useEmployeeAllDetailMutation,
+  useGetAttendanceDetailQuery,
+  useAttendanceFilterQuery
+} = attendanceDetailApi;

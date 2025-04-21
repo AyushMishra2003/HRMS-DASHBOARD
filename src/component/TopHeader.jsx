@@ -76,7 +76,6 @@ const TopHeader = () => {
 
   const checkInButton = async () => {
     const id = employeeId;
-    console.log(employeeId);
     const response = await employeeCheckIn(employeeId);
          if(response.data.success){
            startTimer();

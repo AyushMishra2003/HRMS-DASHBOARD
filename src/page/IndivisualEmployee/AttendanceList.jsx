@@ -8,10 +8,11 @@ export default function AttendanceList() {
  
     const{data,isLoading}=useGetAttendanceDetailQuery()
     
-    console.log("data++",data?.employeedata?.[0].name);
+    // console.log("data++",data?.employeedata?.[0].name);
 
     const columns=[
         {header:"Name",accessor:"name"},
+        {header:"Date",accessor:"date"},
         {header:"checkIn",accessor:"checkIn"},
         {header:"checkOut",accessor:"checkOut"},
         {header:"totalworkingHout",accessor:"totalworkingHout"},
@@ -21,8 +22,22 @@ export default function AttendanceList() {
    
     const tableData = data?.attandanceData.map((emp) => {
       let status = emp?.status;
-      let checkIn = emp?.loginTime;
-      let checkOut = emp?.logoutTime;
+      let checkIn =emp?.loginTime
+      ? new Date(emp.loginTime).toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : "N/A";
+      let checkOut =emp?.loginTime
+      ? new Date(emp.logoutTime).toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : "N/A";
       let totalworkingHout = emp?.workingHours;
     
       if (emp.checkIn === false) {
@@ -31,9 +46,17 @@ export default function AttendanceList() {
         checkOut = "N/A";
         totalworkingHout = "N/A";
       }
+      let date = emp?.createdAt
+      ? `${new Date(emp.createdAt).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })}`
+      : "N/A";
     
       return {
         name: data?.employeedata?.[0].name, 
+        date,
         checkIn,
         checkOut,
         totalworkingHout,
@@ -41,13 +64,7 @@ export default function AttendanceList() {
       };
     });
     
-    
-
-
-      //  <div>
-      //    <ClipLoader/>
-      //  </div>
-          
+  
          
   return (
     <div>   

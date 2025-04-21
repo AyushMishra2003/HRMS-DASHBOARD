@@ -67,6 +67,7 @@ const Dashboard=({data})=> {
     });
   };
 
+  
   const mapAttendanceStatus = (attendanceArray) => {
     return attendanceArray.map(record => {
       let status = "absent"; // default

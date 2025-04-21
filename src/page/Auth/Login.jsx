@@ -12,7 +12,7 @@ const AuthLogin = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [loginApi] = useLoginApiMutation();
+  const [loginApi,{isLoading:LoginLoading}] = useLoginApiMutation();
   const { data: isLoginData, isLoading } = useIsLoginQuery();
 
   const handleChange = (e) => {
@@ -39,7 +39,7 @@ const AuthLogin = () => {
     }
   }, [isLoginData, isLoading, navigate]);
 
-  if (isLoading || isLoginData) {
+  if (isLoading || isLoginData || LoginLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <ClipLoader color="blue" size={30} />
