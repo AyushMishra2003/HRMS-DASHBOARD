@@ -51,7 +51,8 @@ const {data,isLoading,error}=useIsLoginQuery()
       ] },  
       { name: "Leave", icon: <Users size={20} />,
        children:   [
-            {name:"Leave",url:"/leave"},
+            ...(data?.role==="employee"?[{name:"Leave",url:"/leave"}]:[]),
+            ...(data?.role==="Admin"?[{name:"Leave List",url:"/leave/list"}]:[]),
           ]  
       },
     ];

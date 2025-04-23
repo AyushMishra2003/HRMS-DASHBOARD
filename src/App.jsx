@@ -17,6 +17,7 @@ import ProtectedAuth from "./page/Auth/ProtectedAuth";
 import AttendanceList from "./page/IndivisualEmployee/attendanceList";
 import EmployeeAttendance from "./page/EmployeeAttendance/EmployeeAttendance";
 import EmployeeLeave from "./page/EmployeeLeave/EmployeeLeave";
+import LeaveList from "./page/LeaveList/LeaveList"
 const App = () => {
   return (
     <div>
@@ -37,6 +38,7 @@ const App = () => {
              <Route path="/attendance/list" element={<AttendanceList/>}/>
              <Route path="/attendance/employee" element={<EmployeeAttendance/>}/>
              <Route path="/leave" element={<EmployeeLeave/>}/>
+             <Route path="/leave/list" element={<LeaveList/>}/>
           </Route>
         </Route>
         <Route element={<ProtectedAuth isPrivate={false} />}>

@@ -26,7 +26,18 @@ const ischeck = async () => {
 };
 
 
+const isleaveConfirm = async () => {
+  return Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able delet leave?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes ?",
+  }).then((result) => result.isConfirmed);
+};
 
 
 
-export{isConfirm,ischeck}
+export{isConfirm,ischeck,isleaveConfirm}

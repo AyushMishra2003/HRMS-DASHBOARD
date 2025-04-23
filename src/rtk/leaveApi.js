@@ -7,13 +7,31 @@ export const leaveApi = createApi({
   tagTypes: ["leave"],
 
   endpoints: (builder) => ({
-    // employeeCheckIn: builder.mutation({
-    //   query: (id) => ({
-    //     url: `employee/attendance/checkIn/${id}`,
-    //     method: "POST",
-    //   }),
-    //   invalidatesTags: ["attendance"],
-    // }),
+    leaveCreate: builder.mutation({
+      query: ({ id, formData }) => ({
+        url: `leave/add/${id}`,
+        method: "POST",
+        data: formData,
+      }),
+      invalidatesTags: ["leave"],
+    }),
+
+    leaveDelete: builder.mutation({
+      query: ({ leaveId }) => ({
+        url: `leave/delete/${leaveId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["leave"],
+    }),
+
+    leaveUpdate: builder.mutation({
+      query: ({ id, formData }) => ({
+        url: `leave/edit/${id}`,
+        method: "PUT",
+        data: formData,
+      }),
+      invalidatesTags: ["leave"],
+    }),
 
     getLeaveDetail: builder.query({
       query: () => ({
@@ -22,10 +40,22 @@ export const leaveApi = createApi({
       }),
       providesTags: ["leave"],
     }),
+
+    getEmployeeLeave: builder.query({
+      query: () => ({
+        url: "/leave/all/employee",
+        method: "GET",
+      }),
+      providesTags: ["leave"],
+    }),
+   
   }),
 });
 
 export const {
+  useGetEmployeeLeaveQuery,
   useGetLeaveDetailQuery,
-  useGetAttendanceDetailQuery,
+  useLeaveCreateMutation,
+  useLeaveDeleteMutation,
+  useLeaveUpdateMutation,
 } = leaveApi;
