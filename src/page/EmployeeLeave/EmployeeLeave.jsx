@@ -6,7 +6,7 @@ import {
   useLeaveDeleteMutation,
   useLeaveUpdateMutation,
 } from "../../rtk/leaveApi";
-import {ClipLoader} from "react-spinners"
+import { ClipLoader } from "react-spinners"
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { isleaveConfirm } from "../../helper/SweetAlrertIsConfirm";
@@ -14,13 +14,13 @@ import { isleaveConfirm } from "../../helper/SweetAlrertIsConfirm";
 export default function EmployeeLeave() {
   const { data: leaveData, isLoading } = useGetLeaveDetailQuery();
   const [leavCeate, { isLoading: leaveLoading }] = useLeaveCreateMutation();
-  const [deleteLeave,{isLoading:deleteLoading}]=useLeaveDeleteMutation()
-  const[leaveUpdate,{isLoading:leaveUpdateLoading}] =useLeaveUpdateMutation();
+  const [deleteLeave, { isLoading: deleteLoading }] = useLeaveDeleteMutation()
+  const [leaveUpdate, { isLoading: leaveUpdateLoading }] = useLeaveUpdateMutation();
   // console.log("leavedata:", leaveData?.employeeData?.name
   // );
   const [errors, setErrors] = useState({});
   const [showLeaveForm, setShowLeaveForm] = useState(false);
-  const [editLeaveId,setEditLeaveId]=useState(null);
+  const [editLeaveId, setEditLeaveId] = useState(null);
 
   const [formData, setFormData] = useState({
     breakDown: "",
@@ -45,31 +45,31 @@ export default function EmployeeLeave() {
     { header: "Start Date", accessor: "startDate" },
     { header: "End Date", accessor: "endDate" },
     { header: "Status", accessor: "status" },
-    {header:"Description",accessor:"description"},
-    {header:"Action",accessor:"action"},
-    
+    { header: "Description", accessor: "description" },
+    { header: "Action", accessor: "action" },
+
   ];
 
   const handleEdit = (leaveItem) => {
-    console.log("Edit clicked", leaveItem); 
+    console.log("Edit clicked", leaveItem);
     setEditLeaveId(leaveItem);
     setFormData({
-      breakDown:leaveItem.breakDown||"",
-      leaveType:leaveItem.leaveType||"",
-      startDate:leaveItem.startDate?.split("T")[0]||"",
-      endDate:leaveItem.endDate?.split("T")[0]||"",
-      description:leaveItem.description
+      breakDown: leaveItem.breakDown || "",
+      leaveType: leaveItem.leaveType || "",
+      startDate: leaveItem.startDate?.split("T")[0] || "",
+      endDate: leaveItem.endDate?.split("T")[0] || "",
+      description: leaveItem.description
     })
-       setShowLeaveForm(true);  
+    setShowLeaveForm(true);
   };
-  
-  const handleDelete =async(leaveId) => {
-      const isConfirm= await isleaveConfirm()
-      if(isConfirm){
-        console.log("Delete clicked", leaveId);
-        const response=await deleteLeave({leaveId})
-      }
-   
+
+  const handleDelete = async (leaveId) => {
+    const isConfirm = await isleaveConfirm()
+    if (isConfirm) {
+      console.log("Delete clicked", leaveId);
+      const response = await deleteLeave({ leaveId })
+    }
+
   };
 
   const data = leaveData?.leaveData.map((e) => ({
@@ -77,7 +77,7 @@ export default function EmployeeLeave() {
     startDate: new Date(e.startDate).toLocaleDateString("en-IN"),
     endDate: new Date(e.endDate).toLocaleDateString("en-IN"),
     status: e.status,
-    description:e.description,
+    description: e.description,
     name: leaveData?.employeeData?.name,
     action: (
       <div className="flex space-x-2">
@@ -85,18 +85,18 @@ export default function EmployeeLeave() {
           onClick={() => handleEdit(e)}
           className="text-blue-500 hover:text-blue-700 font-medium"
         >
-       <FaEdit  className="size-6"/>
+          <FaEdit className="size-6" />
         </button>
         <button
           onClick={() => handleDelete(e._id)}
           className="text-red-500 hover:text-red-700 font-medium"
         >
-        <MdDelete className="size-6" />
+          <MdDelete className="size-6" />
         </button>
       </div>
     ),
-    
-  })) ||[];
+
+  })) || [];
 
   const handleCreateClick = () => {
     setShowLeaveForm(true);
@@ -120,9 +120,9 @@ export default function EmployeeLeave() {
     } else if (formData.description.length > 30) {
       newErrors.description = "Maximum 30 characters allowed";
     }
-  
+
     setErrors(newErrors);
-  
+
     if (Object.keys(newErrors).length > 0) return;
 
     let response;
@@ -133,49 +133,49 @@ export default function EmployeeLeave() {
     realFormData.append("endDate", formData.endDate);
     realFormData.append("description", formData.description);
     const id = leaveData?.employeeData?.id;
-     if(editLeaveId){
-        let id=editLeaveId._id;
-        response=await leaveUpdate({id,formData:realFormData})
-        console.log();     
-     }else{
-       response = await leavCeate({ id, formData:realFormData });
-     }
-      if(response.data.success){
-        setShowLeaveForm(false)
-      }
+    if (editLeaveId) {
+      let id = editLeaveId._id;
+      response = await leaveUpdate({ id, formData: realFormData })
+      console.log();
+    } else {
+      response = await leavCeate({ id, formData: realFormData });
+    }
+    if (response.data.success) {
+      setShowLeaveForm(false)
+    }
   };
 
-  if (leaveLoading ||deleteLoading||leaveUpdateLoading||isLoading) {
+  if (leaveLoading || deleteLoading || leaveUpdateLoading || isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <ClipLoader size={30} color="blue" />
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto p-4">
       <div className="relative">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Employee Leave</h2>
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer"
             onClick={handleCreateClick}
           >
-            Create
+            CREATE
           </button>
         </div>
 
         <TableComponent columns={columns} data={data} itemsPerPage={10} />
 
         {showLeaveForm && (
-          <div className="fixed inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-md shadow-lg w-full max-w-2xl">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Leave Request</h3>
                 <button
                   onClick={closeLeaveForm}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-gray-700 cursor-pointer"
                 >
                   <span className="text-2xl">&times;</span>
                 </button>
@@ -225,9 +225,10 @@ export default function EmployeeLeave() {
                       value={formData.startDate}
                       onChange={handelChange}
                       className="w-full border border-gray-300 rounded-md p-2"
+                      min={new Date().toISOString().split('T')[0]}
                       required
                     />
-                      {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>}
+                    {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -253,8 +254,10 @@ export default function EmployeeLeave() {
                     <label
                       className="block text-sm font-medium text-gray-700 mb-1"
                       name="endDate"
+                      
                       value={formData.endDate}
                       onChange={handelChange}
+                      
                     >
                       End date <span className="text-red-500">*</span>
                     </label>
@@ -264,9 +267,10 @@ export default function EmployeeLeave() {
                       value={formData.endDate}
                       onChange={handelChange}
                       className="w-full border border-gray-300 rounded-md p-2"
+                      min={new Date().toISOString().split('T')[0]} 
                       required
                     />
-                     {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>}
+                    {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>}
                   </div>
 
                   {/* <div>
@@ -302,7 +306,7 @@ export default function EmployeeLeave() {
                     minLength={3}
                     maxLength={30}
                   ></textarea>
-                     {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+                  {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                 </div>
 
                 <div className="flex justify-end space-x-2">
