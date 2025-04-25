@@ -1,54 +1,55 @@
-import { useForm } from 'react-hook-form';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { useWorkAddMutation } from '../../../rtk/employeeworck';
+import { useForm } from "react-hook-form";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useWorkAddMutation } from "../../../rtk/employeeworck";
 import { useParams } from "react-router-dom";
-import {useGetOneEmployeeWorkQuery} from '../../../rtk/employeeworck'
-
+import { useGetOneEmployeeWorkQuery } from "../../../rtk/employeeworck";
+import { ClipLoader } from "react-spinners";
 const EmployeeWorkAddForm = () => {
-     const{id}=useParams()
-     const { data: workdata, isLoading, error } = useGetOneEmployeeWorkQuery({ id });
-     
-  const [workAdd] = useWorkAddMutation();
+  const { id } = useParams();
+  const {
+    data: workdata,
+    isLoading,
+    error,
+  } = useGetOneEmployeeWorkQuery({ id });
+
+  const [workAdd,{isLoading:workLoading}] = useWorkAddMutation();
   const location = useLocation();
   const employeeData = location.state?.editEmployee;
-  const workId = location.state?.workId;
+
+  const { data: workData } = useGetOneEmployeeWorkQuery({ id });
   const navigate = useNavigate();
   const [data, setData] = useState({
-    department: '',
-    shipInformation: '',
-    employeeType: '',
-    company: '',
-    jobPosition: '',
-    workType: '',
-    reportingManager: '',
-    workLocation: '',
-    joiningDate: '',
-    salary: ''
+    department: "",
+    shipInformation: "",
+    employeeType: "",
+    company: "",
+    jobPosition: "",
+    workType: "",
+    reportingManager: "",
+    workLocation: "",
+    joiningDate: "",
+    salary: "",
   });
 
-  //   useEffect(()=>{
-  //         if(employeeData){
-  //          setData((prev)=>({
-  //             ...prev,
-  //           name:employeeData.name,
-  //           email:employeeData.email,
-  //           workEmail:employeeData.workEmail,
-  //           mobile:employeeData.mobile,
-  //           dob:employeeData.dob,
-  //           gender:employeeData.gender,
-  //           address:employeeData.address,
-  //           city:employeeData.city,
-  //           state:employeeData.state,
-  //           qualification:employeeData.qualification,
-  //           experience:employeeData.experience,
-  //           maritalStatus:employeeData.maritalStatus,
-  //           password:employeeData.passwords||"",
-  //           joiningDate:employeeData.joiningDate ? employeeData.joiningDate.split('T')[0]:"",
-  //           // photo:employeeData.photo,
-  //          }))
-  //         }
-  //   },[employeeData]);
+  useEffect(() => {
+    if (workData) {
+      setData({
+        department: workData?.department || "N/A",
+        shipInformation: workData?.shipInformation || "",
+        employeeType: workData?.employeeType || "",
+        company: workData?.company || "",
+        jobPosition: workData?.jobPosition || "",
+        workType: workData?.workType || "",
+        reportingManager: workData?.reportingManager || "",
+        workLocation: workData?.workLocation || "",
+        joiningDate: workData?.joiningDate
+        ? new Date(workData.joiningDate).toISOString().split("T")[0]
+        : "",
+        salary: workData?.salary || "",
+      });
+    }
+  }, [workData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,27 +61,38 @@ const EmployeeWorkAddForm = () => {
     setData({ ...data, [name]: e.target.files[0] });
   };
 
-  //  console.log("data",data);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const result = await workAdd({ data, id }).unwrap();
-    console.log('data', result);
-    if(result.success){
-      navigate(`/employee/details/${id}`)
-    }
 
+      
+    const result = await workAdd({ data, id }).unwrap();
+    if (result.success) {
+      navigate(`/employee/details/${id}`);
+    }
   };
+
+  if(workLoading){
+     return(
+      <div className="flex justify-center items-center h-screen">
+          <ClipLoader size={30} color="blu"/>
+      </div>
+     )
+  }
 
   return (
     <div className="container mx-auto mt-1 p-4 bg-white shadow-lg rounded-lg pb-8">
-      <h2 className="text-2xl font-bold mb-4 text-center">{employeeData ? 'Add Work Information ' : 'Add Work Information'}</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        {employeeData ? "Add Work Information " : "Add Work Information"}
+      </h2>
       <form onSubmit={onSubmit} className="space-y-4">
         {/* Email & Role */}
         {/* Name, Phone */}
         <div className="flex gap-10">
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Department</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Department
+            </label>
             <input
               type="text"
               onChange={handleChange}
@@ -92,7 +104,9 @@ const EmployeeWorkAddForm = () => {
             />
           </div>
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Ship Information</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Ship Information
+            </label>
             <select
               onChange={handleChange}
               name="shipInformation"
@@ -107,7 +121,9 @@ const EmployeeWorkAddForm = () => {
         </div>
         <div className="flex gap-10">
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Employee Type</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Employee Type
+            </label>
             <input
               type="text"
               onChange={handleChange}
@@ -120,7 +136,9 @@ const EmployeeWorkAddForm = () => {
           </div>
 
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Company</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Company
+            </label>
             <select
               onChange={handleChange}
               name="company"
@@ -144,7 +162,9 @@ const EmployeeWorkAddForm = () => {
         {/* Department, Designation */}
         <div className="flex gap-10">
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Job Position</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Job Position
+            </label>
             <input
               type="text"
               onChange={handleChange}
@@ -156,7 +176,9 @@ const EmployeeWorkAddForm = () => {
             />
           </div>
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Work Type</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Work Type
+            </label>
             <select
               onChange={handleChange}
               name="workType"
@@ -174,17 +196,21 @@ const EmployeeWorkAddForm = () => {
         {/* Salary, Joining Date */}
         <div className="flex gap-10">
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Reporting Manager</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Reporting Manager
+            </label>
             <input
               type="text"
               onChange={handleChange}
-              value={data.address}
+              value={data.reportingManager}
               name="reportingManager"
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
             />
           </div>
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Work Location</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Work Location
+            </label>
             <input
               type="text"
               onChange={handleChange}
@@ -197,7 +223,9 @@ const EmployeeWorkAddForm = () => {
 
         <div className="flex gap-10">
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Joining Date</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Joining Date
+            </label>
             <input
               type="Date"
               onChange={handleChange}
@@ -207,7 +235,9 @@ const EmployeeWorkAddForm = () => {
             />
           </div>
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Salary</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Salary
+            </label>
             <input
               type="Number"
               onChange={handleChange}
@@ -217,9 +247,22 @@ const EmployeeWorkAddForm = () => {
             />
           </div>
         </div>
-        <button type="submit" className=" bg-blue-600 text-white py-2 px-5 rounded-md hover:bg-blue-700 w-fit">
-          Submit
-        </button>
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-5 rounded-md hover:bg-blue-700"
+          >
+            Submit
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate(`/employee/details/${id}`)}
+            className="bg-gray-400 text-white py-2 px-5 rounded-md hover:bg-gray-500"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

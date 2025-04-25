@@ -41,9 +41,9 @@ const {data,isLoading,error}=useIsLoginQuery()
         //   {name:'Employee Attendance',url:"/employee/lists"},
           {name:'Work Type',url:"/employee/work"},
           {name:'Employee Policy',url:"/employee/policy"},
-         
         ] 
       },
+
       { name: 'Attendance', icon: <Clock size={20} />,
        children: [
       ...(data?.role==="employee"?[{name:"Attendance List",url:"/attendance/list"}]:[]),

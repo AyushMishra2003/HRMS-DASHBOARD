@@ -1,50 +1,45 @@
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
 
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import {useBankAddMutation} from '../../../rtk/employeeBank'
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  useBankAddMutation,
+  useGetOneEmployeeBankQuery,
+} from "../../../rtk/employeeBank";
 import { useParams } from "react-router-dom";
-
+import { ClipLoader } from "react-spinners";
 const EmployeeBankInfo = () => {
-  const{id}=useParams()
-  const [bankAdd, { isLoading, isError, isSuccess }] =useBankAddMutation();
+  const { id } = useParams();
+  const [bankAdd, { isLoading, isError, isSuccess }] = useBankAddMutation();
+  const { data: bankData } = useGetOneEmployeeBankQuery({ id });
   const location = useLocation();
   const employeeData = location.state?.editEmployee;
   const bankId = location.state?.bankId;
   const navigate = useNavigate();
 
   const [data, setData] = useState({
-    bankName: '',
-    accountNumber: '',
-    branch: '',
-    bankCode: '',
-    bankAddress: '',
-    country: '',
-    ifsc: '',
+    bankName: "",
+    accountNumber: "",
+    branch: "",
+    bankCode: "",
+    bankAddress: "",
+    country: "",
+    ifscCode: "",
   });
 
-  //   useEffect(()=>{
-  //         if(employeeData){
-  //          setData((prev)=>({
-  //             ...prev,
-  //           name:employeeData.name,
-  //           email:employeeData.email,
-  //           workEmail:employeeData.workEmail,
-  //           mobile:employeeData.mobile,
-  //           dob:employeeData.dob,
-  //           gender:employeeData.gender,
-  //           address:employeeData.address,
-  //           city:employeeData.city,
-  //           state:employeeData.state,
-  //           qualification:employeeData.qualification,
-  //           experience:employeeData.experience,
-  //           maritalStatus:employeeData.maritalStatus,
-  //           password:employeeData.passwords||"",
-  //           joiningDate:employeeData.joiningDate ? employeeData.joiningDate.split('T')[0]:"",
-  //           // photo:employeeData.photo,
-  //          }))
-  //         }
-  //   },[employeeData]);
+  useEffect(() => {
+    if (bankData) {
+      setData({
+        bankName: bankData.bankName,
+        accountNumber: bankData.accountNumber,
+        branch: bankData.branch,
+        bankCode: bankData.bankCode,
+        bankAddress: bankData.bankAddress,
+        country: bankData.country,
+        ifscCode: bankData.ifscCode,
+      });
+    }
+  }, [bankData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,30 +51,41 @@ const EmployeeBankInfo = () => {
     setData({ ...data, [name]: e.target.files[0] });
   };
 
-  //  console.log("data",data);
 
   const onSubmit = async (e) => {
     e.preventDefault();
+      
     try {
-      console.log("Submitting form...");
       const result = await bankAdd({ data, id }).unwrap();
-       if(result.success){
-        navigate(`/employee/details/${id}`)
-       }
+      if (result.success) {
+        navigate(`/employee/details/${id}`);
+      }
     } catch (error) {
       console.error("Failed to submit bank data:", error);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <ClipLoader size={30} color="blu" />
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto mt-1 p-4 bg-white shadow-lg rounded-lg pb-8">
-      <h2 className="text-2xl font-bold mb-4 text-center">{employeeData ? 'Add Bank Information ' : 'Add Bank Information'}</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        {employeeData ? "Add Bank Information " : "Add Bank Information"}
+      </h2>
       <form onSubmit={onSubmit} className="space-y-4">
         {/* Email & Role */}
         {/* Name, Phone */}
         <div className="flex gap-10">
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Bank Name</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Bank Name
+            </label>
             <input
               type="text"
               onChange={handleChange}
@@ -91,7 +97,9 @@ const EmployeeBankInfo = () => {
             />
           </div>
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Account Number</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Account Number
+            </label>
             <input
               type="number"
               onChange={handleChange}
@@ -105,7 +113,9 @@ const EmployeeBankInfo = () => {
         </div>
         <div className="flex gap-10">
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Branch</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Branch
+            </label>
             <input
               type="text"
               onChange={handleChange}
@@ -118,13 +128,15 @@ const EmployeeBankInfo = () => {
           </div>
 
           <div className="w-1/2">
-            <label className='block text-sm font-medium text-gray-700 '>Bank code</label>
+            <label className="block text-sm font-medium text-gray-700 ">
+              Bank code
+            </label>
             <input
-             type='text'
-             onChange={handleChange}
-             value={data.bankCode}
-             name='bankCode'
-             className='mt-1 block w-full border border-gray-300 rounded-md p-2'
+              type="text"
+              onChange={handleChange}
+              value={data.bankCode}
+              name="bankCode"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
             ></input>
           </div>
 
@@ -140,7 +152,9 @@ const EmployeeBankInfo = () => {
         {/* Department, Designation */}
         <div className="flex gap-10">
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Bank Address</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Bank Address
+            </label>
             <input
               type="text"
               onChange={handleChange}
@@ -152,7 +166,9 @@ const EmployeeBankInfo = () => {
             />
           </div>
           <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Countary</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Countary
+            </label>
             <input
               type="text"
               onChange={handleChange}
@@ -168,12 +184,14 @@ const EmployeeBankInfo = () => {
         {/* Salary, Joining Date */}
         <div className="flex gap-10">
           <div className="w-full">
-            <label className="block text-sm font-medium text-gray-700">IFSC CODE</label>
+            <label className="block text-sm font-medium text-gray-700">
+              IFSC CODE
+            </label>
             <input
               type="text"
               onChange={handleChange}
-              value={data.ifsc}
-              name="ifsc"
+              value={data.ifscCode}
+              name="ifscCode"
               className="mt-1 block w-full border border-gray-300 rounded-md p-2"
             />
           </div>
@@ -211,9 +229,21 @@ const EmployeeBankInfo = () => {
             />
           </div>
         </div> */}
-        <button type="submit" className=" bg-blue-600 text-white py-2 px-5 rounded-md hover:bg-blue-700 w-fit">
-          Submit
-        </button>
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-2 px-5 rounded-md hover:bg-blue-700 w-fit"
+          >
+            Submit
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate(-1)} // ya navigate("/your-desired-path")
+            className="bg-gray-300 text-gray-800 py-2 px-5 rounded-md hover:bg-gray-400 w-fit"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

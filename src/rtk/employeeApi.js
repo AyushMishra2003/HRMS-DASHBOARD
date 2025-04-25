@@ -14,6 +14,15 @@ export const employeeDetailApi = createApi({
             }),
             providesTags: ["employee"], 
         }), 
+
+        getAllEmployeeDetail: builder.query({
+            query: ({id}) => ({
+                url: `/employee/all/detail/${id}`,
+                method: "GET",
+            }),
+            providesTags: ["employee"], 
+        }), 
+
         getEmployeeProfile: builder.query({
             query: () => ({
                 url: "/employee/profile",
@@ -76,5 +85,6 @@ export const {useGetAllEmployeeQuery,
     useEmployeeEditMutation,
     useEmployeeLoginMutation,
     useGetOneEmployeeQuery,
-    useGetEmployeeProfileQuery
+    useGetEmployeeProfileQuery,
+    useGetAllEmployeeDetailQuery
 } = employeeDetailApi;
