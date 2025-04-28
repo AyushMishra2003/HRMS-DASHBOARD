@@ -16,7 +16,7 @@ import WorkingHoursChart from "../../page/WorkingHourChart/WorkingHoursCharts.js
 const Dashboard = ({ data }) => {
   const { data: attandance, isLoading } = useGetAttendanceDetailQuery();
 
-  const { setEmployeeId, setUser } = useUserContext();
+  const { setEmployeeId } = useUserContext();
   const [notices] = useState([
     {
       id: 1,
@@ -42,22 +42,31 @@ const Dashboard = ({ data }) => {
   ]);
 
   // Mock data for user
-  const [user] = useState({
-    name: data?.name || "Test Employee",
-    phone_Number: data?.mobile || "EMP1234",
+  const [user, setUser] = useState({
+    name: "Loading...",
+    phone_Number: "Loading...",
     department: "Employee",
-    totalDays: 60, // Total working days in the last 2 months
+    totalDays: 60,
     present: 52,
     absent: 5,
     leave: 3,
   });
-
+  
   useEffect(() => {
     if (data?.id) {
       setEmployeeId(data.id);
-      setUser(data);
+      setUser({
+        name: data.name,
+        phone_Number: data.mobile,
+        department: "Employee",
+        totalDays: 60,
+        present: 52,
+        absent: 5,
+        leave: 3,
+      });
     }
   }, [data]);
+  
 
   const groupByMonthYear = (data) => {
     const grouped = {};

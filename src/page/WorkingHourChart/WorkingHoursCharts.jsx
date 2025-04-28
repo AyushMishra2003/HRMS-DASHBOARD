@@ -3,7 +3,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 const WorkingHoursCharts = ({ attendance }) => {
    
   const data = attendance?.map(item => {
-    console.log("attendance", item.workingHours); 
     return {
       date: new Date(item.createdAt).toLocaleDateString("en-IN"),
       hours: item.workingHours || 0

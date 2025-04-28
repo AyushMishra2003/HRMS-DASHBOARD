@@ -3,7 +3,7 @@ import axiosBaseQuery from "./axiosBaseQuery";
 export const logiDetail = createApi({
   reducerPath: "authApi",
   baseQuery: axiosBaseQuery,
-  tagTypes: ["babu"],
+  tagTypes: ["userSession"],
   endpoints: (builder) => ({
     loginApi: builder.mutation({
       query: (data) => (
@@ -13,7 +13,7 @@ export const logiDetail = createApi({
         data,
         credentials: "include",
       }),
-      // invalidatesTags: ["userLogin"],
+      invalidatesTags: ["userSession"],
     }),
 
     isLogin: builder.query({
@@ -22,8 +22,8 @@ export const logiDetail = createApi({
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["userLogin"],
-      keepUnusedDataFor: 0, // Data cache ko immediately expire karega
+      providesTags: ["babu"],
+      keepUnusedDataFor: 0, 
       refetchOnMountOrArgChange: true,
     }),
 
@@ -34,6 +34,7 @@ export const logiDetail = createApi({
         method: "POST",
         credentials: "include",
       }),
+      invalidatesTags: ["userSession"],
     }),
   }),
 });

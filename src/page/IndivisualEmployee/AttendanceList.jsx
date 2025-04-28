@@ -13,9 +13,9 @@ export default function AttendanceList() {
     const columns=[
         {header:"Name",accessor:"name"},
         {header:"Date",accessor:"date"},
-        {header:"checkIn",accessor:"checkIn"},
-        {header:"checkOut",accessor:"checkOut"},
-        {header:"totalworkingHout",accessor:"totalworkingHout"},
+        {header:"CheckIn",accessor:"checkIn"},
+        {header:"CheckOut",accessor:"checkOut"},
+        {header:"TotalworkingHour",accessor:"totalworkingHout"},
         {header:"status",accessor:"status"}
     ]
        

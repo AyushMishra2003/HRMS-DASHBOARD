@@ -23,12 +23,13 @@ import { useGetEmployeeProfileQuery } from "../rtk/employeeApi.js";
 import { ClipLoader } from "react-spinners";
 import { ischeck } from "../helper/SweetAlrertIsConfirm.jsx";
 
+
 const TopHeader = () => {
   const { employeeId, user } = useUserContext();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [buttonStatus, setButtonStatus] = useState(true);
-  const [logout] = useIsLogoutMutation();
+  const [logout,{isLoading:logoutLoading}] = useIsLogoutMutation();
   const [employeeCheckIn, { isLoading, isError, isSuccess }] =
     useEmployeeCheckInMutation();
   const { data, isLoading: isProfileLoading } = useGetEmployeeProfileQuery();
@@ -72,7 +73,7 @@ const TopHeader = () => {
   const handleLogout = async () => {
     const response = await logout();
     if (response?.data) {
-      navigate("/login");
+      window.location.href = "/login";
     }
   };
 
@@ -128,6 +129,14 @@ const TopHeader = () => {
       </div>
     );
   }
+
+   if(logoutLoading){
+    return(
+      <div className="flex justify-center items-center h-screen">
+         <ClipLoader size={30} color="blue"/>
+      </div>
+    )
+   }
 
   return (
     <header className="bg-white border-b shadow-sm flex justify-between items-center px-6 py-3 sticky top-0 z-10">

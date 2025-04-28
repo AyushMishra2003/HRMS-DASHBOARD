@@ -4,7 +4,8 @@ import { data, Outlet, useNavigate } from "react-router-dom";
 import { ClipLoader } from 'react-spinners';
 
 const ProtectedAuth = ({ isPrivate }) => {
-  const { data: isLoginData, isLoading } = useIsLoginQuery();
+  const { data, isLoading, refetch } = useIsLoginQuery();
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true); // For loading indicator
 
@@ -13,27 +14,24 @@ const ProtectedAuth = ({ isPrivate }) => {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const response = await isLogin();
-        console.log(response);
-
+        const response = await refetch(); // 🛠️ This triggers fresh API call
         if (response?.data?.success) {
           console.log("✅ User is logged in.");
           if (!isPrivate) navigate("/dashboard/home", { replace: true });
         } else {
-          console.log("⛔ User is not logged in.");
+          // console.log("⛔ User is not logged in.");
           if (isPrivate) navigate("/login", { replace: true });
         }
       } catch (error) {
-        // console.error("🚨 Error in login check:", error);
         if (isPrivate) navigate("/login", { replace: true });
       } finally {
-        setLoading(false); // Loading is done
+        setLoading(false);
       }
     };
-
-    checkLogin(); // Call the function
-  }, []);
-
+  
+    checkLogin();
+  }, [refetch]);
+  
   if (isLoading) {
     return <div className='flex  h-[100vh] items-center justify-center'><ClipLoader/></div>
   }

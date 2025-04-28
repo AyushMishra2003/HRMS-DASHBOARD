@@ -1,12 +1,14 @@
 import React from "react";
 import TableComponent from "../../helper/TableComponent";
-import { useGetEmployeeLeaveQuery } from "../../rtk/leaveApi";
+import { useApproveLeaveMutation, useGetEmployeeLeaveQuery } from "../../rtk/leaveApi";
 import { AppBar } from "@mui/material";
 
 export default  function LeaveList(){
          
     const{data:allLeave ,isLaoding}= useGetEmployeeLeaveQuery()
-    //  console.log("bhai ye leave detail h ",allLeave);
+      const[leaveApproved,{isLaoding:leaveLoading}]= useApproveLeaveMutation();
+      
+     console.log("bhai ye leave detail h ",allLeave);
      
 
     const columns=[
@@ -23,17 +25,17 @@ export default  function LeaveList(){
   const handleApprove=async(id)=>{
         try{
               console.log("a++i",id);
+              const response=await leaveApproved({id})
+              console.log(response);
               
         }catch(err){
             console.log(err.message);
-            
         }
   }
 
   const handleReject=(id)=>{
        try {
-               console.log("i++",id);
-               
+               console.log("i++",id);         
        } catch (err) {
           console.log(err.message);
           
@@ -42,7 +44,7 @@ export default  function LeaveList(){
 //    const data=[];
 
    const data=allLeave? allLeave?.map((val)=>{
-      console.log(val.employeeId);
+      // console.log(val.employeeId);
        let name=val.employeeId.name;
        let mobile=val.employeeId.mobile;
        let email=val.employeeId.email; 
@@ -75,6 +77,8 @@ export default  function LeaveList(){
               
       }
    }):[]
+
+    
 
     return(
         <div>
