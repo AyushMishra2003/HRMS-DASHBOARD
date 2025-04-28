@@ -267,7 +267,7 @@ export default function EmployeeLeave() {
                       value={formData.endDate}
                       onChange={handelChange}
                       className="w-full border border-gray-300 rounded-md p-2"
-                      min={new Date().toISOString().split('T')[0]} 
+                      min={formData.startDate}
                       required
                     />
                     {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>}

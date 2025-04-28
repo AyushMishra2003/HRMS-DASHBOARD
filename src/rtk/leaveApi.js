@@ -41,9 +41,25 @@ export const leaveApi = createApi({
       invalidatesTags: ["leave"],
     }),
 
+    RejectLeave: builder.mutation({
+      query: ({id}) => ({
+        url: `leave/reject/${id}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["leave"],
+    }),
+
     getLeaveDetail: builder.query({
       query: () => ({
         url: "/leave/all/detal",
+        method: "GET",
+      }),
+      providesTags: ["leave"],
+    }),
+
+    getAllLeave: builder.query({
+      query: () => ({
+        url: "/leave/all",
         method: "GET",
       }),
       providesTags: ["leave"],
@@ -67,4 +83,6 @@ export const {
   useLeaveDeleteMutation,
   useLeaveUpdateMutation,
   useApproveLeaveMutation,
+  useGetAllLeaveQuery,
+  useRejectLeaveMutation
 } = leaveApi;

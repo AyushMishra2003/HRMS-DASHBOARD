@@ -125,7 +125,7 @@ const TopHeader = () => {
   if (isProfileLoading || attendanceLoading || isLoading || chekOutLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <ClipLoader color="#3b82f6" size={40} />
+        <ClipLoader color="blue" size={30} />
       </div>
     );
   }
