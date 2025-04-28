@@ -7,11 +7,18 @@ import {
   Check,
   X,
   Calendar as CalendarIcon,
+  PieChart as PieChartIcon,
+  BarChart as BarChartIcon,
+  Activity,
+  Clock
 } from "lucide-react";
+import { Quote, Target, Lightbulb, ArrowUpRight } from "lucide-react";
+
 import { useUserContext } from "../UseContext/useContext.jsx";
 import { useEffect } from "react";
 import { useGetAttendanceDetailQuery } from "../../rtk/attendance.js";
 import WorkingHoursChart from "../../page/WorkingHourChart/WorkingHoursCharts.jsx";
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
 
 const Dashboard = ({ data }) => {
   const { data: attandance, isLoading } = useGetAttendanceDetailQuery();
@@ -67,6 +74,36 @@ const Dashboard = ({ data }) => {
     }
   }, [data]);
   
+  // Performance score data (mock)
+  const [performanceData] = useState([
+    { month: 'Jan', score: 85 },
+    { month: 'Feb', score: 88 },
+    { month: 'Mar', score: 82 },
+    { month: 'Apr', score: 91 },
+    { month: 'May', score: 90 },
+  ]);
+  
+  // Productivity by time of day (mock)
+  const [productivityData] = useState([
+    { time: '9 AM', productivity: 65 },
+    { time: '10 AM', productivity: 80 },
+    { time: '11 AM', productivity: 90 },
+    { time: '12 PM', productivity: 75 },
+    { time: '1 PM', productivity: 60 },
+    { time: '2 PM', productivity: 70 },
+    { time: '3 PM', productivity: 85 },
+    { time: '4 PM', productivity: 78 },
+    { time: '5 PM', productivity: 72 },
+  ]);
+  
+  // Weekly work hours (mock)
+  const [weeklyHoursData] = useState([
+    { day: 'Mon', hours: 8.5 },
+    { day: 'Tue', hours: 9.2 },
+    { day: 'Wed', hours: 8.7 },
+    { day: 'Thu', hours: 7.9 },
+    { day: 'Fri', hours: 8.3 },
+  ]);
 
   const groupByMonthYear = (data) => {
     const grouped = {};
@@ -99,6 +136,20 @@ const Dashboard = ({ data }) => {
       return dateB - dateA;
     });
   };
+
+
+  const [thoughtOfDay] = useState({
+    quote: "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+    author: "Winston Churchill"
+  });
+  
+  // Add this for a new KPI visualization
+  const [keyMetrics] = useState([
+    { name: 'Tasks Completed', value: 87, target: 100, icon: <Target className="text-purple-500" size={20} />, color: 'bg-purple-100' },
+    { name: 'Meetings Attended', value: 24, target: 30, icon: <MessageSquare className="text-blue-500" size={20} />, color: 'bg-blue-100' },
+    { name: 'Efficiency Score', value: 92, target: 95, icon: <Activity className="text-green-500" size={20} />, color: 'bg-green-100' },
+  ]);
+  
 
   const mapAttendanceStatus = (attendanceArray) => {
     return attendanceArray.map((record) => {
@@ -139,80 +190,208 @@ const Dashboard = ({ data }) => {
   };
 
   const stats = calculateStats();
+  
+  // Data for attendance pie chart
+  const attendancePieData = [
+    { name: 'Present', value: stats.present, color: '#10B981' },
+    { name: 'Absent', value: stats.absent, color: '#EF4444' },
+    { name: 'Leave', value: stats.leave, color: '#F59E0B' },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <User className="text-blue-600" />
-            <div>
-              <h1 className="text-xl font-bold">{user.name}</h1>
-              <p className="text-gray-500 text-sm">
-                {user.id} | {user.department}
-              </p>
+        {/* Header with Employee Info Panel */}
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="bg-blue-100 p-3 rounded-full">
+                <User size={32} className="text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
+                <p className="text-gray-500">
+                  ID: {user.id || 'N/A'} • {user.department} • {user.phone_Number}
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 md:mt-0 bg-blue-50 px-4 py-2 rounded-lg">
+              <div className="text-sm font-medium text-blue-800">
+                Today: {new Date().toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </div>
             </div>
           </div>
-          <div className="hidden md:block">
-            <div className="text-sm text-gray-600">
-              Today: {new Date().toLocaleDateString("en-GB")}
-            </div>
-          </div>
+          
         </div>
 
+
+        
+
         {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Stats Cards */}
-          <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500 mb-1">
-                Total Working Days
+          <div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white rounded-lg shadow p-4 flex items-center">
+              <div className="bg-blue-100 p-3 rounded-full mr-4">
+                <Calendar size={24} className="text-blue-600" />
               </div>
-              <div className="text-3xl font-bold">{stats.total}</div>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500 mb-1">Present</div>
-              <div className="text-3xl font-bold text-green-600">
-                {stats.present}
-              </div>
-              <div className="text-sm text-gray-500">
-                {((stats.present / stats.total) * 100).toFixed(1)}%
+              <div>
+                <div className="text-sm text-gray-500 mb-1">Total Working Days</div>
+                <div className="text-3xl font-bold">{stats.total}</div>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500 mb-1">Absent</div>
-              <div className="text-3xl font-bold text-red-600">
-                {stats.absent}
+            <div className="bg-white rounded-lg shadow p-4 flex items-center">
+              <div className="bg-green-100 p-3 rounded-full mr-4">
+                <Check size={24} className="text-green-600" />
               </div>
-              <div className="text-sm text-gray-500">
-                {((stats.absent / stats.total) * 100).toFixed(1)}%
+              <div>
+                <div className="text-sm text-gray-500 mb-1">Present</div>
+                <div className="text-3xl font-bold text-green-600">{stats.present}</div>
+                <div className="text-sm text-gray-500">
+                  {((stats.present / stats.total) * 100).toFixed(1)}%
+                </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500 mb-1">On Leave</div>
-              <div className="text-3xl font-bold text-yellow-600">
-                {stats.leave}
+            <div className="bg-white rounded-lg shadow p-4 flex items-center">
+              <div className="bg-red-100 p-3 rounded-full mr-4">
+                <X size={24} className="text-red-600" />
               </div>
-              <div className="text-sm text-gray-500">
-                {((stats.leave / stats.total) * 100).toFixed(1)}%
+              <div>
+                <div className="text-sm text-gray-500 mb-1">Absent</div>
+                <div className="text-3xl font-bold text-red-600">{stats.absent}</div>
+                <div className="text-sm text-gray-500">
+                  {((stats.absent / stats.total) * 100).toFixed(1)}%
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4 flex items-center">
+              <div className="bg-yellow-100 p-3 rounded-full mr-4">
+                <CalendarIcon size={24} className="text-yellow-600" />
+              </div>
+              <div>
+                <div className="text-sm text-gray-500 mb-1">On Leave</div>
+                <div className="text-3xl font-bold text-yellow-600">{stats.leave}</div>
+                <div className="text-sm text-gray-500">
+                  {((stats.leave / stats.total) * 100).toFixed(1)}%
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-3">
-            <WorkingHoursChart attendance={attandance?.attandanceData || []} />
+          {/* Attendance Overview - Pie Chart */}
+          <div className="lg:col-span-4">
+            <div className="bg-white rounded-lg shadow h-full">
+              <div className="border-b border-gray-200 p-4 flex items-center">
+                <PieChartIcon className="text-blue-600 mr-2" />
+                <h2 className="text-lg font-semibold">Attendance Overview</h2>
+              </div>
+              <div className="p-4 flex items-center justify-center h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={attendancePieData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      outerRadius={80}
+                      innerRadius={50}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {attendancePieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Performance Trend Chart */}
+          <div className="lg:col-span-8">
+            <div className="bg-white rounded-lg shadow h-full">
+              <div className="border-b border-gray-200 p-4 flex items-center">
+                <Activity className="text-blue-600 mr-2" />
+                <h2 className="text-lg font-semibold">Performance Trend</h2>
+              </div>
+              <div className="p-4 h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={performanceData}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
+                    <XAxis dataKey="month" />
+                    <YAxis domain={[0, 100]} />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="score" stroke="#3B82F6" fill="#DBEAFE" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Productivity By Time of Day */}
+          <div className="lg:col-span-6">
+            <div className="bg-white rounded-lg shadow h-full">
+              <div className="border-b border-gray-200 p-4 flex items-center">
+                <Clock className="text-blue-600 mr-2" />
+                <h2 className="text-lg font-semibold">Productivity By Hour</h2>
+              </div>
+              <div className="p-4 h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={productivityData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
+                    <XAxis dataKey="time" />
+                    <YAxis domain={[0, 100]} />
+                    <Tooltip />
+                    <Line 
+                      type="monotone" 
+                      dataKey="productivity" 
+                      stroke="#8B5CF6" 
+                      strokeWidth={2} 
+                      dot={{ fill: '#8B5CF6', stroke: '#8B5CF6', strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Weekly Working Hours */}
+          <div className="lg:col-span-6">
+            <div className="bg-white rounded-lg shadow h-full">
+              <div className="border-b border-gray-200 p-4 flex items-center">
+                <BarChartIcon className="text-blue-600 mr-2" />
+                <h2 className="text-lg font-semibold">Weekly Working Hours</h2>
+              </div>
+              <div className="p-4 h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={weeklyHoursData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
+                    <XAxis dataKey="day" />
+                    <YAxis domain={[0, 10]} />
+                    <Tooltip />
+                    <Bar dataKey="hours" fill="#10B981" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
 
           {/* Notice Board */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-8">
             <div className="bg-white rounded-lg shadow">
               <div className="border-b border-gray-200 p-4 flex items-center justify-between">
                 <div className="flex items-center">
                   <Bell className="text-blue-600 mr-2" />
                   <h2 className="text-lg font-semibold">Notice Board</h2>
                 </div>
-                <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
                   {notices.length} New
                 </span>
               </div>
@@ -222,7 +401,7 @@ const Dashboard = ({ data }) => {
                     {notices.map((notice) => (
                       <div
                         key={notice.id}
-                        className="border-l-4 p-3 bg-gray-50 rounded"
+                        className="border-l-4 p-4 bg-gray-50 rounded shadow-sm hover:shadow transition-all duration-200"
                         style={{
                           borderColor:
                             notice.priority === "high"
@@ -236,11 +415,11 @@ const Dashboard = ({ data }) => {
                           <h3 className="font-medium text-gray-900">
                             {notice.title}
                           </h3>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
                             {notice.date}
                           </span>
                         </div>
-                        <p className="text-gray-600 mt-1 text-sm">
+                        <p className="text-gray-600 mt-2 text-sm">
                           {notice.content}
                         </p>
                       </div>
@@ -262,7 +441,7 @@ const Dashboard = ({ data }) => {
           </div>
 
           {/* Attendance Calendar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-4">
             <div className="bg-white rounded-lg shadow h-full">
               <div className="border-b border-gray-200 p-4 flex items-center">
                 <Calendar className="text-blue-600 mr-2" />
