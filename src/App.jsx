@@ -24,31 +24,40 @@ import React, { useEffect } from "react";
 
 const App = () => {
 
-const socket = io("http://localhost:6002", {
-  withCredentials: true,
-});
+// const socket = io("http://localhost:6002", {
+//   withCredentials: true,
+// });
 
-useEffect(() => {
-  const userId = localStorage.getItem("userId");
-     console.log("app me hu +++",userId);
+// useEffect(() => {
+//   const userId = localStorage.getItem("userId");
+//      console.log("app me hu +++",userId);
      
   
-    socket.emit(); // join room
-    socket.emit("join","front end h +++"); // join room
+//   socket.on("connect", () => {
+//     console.log("✅ Socket connected", socket.id);
+//   });
+//       // Now emit your join only after connection
+//     socket.emit("join", "front end h +++");
   
 
-  socket.on("welcome", (notification) => {
-    console.log("📩 New Notification:", notification);
-    // refetch(); // ✅ This works here
-  });
+//   socket.on("welcome", (notification) => {
+//     console.log("📩 New Notification:", notification);
+//     // refetch(); // ✅ This works here
+//   });
 
-  return () => {
-    // socket.off("new_notification");
-    socket.disconnect();
-  };
-}, []);
+//       socket.on("new-message", (notification) => {
+//       console.log("📩 New Notification:", notification);
+//       // refetch(); // ✅ This works here
+//       window.location.reload(); // This reloads the page like a browser refresh
+//     });
 
+//   return () => {
+//     // socket.off("new_notification");
+//     socket.disconnect();
+//   };
+// }, []);
 
+// 
 
   return (
     <div>

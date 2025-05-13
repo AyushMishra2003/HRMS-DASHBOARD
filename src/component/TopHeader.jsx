@@ -26,18 +26,19 @@ import {
   useGetNotificationQuery,
   useMarkAsReadNotificationMutation,
 } from "../rtk/notification.js";
+import { io } from "socket.io-client";
 
 const TopHeader = () => {
   const { employeeId, user } = useUserContext();
   const [logout, { isLoading: logoutLoading }] = useIsLogoutMutation();
-  const [employeeCheckIn, { isLoading, isError, isSuccess }] =useEmployeeCheckInMutation();
+  const [employeeCheckIn, { isLoading, isError, isSuccess }] = useEmployeeCheckInMutation();
   const { data: isLoginData, isLoading: isLoginLoding } = useIsLoginQuery();
-  const { data: notificationData, isLoading: isNotificationLoading,refetch } =useGetNotificationQuery();
+  const { data: notificationData, isLoading: isNotificationLoading, refetch } = useGetNotificationQuery();
   const [markAsReadNotification] = useMarkAsReadNotificationMutation();
   const { data, isLoading: isProfileLoading } = useGetEmployeeProfileQuery();
-  const { data: attandanceData,isLoading: attendanceLoading,error,} = useGetAttendanceDetailQuery();
-  const [employeeCheckOut, { isLoading: chekOutLoading }]=useEmployeeChekOutMutation();
-  
+  const { data: attandanceData, isLoading: attendanceLoading, error, } = useGetAttendanceDetailQuery();
+  const [employeeCheckOut, { isLoading: chekOutLoading }] = useEmployeeChekOutMutation();
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -46,7 +47,33 @@ const TopHeader = () => {
   const [intervalId, setIntervalId] = useState(null);
   const navigate = useNavigate();
 
+
   useEffect(() => {
+    const socket = io("http://localhost:6002", {
+      withCredentials: true,
+    });
+
+    socket.on("connect", () => {
+      console.log("✅ Socket connected", socket.id);
+      socket.emit("join", "front end h +++");
+    });
+
+    socket.on("new-message", (notification) => {
+      console.log("📩 New Notification:", notification);
+      refetch();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [refetch]);
+
+
+
+  useEffect(() => {
+
+
+
     if (!attandanceData?.todayData?.checkIn == false) {
       setButtonStatus(false);
     }
@@ -61,6 +88,29 @@ const TopHeader = () => {
       totalTimeActive();
     }
   }, [attandanceData]);
+
+
+
+
+
+  //  useEffect(() => {
+
+  //   socket.on("connect", () => {
+  //     console.log("✅ Socket connected", socket.id);
+  //   });
+
+
+
+  //   socket.on("new-message", (notification) => {
+  //     console.log("📩 New Notification:", notification);
+  //     refetch(); // ✅ This works here
+  //   });
+
+  //   return () => {
+  //     // socket.off("new_notification");
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   const getSecondDifferenc = async () => {
     const now = new Date(); // current date-time
@@ -139,7 +189,7 @@ const TopHeader = () => {
     );
   }
 
-  
+
 
   if (logoutLoading) {
     return (
@@ -153,8 +203,13 @@ const TopHeader = () => {
     try {
       const response = await markAsReadNotification(id);
       console.log("notification LOgin", response);
-    } catch (err) {}
+    } catch (err) { }
   };
+
+
+
+
+
 
   return (
     <header className="bg-white border-b shadow-sm flex justify-between items-center px-6 py-3 sticky top-0 z-10">
