@@ -8,7 +8,7 @@ import {
 import { ClipLoader } from "react-spinners";
 
 const EmployeeAdd = () => {
-  const [employeeEdit] = useEmployeeEditMutation();
+  const [employeeEdit,{isLoading:editLoading}] = useEmployeeEditMutation();
   const [addEmployee, { isLoading, isError, isSuccess }] =
     useAddEmployeeMutation();
   const location = useLocation();
@@ -104,10 +104,12 @@ const EmployeeAdd = () => {
     }
   };
 
-  if (isLoading) {
-    <div className="flex justify-center items-center h-screen">
+  if (isLoading||editLoading) {
+    return(
+      <div className="flex justify-center items-center h-screen">
       <ClipLoader color="blue" size={30} />
-    </div>;
+    </div>
+    ) 
   }
 
   return (

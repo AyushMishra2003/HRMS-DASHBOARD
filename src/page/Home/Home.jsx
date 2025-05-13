@@ -9,11 +9,16 @@ const Home = () => {
   const {data,isLoading,error}=useIsLoginQuery()
 
   
+  
   if(isLoading){
-      return <ClipLoader/>
+      return(
+        <div className='flex justify-center items-center h-screen'>
+           <ClipLoader size={30} color='blue'/>
+        </div>
+      )
   }
 
-
+  
   return (
     <div >
       {data?.role==="Admin"  ?  <DashboardLayout/>  :  <Dashboard data={data}/>}

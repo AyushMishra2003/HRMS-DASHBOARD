@@ -21,7 +21,7 @@ const EmployeeWorkAddForm = () => {
   const navigate = useNavigate();
   const [data, setData] = useState({
     department: "",
-    shipInformation: "",
+    shiftInformation: "",
     employeeType: "",
     company: "",
     jobPosition: "",
@@ -36,7 +36,7 @@ const EmployeeWorkAddForm = () => {
     if (workData) {
       setData({
         department: workData?.department || "N/A",
-        shipInformation: workData?.shipInformation || "",
+        shiftInformation: workData?.shiftInformation || "",
         employeeType: workData?.employeeType || "",
         company: workData?.company || "",
         jobPosition: workData?.jobPosition || "",
@@ -109,8 +109,8 @@ const EmployeeWorkAddForm = () => {
             </label>
             <select
               onChange={handleChange}
-              name="shipInformation"
-              value={data.shipInformation}
+              name="shiftInformation"
+              value={data.shiftInformation}
               className="mt-1 block w-full border  border-gray-300 rounded-md p-2 bg-white"
             >
               <option value="">select</option>

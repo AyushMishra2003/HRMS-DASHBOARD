@@ -85,7 +85,7 @@ export default function Policy() {
           </div>
           <button
             onClick={addNewPolicy}
-            className="flex items-center gap-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-md transition-colors duration-300"
+            className="flex items-center gap-1 px-4 py-2 bg-[#075271] hover:bg-[#075290] text-white font-medium rounded-md transition-colors duration-300"
           >
             <Plus size={20} />
             Create
@@ -133,7 +133,7 @@ export default function Policy() {
               )}
             </div>
             <div className="px-4 py-3 bg-gray-50">
-              <button className="w-full py-2 text-sm text-white bg-red-500 hover:bg-red-600 rounded transition-colors duration-300" 
+              <button className="w-full py-2 text-sm text-white bg-[#075271] hover:bg-[#075250] rounded transition-colors duration-300" 
               onClick={() =>ViewPolicy(policy)}>
                 View policy
               </button>

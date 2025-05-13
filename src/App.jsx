@@ -1,4 +1,3 @@
-import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "./page/Home/Home";
 import Layout from "./component/Layout";
@@ -18,7 +17,39 @@ import AttendanceList from "./page/IndivisualEmployee/attendanceList";
 import EmployeeAttendance from "./page/EmployeeAttendance/EmployeeAttendance";
 import EmployeeLeave from "./page/EmployeeLeave/EmployeeLeave";
 import LeaveList from "./page/LeaveList/LeaveList"
+import { notificationApi } from "../src/rtk/notification";
+import { io } from "socket.io-client";
+import { useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+
 const App = () => {
+
+const socket = io("http://localhost:6002", {
+  withCredentials: true,
+});
+
+useEffect(() => {
+  const userId = localStorage.getItem("userId");
+     console.log("app me hu +++",userId);
+     
+  
+    socket.emit(); // join room
+    socket.emit("join","front end h +++"); // join room
+  
+
+  socket.on("welcome", (notification) => {
+    console.log("📩 New Notification:", notification);
+    // refetch(); // ✅ This works here
+  });
+
+  return () => {
+    // socket.off("new_notification");
+    socket.disconnect();
+  };
+}, []);
+
+
+
   return (
     <div>
       <Routes>
@@ -31,14 +62,14 @@ const App = () => {
             <Route path="/employee/details/:id" element={<EmployeeDetail />} />
             <Route path="/employee/add" element={<EmployeeAdd />} />
             <Route path="/employee/work" element={<EmployeeWorkType />} />
-            <Route path="/employee/work/:id"element={<EmployeeWorkAddForm />}/>
+            <Route path="/employee/work/:id" element={<EmployeeWorkAddForm />} />
             <Route path="/employee/bank/:id" element={<EmployeeBankInfo />} />
             <Route path="/employee/policy" element={<Policy />} />
-            <Route path="/employee/add/policy"element={<EmployeeAddPolicy />}/>
-             <Route path="/attendance/list" element={<AttendanceList/>}/>
-             <Route path="/attendance/employee" element={<EmployeeAttendance/>}/>
-             <Route path="/leave" element={<EmployeeLeave/>}/>
-             <Route path="/leave/list" element={<LeaveList/>}/>
+            <Route path="/employee/add/policy" element={<EmployeeAddPolicy />} />
+            <Route path="/attendance/list" element={<AttendanceList />} />
+            <Route path="/attendance/employee" element={<EmployeeAttendance />} />
+            <Route path="/leave" element={<EmployeeLeave />} />
+            <Route path="/leave/list" element={<LeaveList />} />
           </Route>
         </Route>
         <Route element={<ProtectedAuth isPrivate={false} />}>

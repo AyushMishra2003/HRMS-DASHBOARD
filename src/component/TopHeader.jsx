@@ -8,10 +8,10 @@ import {
   Clock,
   LogIn,
   LogOut,
-  User
+  User,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useIsLogoutMutation } from "../rtk/login";
+import { useIsLoginQuery, useIsLogoutMutation } from "../rtk/login";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../page/UseContext/useContext.jsx";
 import {
@@ -22,21 +22,26 @@ import {
 import { useGetEmployeeProfileQuery } from "../rtk/employeeApi.js";
 import { ClipLoader } from "react-spinners";
 import { ischeck } from "../helper/SweetAlrertIsConfirm.jsx";
-
+import {
+  useGetNotificationQuery,
+  useMarkAsReadNotificationMutation,
+} from "../rtk/notification.js";
 
 const TopHeader = () => {
   const { employeeId, user } = useUserContext();
+  const [logout, { isLoading: logoutLoading }] = useIsLogoutMutation();
+  const [employeeCheckIn, { isLoading, isError, isSuccess }] =useEmployeeCheckInMutation();
+  const { data: isLoginData, isLoading: isLoginLoding } = useIsLoginQuery();
+  const { data: notificationData, isLoading: isNotificationLoading,refetch } =useGetNotificationQuery();
+  const [markAsReadNotification] = useMarkAsReadNotificationMutation();
+  const { data, isLoading: isProfileLoading } = useGetEmployeeProfileQuery();
+  const { data: attandanceData,isLoading: attendanceLoading,error,} = useGetAttendanceDetailQuery();
+  const [employeeCheckOut, { isLoading: chekOutLoading }]=useEmployeeChekOutMutation();
+  
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const [buttonStatus, setButtonStatus] = useState(true);
-  const [logout,{isLoading:logoutLoading}] = useIsLogoutMutation();
-  const [employeeCheckIn, { isLoading, isError, isSuccess }] =
-    useEmployeeCheckInMutation();
-  const { data, isLoading: isProfileLoading } = useGetEmployeeProfileQuery();
-  const { data: attandanceData, isLoading: attendanceLoading, error } = 
-    useGetAttendanceDetailQuery();
-  const [employeeCheckOut, { isLoading: chekOutLoading }] =
-    useEmployeeChekOutMutation();
   const [timer, setTimer] = useState(0); // in seconds
   const [intervalId, setIntervalId] = useState(null);
   const navigate = useNavigate();
@@ -45,10 +50,14 @@ const TopHeader = () => {
     if (!attandanceData?.todayData?.checkIn == false) {
       setButtonStatus(false);
     }
-    if (attandanceData?.todayData?.loginTime && intervalId === null && !attandanceData?.todayData?.logoutTime) {
+    if (
+      attandanceData?.todayData?.loginTime &&
+      intervalId === null &&
+      !attandanceData?.todayData?.logoutTime
+    ) {
       getSecondDifferenc();
     }
-    if(attandanceData?.todayData?.logoutTime){
+    if (attandanceData?.todayData?.logoutTime) {
       totalTimeActive();
     }
   }, [attandanceData]);
@@ -56,15 +65,15 @@ const TopHeader = () => {
   const getSecondDifferenc = async () => {
     const now = new Date(); // current date-time
     const createdAt = new Date(attandanceData?.todayData?.loginTime);
-    setTimer(Math.floor((now - createdAt) / 1000)); 
+    setTimer(Math.floor((now - createdAt) / 1000));
     startTimer();
-  }
+  };
 
   const totalTimeActive = async () => {
     const now = new Date(attandanceData?.todayData?.logoutTime); // current date-time
     const createdAt = new Date(attandanceData?.todayData?.loginTime);
-    setTimer(Math.floor((now - createdAt) / 1000)); 
-  }
+    setTimer(Math.floor((now - createdAt) / 1000));
+  };
 
   const toggleProfileMenu = () => {
     setProfileMenuOpen(!profileMenuOpen);
@@ -79,7 +88,7 @@ const TopHeader = () => {
 
   const checkInButton = async () => {
     const response = await employeeCheckIn(employeeId);
-    if(response.data.success){
+    if (response.data.success) {
       startTimer();
     }
   };
@@ -88,8 +97,8 @@ const TopHeader = () => {
     const confirmed = await ischeck();
     if (confirmed) {
       const response = await employeeCheckOut(employeeId);
-      if(response.data.success){
-        stopTimer(); 
+      if (response.data.success) {
+        stopTimer();
       }
     }
   };
@@ -122,7 +131,7 @@ const TopHeader = () => {
     return "US"; // Default
   };
 
-  if (isProfileLoading || attendanceLoading || isLoading || chekOutLoading) {
+  if (isLoading || chekOutLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <ClipLoader color="blue" size={30} />
@@ -130,13 +139,22 @@ const TopHeader = () => {
     );
   }
 
-   if(logoutLoading){
-    return(
+  
+
+  if (logoutLoading) {
+    return (
       <div className="flex justify-center items-center h-screen">
-         <ClipLoader size={30} color="blue"/>
+        <ClipLoader size={30} color="blue" />
       </div>
-    )
-   }
+    );
+  }
+
+  const isReadeNotification = async (id) => {
+    try {
+      const response = await markAsReadNotification(id);
+      console.log("notification LOgin", response);
+    } catch (err) {}
+  };
 
   return (
     <header className="bg-white border-b shadow-sm flex justify-between items-center px-6 py-3 sticky top-0 z-10">
@@ -148,60 +166,105 @@ const TopHeader = () => {
         >
           <Menu size={20} />
         </button>
-        <h1 className="text-xl font-semibold text-gray-800 hidden md:block">Dashboard</h1>
+        <h1 className="text-xl font-semibold text-gray-800 hidden md:block">
+          Dashboard
+        </h1>
       </div>
 
       <div className="flex items-center space-x-3">
         {/* Time Tracker with Visual Improvements */}
-        <div className="flex items-center rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-          {buttonStatus ? (
-            <button
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 flex items-center font-medium transition-colors"
-              onClick={checkInButton}
-              disabled={isLoading}
-            >
-              <LogIn size={16} className="mr-1" />
-              <span>Check In</span>
-            </button>
-          ) : (
-            <button
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center font-medium transition-colors"
-              onClick={checkOutButton}
-              disabled={chekOutLoading}
-            >
-              <LogOut size={16} className="mr-1" />
-              <span>Check Out</span>
-            </button>
-          )}
-          
-          <div className="bg-gray-50 px-4 py-2 flex items-center border-l border-gray-200">
-            <Clock size={16} className="text-green-600 mr-2" />
-            <span className="font-mono text-green-600 font-medium">{formatTime(timer)}</span>
-          </div>
-        </div>
+        {isLoginData?.role == "employee" && (
+          <>
+            <div className="flex items-center rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+              {buttonStatus ? (
+                <button
+                  className="bg-[#075271] hover:bg-[#075260] text-white px-4 py-2 flex items-center font-medium transition-colors"
+                  onClick={checkInButton}
+                  disabled={isLoading}
+                >
+                  <LogIn size={16} className="mr-1" />
+                  <span>Check In</span>
+                </button>
+              ) : (
+                <button
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center font-medium transition-colors"
+                  onClick={checkOutButton}
+                  disabled={chekOutLoading}
+                >
+                  <LogOut size={16} className="mr-1" />
+                  <span>Check Out</span>
+                </button>
+              )}
+
+              <div className="bg-gray-50 px-4 py-2 flex items-center border-l border-gray-200">
+                <Clock size={16} className="text-green-600 mr-2" />
+                <span className="font-mono text-green-600 font-medium">
+                  {formatTime(timer)}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Action Icons */}
         <div className="hidden md:flex items-center space-x-1">
           <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
             <Settings size={18} />
           </button>
-          
-          <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600 relative transition-colors">
-            <Bell size={18} />
-            <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-              6
-            </span>
-          </button>
-          
+
+          {isLoginData?.role === "Admin" && (
+            <>
+              <button
+                onClick={() => setNotificationOpen(!notificationOpen)}
+                className="p-2 rounded-full hover:bg-gray-100 text-gray-600 relative transition-colors"
+              >
+                <Bell size={18} />
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {notificationData?.length || 0}
+                </span>
+              </button>
+
+              {notificationOpen && (
+                <div className="absolute right-16 mt-75 w-80 bg-white rounded-lg shadow-lg z-20 py-2 border border-gray-200 overflow-hidden">
+                  <div className="px-4 py-2 border-b border-gray-100 font-semibold text-gray-700">
+                    Notifications
+                  </div>
+
+                  {isNotificationLoading ? (
+                    <div className="px-4 py-2 text-sm text-gray-500">
+                      Loading...
+                    </div>
+                  ) : notificationData?.data?.length === 0 ? (
+                    <div className="px-4 py-2 text-sm text-gray-500">
+                      No notifications
+                    </div>
+                  ) : (
+                    notificationData?.map((note, index) => (
+                      // console.log("note",note.message)
+
+                      <div
+                        key={note._id || index}
+                        className="px-4 py-2 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer text-sm text-gray-600"
+                        onClick={() => isReadeNotification(note._id)}
+                      >
+                        {note.message}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
           <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
             <Globe size={18} />
           </button>
-          
+
           <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
             <MessageSquare size={18} />
           </button>
         </div>
-        
+
         {/* Profile Menu */}
         <div className="relative">
           <button
@@ -221,22 +284,32 @@ const TopHeader = () => {
           {profileMenuOpen && (
             <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10 py-1 border border-gray-200 overflow-hidden">
               <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-                <p className="text-sm font-medium text-gray-900">{data?.employee?.firstName} {data?.employee?.lastName}</p>
-                <p className="text-xs text-gray-500 truncate">{data?.employee?.email || user?.email}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {data?.employee?.firstName} {data?.employee?.lastName}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {data?.employee?.email || user?.email}
+                </p>
               </div>
-              
-              <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+
+              <a
+                href="#"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
                 <User size={16} className="mr-3 text-gray-500" />
                 My Profile
               </a>
-              
-              <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+
+              <a
+                href="#"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
                 <Settings size={16} className="mr-3 text-gray-500" />
                 Settings
               </a>
-              
+
               <div className="border-t border-gray-100 my-1"></div>
-              
+
               <button
                 onClick={handleLogout}
                 className="w-full text-left flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"

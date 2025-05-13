@@ -57,7 +57,7 @@ export default function LeaveList() {
       action: (
         <div className="flex gap-2">
           {val.status === "Approved" ? (
-            <div className="flex justify-center items-center bg-green-500 text-white px-4 py-1 rounded w-full">
+            <div className="flex justify-center items-center bg-[#075271] text-white px-4 py-1 rounded w-full">
               ✔️
             </div>
           ) : val.status === "Rejected" ? (
@@ -68,7 +68,7 @@ export default function LeaveList() {
             <>
               <button
                 onClick={() => handleApprove(val._id)}
-                className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 w-1/2"
+                className=" bg-[#075271] text-white px-4 py-1 rounded hover:bg-[#075290] w-1/2"
               >
                 Approve
               </button>

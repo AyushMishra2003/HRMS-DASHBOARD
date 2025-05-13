@@ -19,7 +19,6 @@ const axiosBaseQuery = async ({ url, method, data }) => {
         ? { data, headers: { "Content-Type": "multipart/form-data" } } 
         : { data }),
     });
-    // console.log(response);
 
     if (response?.data?.message) {
       toast.success(response.data.message);
@@ -27,9 +26,13 @@ const axiosBaseQuery = async ({ url, method, data }) => {
     return { data: method === "GET" ? response?.data?.data : response?.data };
     
   } catch (error) {
-    // console.error("Request Error:", error);
-    const errorMessage = error.response?.data?.message || error.message || "Something went wrong";
-    toast.error(errorMessage);
+      if(error.status===401){
+        const errorMessage = error.response?.data?.message || error.message || "Something went wrong";
+      }else{
+        const errorMessage = error.response?.data?.message || error.message || "Something went wrong";
+        toast.error(errorMessage);
+      }
+      const errorMessage = error.response?.data?.message || error.message || "Something went wrong";
     return {
       error: {
         status: error.response?.status || 500,

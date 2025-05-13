@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useIsLoginQuery, useLoginApiMutation } from '../../rtk/login';
-import { ClipLoader } from 'react-spinners';
-import logo from '../../assets/logo.png'
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useIsLoginQuery, useLoginApiMutation } from "../../rtk/login";
+import { ClipLoader } from "react-spinners";
+import logo from "../../assets/logo.png";
 
 const AuthLogin = () => {
-  const [data, setData] = useState({ 
-    email: '', 
-    password: '', 
-    role: 'Admin'
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+    role: "Admin",
   });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [loginApi,{isLoading:LoginLoading}] = useLoginApiMutation();
+  const [loginApi, { isLoading: LoginLoading }] = useLoginApiMutation();
   const { data: isLoginData, isLoading } = useIsLoginQuery();
 
   const handleChange = (e) => {
@@ -21,25 +21,25 @@ const AuthLogin = () => {
 
   const login = async () => {
     try {
-        console.log(data);
-        
+      console.log(data);
+
       const response = await loginApi(data).unwrap();
-      console.log('response:', response);
+      console.log("response:", response);
       if (response.success === true) {
-        navigate('/');
+        navigate("/");
       }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
     }
   };
 
   useEffect(() => {
     if (isLoginData && !isLoading) {
-      navigate('/');
+      navigate("/");
     }
   }, [isLoginData, isLoading, navigate]);
 
-  if (isLoading || isLoginData || LoginLoading) {
+  if (LoginLoading||isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <ClipLoader color="blue" size={30} />
@@ -48,90 +48,96 @@ const AuthLogin = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-3xl shadow-lg border">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-2">Sign In</h1>
-        <p className="text-center text-gray-500 mb-6">Please login to access the dashboard.</p>
-        
-        <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-          {/* Username Field */}
-          <div className="space-y-2">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-              Username
-            </label>
-            <input
-              type="text"
-              id="email"
-              name="email"
-              value={data.email}
-              onChange={handleChange}
-              placeholder=""
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          {/* Password Field */}
-          <div className="space-y-2">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                value={data.password}
-                onChange={handleChange}
-                placeholder="••••••"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  {showPassword ? (
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" fillRule="evenodd" clipRule="evenodd" />
-                  ) : (
-                    <path d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" fillRule="evenodd" clipRule="evenodd" />
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          {/* Login Button */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e0f7fa] to-[#f1f8ff] px-4">
+  <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-gray-200 transition-all">
+    {/* Header */}
+    <div className="mb-6 text-center">
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-1">Welcome 👋</h1>
+      <p className="text-gray-500 text-sm">Sign in to continue to your dashboard</p>
+    </div>
+
+    {/* Form */}
+    <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+      {/* Email */}
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={data.email}
+          onChange={handleChange}
+          placeholder="you@example.com"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#075271] focus:border-[#075271] transition-all duration-200"
+        />
+      </div>
+
+      {/* Password */}
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            name="password"
+            value={data.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm pr-10 focus:ring-[#075271] focus:border-[#075271] transition-all"
+          />
           <button
             type="button"
-            onClick={login}
-            className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label="Toggle password visibility"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-            </svg>
-            Secure Sign-In
+            {showPassword ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.522 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7s-8.268-2.943-9.542-7z" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.94 17.94A10.06 10.06 0 0112 20C7 20 2.73 16.11 1 12a17.89 17.89 0 012.06-3.35" />
+                <path d="M22.94 11.06A10.06 10.06 0 0012 4c-2.33 0-4.5.94-6.24 2.35" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            )}
           </button>
-        </form>
-        
-        {/* Help Text */}
-        <div className="mt-6">
-          <p className="text-center text-gray-500 text-sm">
-            Note: You can use the username 'admin' and password 'admin' to log in.
-          </p>
-          <div className="text-center mt-2">
-            <a href="#" className="text-sm text-red-500 hover:text-red-600">
-              Forgot password?
-            </a>
-          </div>
         </div>
       </div>
-      
-      {/* Logo */}
-      <div className="mt-8">
-         <p>Developed By:Code Crafter Web Solutions</p>
-      </div>
+
+      {/* Submit */}
+      <button
+        type="button"
+        onClick={login}
+        className="w-full py-2 px-4 bg-[#075271] hover:bg-[#06425f] text-white text-sm font-medium rounded-lg shadow-md transition duration-200"
+      >
+        Sign In
+      </button>
+    </form>
+
+    {/* Bottom Links */}
+    <div className="mt-6 text-sm text-center text-gray-600">
+      <p>
+        Forgot your password?{" "}
+        <a href="#" className="text-[#075271] font-medium hover:underline">
+          Reset here
+        </a>
+      </p>
+      <p className="mt-2">
+        Note: Use <strong>admin/employee</strong> to login
+      </p>
     </div>
+
+    {/* Footer */}
+    <div className="mt-8 text-center text-xs text-gray-400">
+      Developed by <span className="text-[#075271] font-semibold">Code Crafter Web Solutions</span>
+    </div>
+  </div>
+</div>
+
+  
   );
 };
 

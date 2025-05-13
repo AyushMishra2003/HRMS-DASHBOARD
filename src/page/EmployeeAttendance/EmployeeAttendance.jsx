@@ -112,7 +112,7 @@ export default function EmployeeAttendance() {
           </select>
           <button
             onClick={handlePrint}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            className="bg-[#075370] text-white px-4 py-2 rounded-md hover:bg-[#075390]"
           >
             Export to Excel
           </button>

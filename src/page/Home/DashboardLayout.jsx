@@ -19,6 +19,7 @@ const  DashboardLayout=()=> {
     setCurrentPage(pageName);
   };
 
+  
   const navItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [] },
     { name: 'Recruitment', icon: <UserPlus size={20} />, children: [] },

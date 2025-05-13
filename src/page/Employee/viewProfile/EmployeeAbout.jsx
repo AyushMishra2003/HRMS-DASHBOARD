@@ -47,7 +47,7 @@ export default function EmployeeAbout() {
       setWork({
         department:workData?.department||"N/A",
         position:workData?.jobPosition||"N/A",
-        shiftInfo:workData?.shipInformation||"N/A",
+        shiftInfo:workData?.shiftInformation||"N/A",
         workType:workData?.workType||"N/A",
         employeeType:workData?.employeeType||"N/A",
         manager:workData?.reportingManager||"N/xcA",

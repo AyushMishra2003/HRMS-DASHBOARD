@@ -22,7 +22,9 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 
 const Dashboard = ({ data }) => {
   const { data: attandance, isLoading } = useGetAttendanceDetailQuery();
-
+ 
+      console.log("data++",attandance);
+      
   const { setEmployeeId } = useUserContext();
   const [notices] = useState([
     {

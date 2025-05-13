@@ -9,7 +9,7 @@ export const policyApi = createApi({
     policyAdd: builder.mutation({
       query: (data) => (
         {
-        url: "/plocy/add",
+        url: "/policy/add",
         method: "POST",
         data,
         credentials: "include",
@@ -18,12 +18,12 @@ export const policyApi = createApi({
     }),
     
     policyEdit: builder.mutation({
-      query: ({ id, titel, description }) => (
+      query: ({ id, title, description }) => (
           console.log(id),
         {
-        url: `/plocy/update/${id}`,
+        url: `/policy/update/${id}`,
         method: "PUT",
-        data: { titel, description },
+        data: { title, description },
         credentials: "include",
       }),
       invalidatesTags: ["policy"],
@@ -32,7 +32,7 @@ export const policyApi = createApi({
     policyAll: builder.query({
       query: () => (
           {
-          url: "/plocy/all",
+          url: "/policy/all",
           method: "GET",
       }),
       providesTags: ["policy"], 
@@ -42,7 +42,7 @@ export const policyApi = createApi({
      query:({id})=>(
           console.log("rtk",id),
       {
-        url:`/plocy/delete/${id}`,
+        url:`/policy/delete/${id}`,
         method:"DELETE"
      }),
      invalidatesTags:["policy"]
