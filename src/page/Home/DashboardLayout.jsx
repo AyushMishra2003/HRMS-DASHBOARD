@@ -1,180 +1,157 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, LayoutDashboard, UserPlus, Rocket, Users, FileText, Clock, Calendar, Settings, Bell, Globe, MessageSquare, LogOut, Plus, ChevronLeft } from 'lucide-react';
+import { Plus, Linkedin, Facebook, Twitter } from 'lucide-react';
 
-
-const  DashboardLayout=()=> {
-  const [expandedNav, setExpandedNav] = useState('Employee');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [currentPage, setCurrentPage] = useState('Dashboard');
-
-  const toggleNav = (name) => {
-    if (expandedNav === name) {
-      setExpandedNav(null);
-    } else {
-      setExpandedNav(name);
-    }
-  };
-
-  const navigateTo = (pageName) => {
-    setCurrentPage(pageName);
-  };
-
+const DashboardLayout = () => {
+  const [activeTab, setActiveTab] = useState('Overview');
   
-  const navItems = [
-    { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [] },
-    { name: 'Recruitment', icon: <UserPlus size={20} />, children: [] },
-    { name: 'Onboarding', icon: <Rocket size={20} />, children: [] },
-    { 
-      name: 'Employee', 
-      icon: <Users size={20} />, 
-      children: [
-        'Profile',
-        'Employees',
-        'Document Requests',
-        'Shift Requests',
-        'Work Type Requests',
-        'Rotating Shift Assign',
-        'Rotating Work Type Assign',
-        'Disciplinary Actions',
-        'Policies',
-        'Organization Chart'
-      ] 
-    },
-    { name: 'Attendance', icon: <Clock size={20} />, children: [] },
+  const tabs = [
+    'Overview', 'Address', 'Department', 'Designation', 
+    'Announcements', 'Policies', 'Admin', 'Statutory', 'My Plan'
   ];
 
   return (
-    <div className=" bg-gray-100">
-   
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <div className="bg-white" style={{ backgroundColor: '#06425F' }}>
+        <div className="px-6 py-4">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-white text-xl font-semibold">COMPANY PROFILE</h1>
+            <div className="bg-blue-500 text-white px-3 py-1 rounded text-sm flex items-center space-x-1">
+              <span>▶</span>
+              <span>Getting Started</span>
+            </div>
+          </div>
+          
+          {/* Navigation Tabs */}
+          <div className="mt-4 flex space-x-6">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`pb-2 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === tab
+                    ? 'text-white border-white'
+                    : 'text-gray-300 border-transparent hover:text-white hover:border-gray-300'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
- 
+      <div className="flex">
+        {/* Left Sidebar - Company Logo */}
+        <div className="w-80 p-6">
+          <div className="bg-white rounded border-2 border-dashed border-gray-300 p-8 text-center">
+            <div className="mb-4">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Plus size={32} className="text-blue-500" />
+              </div>
+              <p className="text-gray-500 text-sm">Your Company Logo comes here</p>
+            </div>
+          </div>
+          
+          <div className="mt-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-800">codcra</h2>
+          </div>
+        </div>
 
-        {/* Dynamic Content Area based on currentPage */}
-        <main className="flex-1 overflow-y-auto p-4">
-          {currentPage === 'Dashboard' && <DashboardContent />}
-          {currentPage === 'Attendance' && <AttendanceContent />}
-          {currentPage === 'Recruitment' && <GenericPageContent title="Recruitment" />}
-          {currentPage === 'Onboarding' && <GenericPageContent title="Onboarding" />}
-          {['Profile', 'Employees', 'Document Requests', 'Shift Requests', 'Work Type Requests', 
-            'Rotating Shift Assign', 'Rotating Work Type Assign', 'Disciplinary Actions', 
-            'Policies', 'Organization Chart'].includes(currentPage) && 
-            <GenericPageContent title={currentPage} />
-          }
-        </main>
+        {/* Right Content Area */}
+        <div className="flex-1 p-6">
+          <div className="bg-white rounded-lg shadow-sm">
+            <div className="p-6">
+              {/* Overview Section */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-6">OVERVIEW</h3>
+                
+                <div className="grid grid-cols-2 gap-8">
+                  {/* Left Column */}
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Registered Company Name
+                      </label>
+                      <p className="text-gray-900">Code Crafter</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Company Official Email
+                      </label>
+                      <p className="text-gray-900"></p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Website
+                      </label>
+                      <p className="text-gray-900">None</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Industry Type
+                      </label>
+                      <p className="text-gray-900"></p>
+                    </div>
+                  </div>
+                  
+                  {/* Right Column */}
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Brand Name
+                      </label>
+                      <p className="text-gray-900">codcra</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Company Official Contact
+                      </label>
+                      <p className="text-gray-900"></p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Domain Name
+                      </label>
+                      <p className="text-gray-900">codcra</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Separator Line */}
+              <hr className="border-gray-200 my-8" />
+
+              {/* Social Profile Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-6">SOCIAL PROFILE</h3>
+                
+                <div className="flex space-x-4">
+                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors">
+                    <Linkedin size={24} className="text-white" />
+                  </div>
+                  
+                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors">
+                    <Facebook size={24} className="text-white" />
+                  </div>
+                  
+                  <div className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-500 transition-colors">
+                    <Twitter size={24} className="text-white" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};
 
-// Dashboard content component
-function DashboardContent() {
-  return (
-    <>
-      {/* Stats Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-md shadow-sm border-t-4 border-green-500">
-          <h3 className="text-sm text-gray-600 mb-2">New Joining Today</h3>
-          <p className="text-5xl font-bold">0</p>
-        </div>
-        <div className="bg-white p-4 rounded-md shadow-sm border-t-4 border-orange-500">
-          <h3 className="text-sm text-gray-600 mb-2">New Joining This Week</h3>
-          <p className="text-5xl font-bold">0</p>
-        </div>
-        <div className="bg-white p-4 rounded-md shadow-sm border-t-4 border-blue-400">
-          <h3 className="text-sm text-gray-600 mb-2">Total Strength</h3>
-          <p className="text-5xl font-bold">35</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-5 gap-4">
-        {/* Work Type Requests */}
-        <div className="col-span-3 bg-white p-4 rounded-md shadow-sm">
-          <h3 className="font-medium mb-6">Work Type Requests To Approve</h3>
-          <div className="flex flex-col items-center justify-center py-10 text-gray-500">
-            <div className="mb-4">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <rect x="4" y="4" width="16" height="16" rx="2" />
-                <path d="M9 9l6 6M15 9l-6 6" />
-              </svg>
-            </div>
-            <p>No records available at the moment.</p>
-          </div>
-        </div>
-
-        {/* Attendance To Validate */}
-        <div className="col-span-2 bg-white p-4 rounded-md shadow-sm">
-          <h3 className="font-medium mb-4">Attendance To Validate</h3>
-          <table className="w-full">
-            <thead>
-              <tr className="text-left">
-                <th className="pb-2">Employee</th>
-                <th className="pb-2">At Work</th>
-                <th className="pb-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="py-2">
-                  <div className="flex items-center">
-                    <div className="bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center mr-2">
-                      <span className="text-sm">SA</span>
-                    </div>
-                    <div>
-                      <p className="text-sm">Sanket</p>
-                      <p className="text-xs text-gray-500">Armarkar (SKY0001)</p>
-                    </div>
-                  </div>
-                </td>
-                <td className="py-2">00:30</td>
-                <td className="py-2">
-                  <button className="bg-blue-500 text-white px-4 py-1 rounded">
-                    Validate
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="flex justify-between items-center mt-6">
-            <button className="text-gray-500">
-              <ChevronLeft size={20} />
-            </button>
-            <div className="h-2 bg-gray-200 rounded-full w-full mx-4">
-              <div className="h-2 bg-gray-400 rounded-full w-1/3"></div>
-            </div>
-            <button className="text-gray-500">
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Announcements */}
-      <div className="mt-6 bg-white p-4 rounded-md shadow-sm">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="font-medium">Announcements</h3>
-          <button className="text-gray-400 hover:bg-gray-100 p-1 rounded">
-            <Plus size={20} />
-          </button>
-        </div>
-        <div className="flex flex-col items-center justify-center py-10 text-gray-500">
-          <div className="mb-4">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M19 10c0 3.976-3.582 7-8 7s-8-3.024-8-7 3.582-7 8-7 8 3.024 8 7z" />
-              <path d="M12 17v4M8 21h8" />
-            </svg>
-          </div>
-          <p className="text-center">No Announcements to show.</p>
-        </div>
-      </div>
-    </>
-  );
-}
-
-export default DashboardLayout
-
-
-
-
-
+export default DashboardLayout;

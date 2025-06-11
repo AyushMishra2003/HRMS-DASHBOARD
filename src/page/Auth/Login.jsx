@@ -26,7 +26,7 @@ const AuthLogin = () => {
       const response = await loginApi(data).unwrap();
       console.log("response:", response);
       if (response.success === true) {
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -35,7 +35,7 @@ const AuthLogin = () => {
 
   useEffect(() => {
     if (isLoginData && !isLoading) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [isLoginData, isLoading, navigate]);
 

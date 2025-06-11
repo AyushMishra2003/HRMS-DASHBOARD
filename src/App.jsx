@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./page/Home/Home";
 import Layout from "./component/Layout";
 import About from "./page/About/About";
@@ -21,6 +21,7 @@ import { notificationApi } from "../src/rtk/notification";
 import { io } from "socket.io-client";
 import { useDispatch } from "react-redux";
 import React, { useEffect } from "react";
+import HomeDashboard from "./page/layput/HomeLayout";
 
 const App = () => {
 
@@ -60,32 +61,41 @@ const App = () => {
 // 
 
   return (
-    <div>
-      <Routes>
-        {/* Layout Route */}
-        <Route element={<ProtectedAuth isPrivate={true} />}>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="about" element={<About />} />
-            <Route path="/employee/list" element={<EmployeeList />} />
-            <Route path="/employee/details/:id" element={<EmployeeDetail />} />
-            <Route path="/employee/add" element={<EmployeeAdd />} />
-            <Route path="/employee/work" element={<EmployeeWorkType />} />
-            <Route path="/employee/work/:id" element={<EmployeeWorkAddForm />} />
-            <Route path="/employee/bank/:id" element={<EmployeeBankInfo />} />
-            <Route path="/employee/policy" element={<Policy />} />
-            <Route path="/employee/add/policy" element={<EmployeeAddPolicy />} />
-            <Route path="/attendance/list" element={<AttendanceList />} />
-            <Route path="/attendance/employee" element={<EmployeeAttendance />} />
-            <Route path="/leave" element={<EmployeeLeave />} />
-            <Route path="/leave/list" element={<LeaveList />} />
-          </Route>
-        </Route>
-        <Route element={<ProtectedAuth isPrivate={false} />}>
-          <Route path="/login" element={<AuthLogin />} />
-        </Route>
-      </Routes>
-    </div>
+<div>
+  <Routes>
+    {/* Public Landing Page */}
+    <Route path="/" element={<HomeDashboard />} />
+
+    {/* Protected Dashboard Routes */}
+    <Route element={<ProtectedAuth isPrivate={true} />}>
+      <Route path="/dashboard" element={<Layout />}>
+        {/* Default dashboard home */}
+        <Route index element={<Home />} />
+        <Route path="about" element={<About />} />
+        <Route path="employee/list" element={<EmployeeList />} />
+        <Route path="employee/details/:id" element={<EmployeeDetail />} />
+        <Route path="employee/add" element={<EmployeeAdd />} />
+        <Route path="employee/work" element={<EmployeeWorkType />} />
+        <Route path="employee/work/:id" element={<EmployeeWorkAddForm />} />
+        <Route path="employee/bank/:id" element={<EmployeeBankInfo />} />
+        <Route path="employee/policy" element={<Policy />} />
+        <Route path="employee/add/policy" element={<EmployeeAddPolicy />} />
+        <Route path="attendance/list" element={<AttendanceList />} />
+        <Route path="attendance/employee" element={<EmployeeAttendance />} />
+        <Route path="leave" element={<EmployeeLeave />} />
+        <Route path="leave/list" element={<LeaveList />} />
+      </Route>
+    </Route>
+
+    {/* Login Route (Unprotected) */}
+    <Route element={<ProtectedAuth isPrivate={false} />}>
+      <Route path="/login" element={<AuthLogin />} />
+    </Route>
+
+    {/* Catch-all redirect to HomeDashboard */}
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes>
+</div>
   );
 };
 

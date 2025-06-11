@@ -1,132 +1,146 @@
-import React from 'react'
-import { useState } from 'react';
-import { ChevronDown, ChevronRight, LayoutDashboard, UserPlus, Rocket, Users, FileText, Clock, Calendar, Settings, Bell, Globe, MessageSquare, LogOut, Plus, ChevronLeft }
- from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useIsLoginQuery } from '../rtk/login';
-import { FaUmbrellaBeach } from 'react-icons/fa';
-
-
+import React, { useState } from 'react';
+import { 
+  LayoutDashboard, 
+  UserPlus, 
+  Rocket, 
+  Users, 
+  Clock,
+  ChevronDown,
+  ChevronRight
+} from 'lucide-react';
 
 const SideBar = () => {
-const {data,isLoading,error}=useIsLoginQuery()
-    const [expandedNav, setExpandedNav] = useState('Employee');
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [currentPage, setCurrentPage] = useState('Dashboard');
+  const [expandedNav, setExpandedNav] = useState('Employee');
+  const [currentPage, setCurrentPage] = useState('Dashboard');
   
-    const toggleNav = (name) => {
-      if (expandedNav === name) {
-        setExpandedNav(null);
-      } else {
-        setExpandedNav(name);
-      }
-    };
-  
-    const navigateTo = (pageName) => {
-      setCurrentPage(pageName);
-    };
-  
-    data?.role==="employee"
+  // Mock data for role-based rendering
+  const data = { role: "Admin" }; // You can replace this with your actual data
 
-    const navItems = [
-      { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [] ,url:"/" },
-      { name: 'Recruitment', icon: <UserPlus size={20} />, children: [], url: "/about" },
-      { name: 'Onboarding', icon: <Rocket size={20} />, children: [] },
-      { 
-        name: 'Employee', 
-        icon: <Users size={20} />, 
-        children: [
-          {name:'Employee List',url:"/employee/list"},
-          {name:'Employee Add',url:"/employee/add"},
-        //   {name:'Employee Attendance',url:"/employee/lists"},
-          {name:'Work Type',url:"/employee/work"},
-          {name:'Employee Policy',url:"/employee/policy"},
-        ] 
-      },
+  const navItems = [
+    { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [], url: "/dashboard" },
+    { name: 'Recruitment', icon: <UserPlus size={20} />, children: [], url: "/dashboard/about" },
+    { name: 'Onboarding', icon: <Rocket size={20} />, children: [], url: "/dashboard/onboarding" },
+    { 
+      name: 'Employee', 
+      icon: <Users size={20} />, 
+      children: [
+        {name:'Employee List', url:"/dashboard/employee/list"},
+        {name:'Employee Add', url:"/dashboard/employee/add"},
+        {name:'Work Type', url:"/dashboard/employee/work"},
+        {name:'Employee Policy', url:"/dashboard/employee/policy"},
+      ] 
+    },
+    { name: 'Attendance', icon: <Clock size={20} />,
+      children: [
+        ...(data?.role === "employee" ? [{name:"Attendance List", url:"/dashboard/attendance/list"}] : []),
+        ...(data?.role === "Admin" ? [{name:"Employee Attendance", url:"/dashboard/attendance/employee"}] : [])    
+      ] 
+    },  
+    { name: "Leave", icon: <Users size={20} />,
+      children: [
+        ...(data?.role === "employee" ? [{name:"Leave", url:"/dashboard/leave"}] : []),
+        ...(data?.role === "Admin" ? [{name:"Leave List", url:"/dashboard/leave/list"}] : []),
+      ]  
+    },
+  ];
 
-      { name: 'Attendance', icon: <Clock size={20} />,
-       children: [
-      ...(data?.role==="employee"?[{name:"Attendance List",url:"/attendance/list"}]:[]),
-      ...(data?.role==="Admin"?[{name:"Employee Attendance",url:"/attendance/employee"}]:[])    
-      ] },  
-      { name: "Leave", icon: <Users size={20} />,
-       children:   [
-            ...(data?.role==="employee"?[{name:"Leave",url:"/leave"}]:[]),
-            ...(data?.role==="Admin"?[{name:"Leave List",url:"/leave/list"}]:[]),
-          ]  
-      },
-    ];
+  const filteredNavItems = data?.role === "Admin"
+    ? navItems
+    : navItems.filter(item => item.name !== "Employee" && item.name !== "Recruitment");
 
-    const filteredNavItems = data?.role === "Admin"
-  ? navItems
-  : navItems.filter(item => item.name !== "Employee" && item.name !== "Recruitment");
+  const toggleNav = (name) => {
+    if (expandedNav === name) {
+      setExpandedNav(null);
+    } else {
+      setExpandedNav(name);
+    }
+  };
 
+  const navigateTo = (pageName) => {
+    setCurrentPage(pageName);
+  };
 
-    return (
-        <div className='h-screen bg-gray-900'>
+  const handleItemClick = (item) => {
+    navigateTo(item.name);
+    if (item.children.length > 0) {
+      toggleNav(item.name);
+    }
+    console.log(`Navigating to: ${item.url}`);
+  };
 
-            <div className={`bg-gray-900 text-white ${sidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300`}>
-                {/* Company header */}
-                <div className="p-4 flex items-center border-b border-gray-800">
-                    <div className="bg-blue-700 p-1 rounded">
-                        <span className="text-xs">CC</span>
-                    </div>
-                    {sidebarOpen && (
-                        <div className="ml-3">
-                            <p className="font-bold text-sm">Code Crafter Web Solution</p>
-                            <p className="text-xs text-gray-400">Web Solutions</p>
-                        </div>
-                    )}
-                </div>
+  const handleChildClick = (child) => {
+    navigateTo(child.name);
+    console.log(`Navigating to: ${child.url}`);
+  };
 
-                {/* Navigation */}
-                <nav className="mt-4">
-                    {filteredNavItems.map((item) => (
-                        <div key={item.name}>
-                            <Link to={item?.url}
-                                className={`flex items-center px-4 py-3 cursor-pointer hover:bg-gray-800 ${currentPage === item.name ? 'bg-blue-900' : ''}`}
-                                onClick={() => {
-                                    navigateTo(item.name);
-                                    if (item.children.length > 0) {
-                                        toggleNav(item.name);
-                                    }
-                                }}
-                            >
-                                <span className="mr-3">{item.icon}</span>
-                                {sidebarOpen && (
-                                    <>
-                                        <span className="flex-grow">{item.name}</span>
-                                        {item.children.length > 0 && (
-                                            expandedNav === item.name ?
-                                                <ChevronDown size={16} /> :
-                                                <ChevronRight size={16} />
-                                        )}
-                                    </>
-                                )}
-                            </Link>
-
-                            {/* Submenu */}
-                            {sidebarOpen && expandedNav === item.name && item.children.length > 0 && (
-                                <div className="bg-gray-800 pl-12 py-1">
-                                    {item.children.map((child) => (
-                                        <div
-                                            key={child?.name}
-                                            className={`py-2 text-sm text-gray-300 hover:text-white cursor-pointer ${currentPage === child ? 'text-white font-medium' : ''}`}
-                                            onClick={() => navigateTo(child)}
-                                        >
-                                            <Link to={child?.url}>
-                                            {child?.name}
-                                            </Link>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </nav>
-            </div>
+  return (
+    <div className="w-72 h-screen shadow-2xl border-r border-gray-200" style={{ backgroundColor: '#06425F' }}>
+      {/* Company Header */}
+      <div className="p-6 border-b border-gray-600">
+        <div className="flex items-center space-x-3">
+          <div className="bg-blue-500 p-2 rounded-lg shadow-lg">
+            <span className="text-white font-bold text-sm">CC</span>
+          </div>
+          <div>
+            <p className="font-bold text-white text-base">Code Crafter Web Solution</p>
+            <p className="text-xs text-gray-300">Web Solutions</p>
+          </div>
         </div>
-    )
-}
+      </div>
 
-export default SideBar
+      {/* Navigation */}
+      <nav className="mt-4 px-3">
+        {filteredNavItems.map((item) => (
+          <div key={item.name} className="mb-1">
+            <div
+              className={`
+                flex items-center px-4 py-3 rounded-lg cursor-pointer
+                transition-all duration-200 group
+                ${currentPage === item.name 
+                  ? 'bg-white bg-opacity-80 shadow-lg text-black' 
+                  : 'text-gray-300 hover:text-black hover:bg-white hover:bg-opacity-50 h'
+                }
+              `}
+              onClick={() => handleItemClick(item)}
+            >
+              <span className="mr-4 flex-shrink-0">{item.icon}</span>
+              <span className="flex-grow font-medium text-sm">{item.name}</span>
+              {item.children.length > 0 && (
+                <div className="transition-transform duration-200">
+                  {expandedNav === item.name ? 
+                    <ChevronDown size={16} /> : 
+                    <ChevronRight size={16} />
+                  }
+                </div>
+              )}
+            </div>
+
+            {/* Submenu */}
+            {expandedNav === item.name && item.children.length > 0 && (
+              <div className="ml-6 mt-2 space-y-1">
+                {item.children.map((child) => (
+                  <div
+                    key={child?.name}
+                    className={`
+                      py-2 px-4 rounded-md text-sm cursor-pointer
+                      transition-all duration-200
+                      ${currentPage === child.name 
+                        ? 'text-blue-400 bg-blue-900 bg-opacity-30 font-medium' 
+                        : 'text-gray-400 hover:text-white hover:bg-gray-700 hover:bg-opacity-50'
+                      }
+                    `}
+                    onClick={() => handleChildClick(child)}
+                  >
+                    <span className="ml-2">{child?.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </nav>
+    </div>
+  );
+};
+
+export default SideBar;

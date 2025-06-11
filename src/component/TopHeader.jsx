@@ -9,149 +9,51 @@ import {
   LogIn,
   LogOut,
   User,
+  Wifi,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useIsLoginQuery, useIsLogoutMutation } from "../rtk/login";
-import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../page/UseContext/useContext.jsx";
-import {
-  useEmployeeCheckInMutation,
-  useEmployeeChekOutMutation,
-  useGetAttendanceDetailQuery,
-} from "../rtk/attendance.js";
-import { useGetEmployeeProfileQuery } from "../rtk/employeeApi.js";
-import { ClipLoader } from "react-spinners";
-import { ischeck } from "../helper/SweetAlrertIsConfirm.jsx";
-import {
-  useGetNotificationQuery,
-  useMarkAsReadNotificationMutation,
-} from "../rtk/notification.js";
-import { io } from "socket.io-client";
+
+// Mock data for demonstration
+const mockData = {
+  employee: {
+    firstName: "John",
+    lastName: "Doe",
+    email: "john.doe@company.com"
+  }
+};
+
+const mockNotifications = [
+  { _id: "1", message: "New task assigned to you", isRead: false },
+  { _id: "2", message: "Meeting scheduled for 3 PM", isRead: false },
+  { _id: "3", message: "Project deadline approaching", isRead: true },
+];
 
 const TopHeader = () => {
-  const { employeeId, user } = useUserContext();
-  const [logout, { isLoading: logoutLoading }] = useIsLogoutMutation();
-  const [employeeCheckIn, { isLoading, isError, isSuccess }] = useEmployeeCheckInMutation();
-  const { data: isLoginData, isLoading: isLoginLoding } = useIsLoginQuery();
-  const { data: notificationData, isLoading: isNotificationLoading, refetch } = useGetNotificationQuery();
-  const [markAsReadNotification] = useMarkAsReadNotificationMutation();
-  const { data, isLoading: isProfileLoading } = useGetEmployeeProfileQuery();
-  const { data: attandanceData, isLoading: attendanceLoading, error, } = useGetAttendanceDetailQuery();
-  const [employeeCheckOut, { isLoading: chekOutLoading }] = useEmployeeChekOutMutation();
-
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [buttonStatus, setButtonStatus] = useState(true);
-  const [timer, setTimer] = useState(0); // in seconds
-  const [intervalId, setIntervalId] = useState(null);
-  const navigate = useNavigate();
+  const [timer, setTimer] = useState(28547); // Demo timer value
+  const [isOnline, setIsOnline] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-
+  // Update current time every minute
   useEffect(() => {
-    const socket = io("http://localhost:6002", {
-      withCredentials: true,
-    });
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
-    socket.on("connect", () => {
-      console.log("✅ Socket connected", socket.id);
-      socket.emit("join", "front end h +++");
-    });
-
-    socket.on("new-message", (notification) => {
-      console.log("📩 New Notification:", notification);
-      refetch();
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [refetch]);
-
-
-
+  // Demo timer effect
   useEffect(() => {
-
-
-
-    if (!attandanceData?.todayData?.checkIn == false) {
-      setButtonStatus(false);
+    if (!buttonStatus) {
+      const interval = setInterval(() => {
+        setTimer(prev => prev + 1);
+      }, 1000);
+      return () => clearInterval(interval);
     }
-    if (
-      attandanceData?.todayData?.loginTime &&
-      intervalId === null &&
-      !attandanceData?.todayData?.logoutTime
-    ) {
-      getSecondDifferenc();
-    }
-    if (attandanceData?.todayData?.logoutTime) {
-      totalTimeActive();
-    }
-  }, [attandanceData]);
-
-
-
-
-
-  //  useEffect(() => {
-
-  //   socket.on("connect", () => {
-  //     console.log("✅ Socket connected", socket.id);
-  //   });
-
-
-
-  //   socket.on("new-message", (notification) => {
-  //     console.log("📩 New Notification:", notification);
-  //     refetch(); // ✅ This works here
-  //   });
-
-  //   return () => {
-  //     // socket.off("new_notification");
-  //     socket.disconnect();
-  //   };
-  // }, []);
-
-  const getSecondDifferenc = async () => {
-    const now = new Date(); // current date-time
-    const createdAt = new Date(attandanceData?.todayData?.loginTime);
-    setTimer(Math.floor((now - createdAt) / 1000));
-    startTimer();
-  };
-
-  const totalTimeActive = async () => {
-    const now = new Date(attandanceData?.todayData?.logoutTime); // current date-time
-    const createdAt = new Date(attandanceData?.todayData?.loginTime);
-    setTimer(Math.floor((now - createdAt) / 1000));
-  };
-
-  const toggleProfileMenu = () => {
-    setProfileMenuOpen(!profileMenuOpen);
-  };
-
-  const handleLogout = async () => {
-    const response = await logout();
-    if (response?.data) {
-      window.location.href = "/login";
-    }
-  };
-
-  const checkInButton = async () => {
-    const response = await employeeCheckIn(employeeId);
-    if (response.data.success) {
-      startTimer();
-    }
-  };
-
-  const checkOutButton = async () => {
-    const confirmed = await ischeck();
-    if (confirmed) {
-      const response = await employeeCheckOut(employeeId);
-      if (response.data.success) {
-        stopTimer();
-      }
-    }
-  };
+  }, [buttonStatus]);
 
   const formatTime = (seconds) => {
     const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0");
@@ -160,220 +62,255 @@ const TopHeader = () => {
     return `${hrs}:${mins}:${secs}`;
   };
 
-  const startTimer = () => {
-    if (intervalId !== null) return;
-    const id = setInterval(() => {
-      setTimer((prev) => prev + 1);
-    }, 1000);
-    setIntervalId(id);
-  };
-
-  const stopTimer = () => {
-    clearInterval(intervalId);
-    setIntervalId(null);
-  };
-
-  // Get first initial and last initial for avatar
   const getInitials = () => {
-    if (data?.employee?.firstName && data?.employee?.lastName) {
-      return `${data.employee.firstName[0]}${data.employee.lastName[0]}`;
+    if (mockData?.employee?.firstName && mockData?.employee?.lastName) {
+      return `${mockData.employee.firstName[0]}${mockData.employee.lastName[0]}`;
     }
-    return "US"; // Default
+    return "JD";
   };
 
-  if (isLoading || chekOutLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <ClipLoader color="blue" size={30} />
-      </div>
-    );
-  }
-
-
-
-  if (logoutLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <ClipLoader size={30} color="blue" />
-      </div>
-    );
-  }
-
-  const isReadeNotification = async (id) => {
-    try {
-      const response = await markAsReadNotification(id);
-      console.log("notification LOgin", response);
-    } catch (err) { }
-  };
-
-
-
-
-
+  const unreadCount = mockNotifications.filter(n => !n.isRead).length;
 
   return (
-    <header className="bg-white border-b shadow-sm flex justify-between items-center px-6 py-3 sticky top-0 z-10">
-      <div className="flex items-center">
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="mr-4 p-2 rounded-md hover:bg-gray-100 text-gray-600 transition-colors"
-          aria-label="Toggle Sidebar"
-        >
-          <Menu size={20} />
-        </button>
-        <h1 className="text-xl font-semibold text-gray-800 hidden md:block">
-          Dashboard
-        </h1>
-      </div>
+    <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+      <div className="flex justify-between items-center px-4 lg:px-6 py-3">
+        {/* Left Section */}
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105"
+            aria-label="Toggle Sidebar"
+          >
+            <Menu size={20} />
+          </button>
+          
+          <div className="hidden md:block">
+            <h1 className="text-xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Dashboard
+            </h1>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {currentTime.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                month: 'short', 
+                day: 'numeric' 
+              })}
+            </p>
+          </div>
+        </div>
 
-      <div className="flex items-center space-x-3">
-        {/* Time Tracker with Visual Improvements */}
-        {isLoginData?.role == "employee" && (
-          <>
-            <div className="flex items-center rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-              {buttonStatus ? (
-                <button
-                  className="bg-[#075271] hover:bg-[#075260] text-white px-4 py-2 flex items-center font-medium transition-colors"
-                  onClick={checkInButton}
-                  disabled={isLoading}
-                >
-                  <LogIn size={16} className="mr-1" />
-                  <span>Check In</span>
-                </button>
-              ) : (
-                <button
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 flex items-center font-medium transition-colors"
-                  onClick={checkOutButton}
-                  disabled={chekOutLoading}
-                >
-                  <LogOut size={16} className="mr-1" />
-                  <span>Check Out</span>
-                </button>
-              )}
+        {/* Center Section - Check In/Out (Employee Only) */}
+        <div className="flex items-center">
+          <div className="flex items-center bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+            {buttonStatus ? (
+              <button
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-2.5 flex items-center font-medium transition-all duration-200 transform hover:scale-105 shadow-sm"
+                onClick={() => setButtonStatus(false)}
+              >
+                <LogIn size={16} className="mr-2" />
+                <span className="hidden sm:inline">Check In</span>
+                <span className="sm:hidden">In</span>
+              </button>
+            ) : (
+              <button
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-2.5 flex items-center font-medium transition-all duration-200 transform hover:scale-105 shadow-sm"
+                onClick={() => setButtonStatus(true)}
+              >
+                <LogOut size={16} className="mr-2" />
+                <span className="hidden sm:inline">Check Out</span>
+                <span className="sm:hidden">Out</span>
+              </button>
+            )}
 
-              <div className="bg-gray-50 px-4 py-2 flex items-center border-l border-gray-200">
-                <Clock size={16} className="text-green-600 mr-2" />
-                <span className="font-mono text-green-600 font-medium">
+            <div className="bg-white px-4 py-2.5 flex items-center border-l border-gray-200 min-w-[120px]">
+              <div className="flex items-center">
+                <div className="relative">
+                  <Clock size={16} className="text-blue-600 mr-2" />
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+                <span className="font-mono text-blue-600 font-semibold text-sm">
                   {formatTime(timer)}
                 </span>
               </div>
             </div>
-          </>
-        )}
+          </div>
+        </div>
 
-        {/* Action Icons */}
-        <div className="hidden md:flex items-center space-x-1">
-          <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
-            <Settings size={18} />
-          </button>
+        {/* Right Section */}
+        <div className="flex items-center space-x-2">
+          {/* Status Indicator */}
+          <div className="hidden lg:flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2">
+            <div className="flex items-center space-x-1">
+              <Wifi size={14} className={isOnline ? "text-green-500" : "text-red-500"} />
+              <span className="text-xs font-medium text-gray-600">
+                {isOnline ? "Online" : "Offline"}
+              </span>
+            </div>
+          </div>
 
-          {isLoginData?.role === "Admin" && (
-            <>
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-1">
+            <button className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group">
+              <Settings size={18} />
+              <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Settings
+              </span>
+            </button>
+
+            {/* Notifications */}
+            <div className="relative">
               <button
                 onClick={() => setNotificationOpen(!notificationOpen)}
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-600 relative transition-colors"
+                className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group"
               >
                 <Bell size={18} />
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {notificationData?.length || 0}
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  Notifications
                 </span>
               </button>
 
+              {/* Notification Dropdown */}
               {notificationOpen && (
-                <div className="absolute right-16 mt-75 w-80 bg-white rounded-lg shadow-lg z-20 py-2 border border-gray-200 overflow-hidden">
-                  <div className="px-4 py-2 border-b border-gray-100 font-semibold text-gray-700">
-                    Notifications
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl z-50 border border-gray-200 overflow-hidden">
+                  <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
+                    <h3 className="font-semibold text-gray-800">Notifications</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">{unreadCount} unread messages</p>
                   </div>
-
-                  {isNotificationLoading ? (
-                    <div className="px-4 py-2 text-sm text-gray-500">
-                      Loading...
-                    </div>
-                  ) : notificationData?.data?.length === 0 ? (
-                    <div className="px-4 py-2 text-sm text-gray-500">
-                      No notifications
-                    </div>
-                  ) : (
-                    notificationData?.map((note, index) => (
-                      // console.log("note",note.message)
-
+                  
+                  <div className="max-h-64 overflow-y-auto">
+                    {mockNotifications.map((note, index) => (
                       <div
                         key={note._id || index}
-                        className="px-4 py-2 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer text-sm text-gray-600"
-                        onClick={() => isReadeNotification(note._id)}
+                        className={`px-4 py-3 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors ${
+                          !note.isRead ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                        }`}
                       >
-                        {note.message}
+                        <p className="text-sm text-gray-700 leading-relaxed">{note.message}</p>
+                        <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
                       </div>
-                    ))
-                  )}
+                    ))}
+                  </div>
+                  
+                  <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                    <button className="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                      View all notifications
+                    </button>
+                  </div>
                 </div>
               )}
-            </>
-          )}
-
-          <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
-            <Globe size={18} />
-          </button>
-
-          <button className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
-            <MessageSquare size={18} />
-          </button>
-        </div>
-
-        {/* Profile Menu */}
-        <div className="relative">
-          <button
-            onClick={toggleProfileMenu}
-            className="flex items-center hover:bg-gray-50 rounded-full py-1 pl-2 pr-3 border border-transparent hover:border-gray-200 transition-colors"
-          >
-            <div className="bg-blue-100 text-blue-700 rounded-full w-8 h-8 flex items-center justify-center">
-              <span className="text-sm font-semibold">{getInitials()}</span>
             </div>
-            <span className="ml-2 mr-1 font-medium text-gray-700 hidden sm:block">
-              {data?.employee?.firstName || "User"}
-            </span>
-            <ChevronDown size={16} className="text-gray-500" />
-          </button>
 
-          {/* Profile Dropdown Menu */}
-          {profileMenuOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10 py-1 border border-gray-200 overflow-hidden">
-              <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-                <p className="text-sm font-medium text-gray-900">
-                  {data?.employee?.firstName} {data?.employee?.lastName}
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  {data?.employee?.email || user?.email}
-                </p>
+            <button className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group">
+              <Globe size={18} />
+              <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Language
+              </span>
+            </button>
+
+            <button className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group">
+              <MessageSquare size={18} />
+              <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Messages
+              </span>
+            </button>
+          </div>
+
+          {/* Profile Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+              className="flex items-center hover:bg-gray-50 rounded-xl py-2 pl-3 pr-4 border border-transparent hover:border-gray-200 transition-all duration-200 hover:shadow-sm"
+            >
+              <div className="relative">
+                <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full w-9 h-9 flex items-center justify-center shadow-sm">
+                  <span className="text-sm font-bold">{getInitials()}</span>
+                </div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
               </div>
+              
+              <div className="ml-3 mr-2 hidden sm:block text-left">
+                <p className="text-sm font-semibold text-gray-700">
+                  {mockData?.employee?.firstName || "John"}
+                </p>
+                <p className="text-xs text-gray-500">Online</p>
+              </div>
+              
+              <ChevronDown 
+                size={16} 
+                className={`text-gray-500 transition-transform duration-200 ${
+                  profileMenuOpen ? 'rotate-180' : ''
+                }`} 
+              />
+            </button>
 
-              <a
-                href="#"
-                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <User size={16} className="mr-3 text-gray-500" />
-                My Profile
-              </a>
+            {/* Profile Dropdown */}
+            {profileMenuOpen && (
+              <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl z-50 border border-gray-200 overflow-hidden">
+                <div className="px-4 py-4 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center">
+                      <span className="text-lg font-bold">{getInitials()}</span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        {mockData?.employee?.firstName} {mockData?.employee?.lastName}
+                      </p>
+                      <p className="text-sm text-gray-500 truncate">
+                        {mockData?.employee?.email}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-              <a
-                href="#"
-                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <Settings size={16} className="mr-3 text-gray-500" />
-                Settings
-              </a>
+                <div className="py-2">
+                  <a
+                    href="#"
+                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                      <User size={16} className="text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">My Profile</p>
+                      <p className="text-xs text-gray-500">View and edit profile</p>
+                    </div>
+                  </a>
 
-              <div className="border-t border-gray-100 my-1"></div>
+                  <a
+                    href="#"
+                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                      <Settings size={16} className="text-gray-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Settings</p>
+                      <p className="text-xs text-gray-500">Preferences and security</p>
+                    </div>
+                  </a>
+                </div>
 
-              <button
-                onClick={handleLogout}
-                className="w-full text-left flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-              >
-                <LogOut size={16} className="mr-3" />
-                Logout
-              </button>
-            </div>
-          )}
+                <div className="border-t border-gray-100">
+                  <button
+                    onClick={() => alert("Logout clicked")}
+                    className="w-full text-left flex items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                      <LogOut size={16} className="text-red-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Sign Out</p>
+                      <p className="text-xs text-red-400">Log out of your account</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

@@ -17,7 +17,7 @@ const ProtectedAuth = ({ isPrivate }) => {
         const response = await refetch(); // 🛠️ This triggers fresh API call
         if (response?.data?.success) {
           console.log("✅ User is logged in.");
-          if (!isPrivate) navigate("/dashboard/home", { replace: true });
+          if (!isPrivate) navigate("/dashboard", { replace: true });
         } else {
           // console.log("⛔ User is not logged in.");
           if (isPrivate) navigate("/login", { replace: true });
