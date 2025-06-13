@@ -30,7 +30,8 @@ export const employeeDetailApi = createApi({
             }),
             providesTags: ["employee"], 
         }), 
-        addEmployee:builder.mutation({
+        addEmployee:builder.mutation(
+            {
             query:(formData)=>(
                 {
                 url:"employee/add",

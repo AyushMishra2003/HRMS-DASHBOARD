@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { User, Calendar, Mail, Phone, MapPin, Building, Award, Heart, Lock, Image, X } from 'lucide-react';
-import { useAddEmployeeMutation, useEmployeeEditMutation } from '../../rtk/employeeApi';
 
 const EmployeeAdd = () => {
-  const [employeeEdit, { isLoading: editLoading }] = useEmployeeEditMutation();
-  const [addEmployee, { isLoading, isError, isSuccess }] =
-    useAddEmployeeMutation();
+  // Simulating the hooks from your original code
+  const [isLoading, setIsLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   // Mock location and employee data - replace with your actual hooks
   const employeeData = null; // This would come from useLocation().state?.editEmployee
@@ -62,43 +61,50 @@ const EmployeeAdd = () => {
   };
 
   const onSubmit = async (e) => {
-    try {
+    e.preventDefault();
+    setIsLoading(true);
 
-      e.preventDefault();
-      // return;
-      const formData = new FormData();
-      formData.append("name", data?.name);
-      formData.append("email", data?.email);
-      formData.append("workEmail", data?.workEmail);
-      formData.append("mobile", data?.mobile);
-      formData.append("dob", data?.dob);
-      formData.append("gender", data?.gender);
-      formData.append("address", data?.address);
-      formData.append("city", data?.city);
-      formData.append("state", data?.state);
-      formData.append("qualification", data?.qualification);
-      formData.append("experience", data?.experience);
-      formData.append("maritalStatus", data?.maritalStatus);
-      formData.append("password", data?.password);
-      formData.append("photo", data?.photo);
+    // Simulate API call
+    setTimeout(() => {
+      setIsLoading(false);
+      alert(employeeData ? 'Employee updated successfully!' : 'Employee added successfully!');
+    }, 2000);
 
-      if (employeeData) {
-        const id = employeeData._id;
-        const result = await employeeEdit({ id, formData }).unwrap();
-        if (result.success) {
-          navigate("/employee/list");
-        }
-      } else {
-        console.log("abhijit+++", formData);
-        const result = await addEmployee(formData).unwrap();
-        console.log("result++65", result);
-        if (result.success) navigate("/employee/list");
+    // Your original form submission logic would go here
+    /*
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("workEmail", data.workEmail);
+    formData.append("mobile", data.mobile);
+    formData.append("dob", data.dob);
+    formData.append("gender", data.gender);
+    formData.append("address", data.address);
+    formData.append("city", data.city);
+    formData.append("state", data.state);
+    formData.append("qualification", data.qualification);
+    formData.append("experience", data.experience);
+    formData.append("maritalStatus", data.maritalStatus);
+    formData.append("password", data.password);
+    formData.append("photo", data.photo);
+    
+    if (employeeData) {
+      const id = employeeData._id;
+      const result = await employeeEdit({ id, formData }).unwrap();
+      if (result.success) {
+        navigate("/employee/list");
       }
-    } catch (error) {
-      console.error("API Error:", error);
+    } else {
+      const result = await addEmployee(formData).unwrap();
+      if (result.success) navigate("/employee/list");
     }
+    */
   };
 
+  const handleCancel = () => {
+    // Replace with your navigation logic
+    console.log('Cancel clicked');
+  };
 
   if (isLoading || editLoading) {
     return (
@@ -285,6 +291,130 @@ const EmployeeAdd = () => {
                 />
               </div>
             </div>
+
+            {/* Work Information Section */}
+            {/* <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+                <Building className="mr-2 h-5 w-5 text-blue-600" />
+                WORK
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Employee ID
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Auto-generated"
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Department
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter department"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Sub Department
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter sub department"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Designation
+                  </label>
+                  <input
+                    type="text"
+                    name="qualification"
+                    value={data.qualification}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter designation"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Job Title
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter job title"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Reporting Manager
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter reporting manager"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Work Location
+                  </label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">Select location</option>
+                    <option value="office">Office</option>
+                    <option value="remote">Remote</option>
+                    <option value="hybrid">Hybrid</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Employee Type
+                  </label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">Select type</option>
+                    <option value="fulltime">Full-time</option>
+                    <option value="parttime">Part-time</option>
+                    <option value="contract">Contract</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Probation Period
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter probation period"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <Calendar className="inline h-4 w-4 mr-1" />
+                  Date of Joining
+                </label>
+                <input
+                  type="date"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div> */}
 
             {/* Additional Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
