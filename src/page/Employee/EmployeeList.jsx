@@ -9,9 +9,13 @@ import { isConfirm } from '../../helper/SweetAlrertIsConfirm';
 import { useNavigate } from 'react-router';
 import { ClipLoader } from 'react-spinners';
 
-const EmployeeCard = ({ employee }) => {
+const EmployeeList = () => {
+  const { data, isLoading, error } = useGetAllEmployeeQuery();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
   const [deleteEmployee] = useDeleteEmployeeMutation();
   const navigate = useNavigate();
+
   const getInitials = (name) => {
     const nameParts = name.split(' ');
     if (nameParts.length >= 2) {
@@ -31,58 +35,14 @@ const EmployeeCard = ({ employee }) => {
     navigate('/employee/add', { state: { editEmployee: employee } });
   };
 
-const employeeDetail=(employee)=>{
-     let id=employee._id
-     navigate(`/employee/details/${id}`,{ state: { employeeData: employee } })
-}
+  const employeeDetail = (employee) => {
+    let id = employee._id;
+    navigate(`/dashboard/employee/details/${id}`, { state: { employeeData: employee } });
+  };
 
-
-  return (
-    <div className="border-red-500 bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 p-4 relative">
-      {/* Card Content */}
-      <div className="flex items-start gap-4">
-        {/* Avatar with Initials */}
-        <div
-          className={`w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold ${employee.bgColor || 'bg-indigo-500'}`}
-        >
-          {employee.initials || getInitials(employee.name)}
-        </div>
-
-        {/* Employee Info */}
-        <div className="flex-1">
-          <h3 className="text-base font-medium text-gray-800">
-            {employee.name}
-            {/* <span className="text-gray-500 font-normal ml-1">({employee._id})</span> */}
-          </h3>
-          <p className="text-sm text-gray-600 mt-1">{employee.email}</p>
-          {employee.role && <p className="text-sm text-gray-500 mt-1">{employee.role}</p>}
-          <p className="text-sm text-gray-600" mt-1>
-            {employee.mobile}
-          </p>
-        </div>
-      </div>
-      <div className="flex gap-2 justify-end">
-        <button  onClick={()=>employeeDetail(employee)}>
-        <GrFormView className='text-2xl text-blue-800 hover:text-blue-500'/>
-        </button>
-        <button onClick={() => handleEdit(employee)}>
-          <FaEdit className="text-blue-500 text-lg hover:text-blue-700" />
-        </button>
-        <button onClick={() => handleDelete(employee._id)}>
-          <MdDelete className="text-red-500 text-lg hover:text-red-800" />
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const EmployeeList = () => {
-  const { data, isLoading, error } = useGetAllEmployeeQuery();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
-  const navigate = useNavigate();
-
-
+  const adddEmployee = (e) => {
+    navigate('/employee/add');
+  };
 
   if (isLoading) {
     return (
@@ -91,6 +51,7 @@ const EmployeeList = () => {
       </div>
     );
   }
+
   if (error) {
     return <p className="text-center text-lg text-red-500">Error Loading Employee...</p>;
   }
@@ -101,61 +62,231 @@ const EmployeeList = () => {
     return matchesSearch && matchesRole;
   });
 
-  const adddEmployee = (e) => {
-    // e.preventDefault();
-   
-    navigate('/employee/add');
-  };
-
   return (
-    <div className="p-6 bg-gray-100 min-h-screen gap">
-      <div className="flex justify-end space-x-4">
-        {/* Search Input */}
-        <div>
-          <div className="relative flex items-center">
-            <input
-              type="search"
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-2 pl-8 w-64 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <CiSearch className="absolute left-2 text-gray-500 text-xl" />
+    <div className="px-6 py-2 bg-gray-50 min-h-screen">
+      {/* Header Section */}
+      <div className="bg-white rounded-lg shadow-sm px-6 py-2 mb-2">
+        <div className="flex justify-between items-center mb-2">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">EMPLOYEES</h1>
+            <p className="text-gray-600 text-sm">Number of Employees: {data?.length || 0}</p>
           </div>
+          <button
+            onClick={adddEmployee}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full flex items-center gap-2 transition-colors"
+          >
+            <span className="text-lg">+</span>
+            Add Employee
+          </button>
         </div>
 
-        {/* Role Filter Dropdown */}
-        <div>
+        {/* Filters Section */}
+        {/* <div className="flex justify-between items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <input type="checkbox" id="includeInactive" className="rounded" />
+              <label htmlFor="includeInactive" className="text-sm text-gray-600">
+                Include Inactive Employees
+              </label>
+            </div>
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-red-500">Invalid Email: 0</span>
+              <span className="text-blue-500">Mobile Users: 2</span>
+              <span className="text-green-500">Signed in: 3</span>
+              <span className="text-gray-500">Not Signed in: 1</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 transition-colors">
+              CONFIRM PROBATION
+            </button>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded text-sm hover:bg-blue-600 transition-colors">
+              RESEND ACTIVATION
+            </button>
+          </div>
+        </div> */}
+      </div>
+
+      {/* Search and Actions Section */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+        <div className="flex justify-between items-center">
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-4 pr-10 py-2 w-64 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <CiSearch className="absolute right-3 top-2.5 text-gray-400 text-xl" />
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* <button className="bg-blue-500 text-white px-3 py-2 rounded text-sm flex items-center gap-1 hover:bg-blue-600 transition-colors">
+              <span>📝</span> Bulk Edit
+            </button>
+            <button className="bg-blue-500 text-white px-3 py-2 rounded text-sm flex items-center gap-1 hover:bg-blue-600 transition-colors">
+              <span>✉️</span> Mail
+            </button>
+            <button className="bg-red-500 text-white px-3 py-2 rounded text-sm flex items-center gap-1 hover:bg-red-600 transition-colors">
+              <span>🗑️</span> Delete
+            </button> */}
+            <button className="bg-red-500 text-white px-3 py-2 rounded text-sm flex items-center gap-1 hover:bg-red-600 transition-colors">
+              <span>📥</span> Import
+            </button>
+            <button className="bg-blue-500 text-white px-3 py-2 rounded text-sm flex items-center gap-1 hover:bg-blue-600 transition-colors">
+              <span>📤</span> Export
+            </button>
+            <div className="flex items-center gap-2 ml-4">
+              <span className="text-sm text-gray-600">Show</span>
+              <select className="border border-gray-300 rounded px-2 py-1 text-sm">
+                <option>10</option>
+                <option>25</option>
+                <option>50</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters Row */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+        <div className="flex items-center gap-4">
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="p-2 w-32 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="">Select</option>
+            <option value="">Signed In</option>
             <option value="admin">Admin</option>
             <option value="employee">Employee</option>
           </select>
-        </div>
-
-        {/* Add Button */}
-        <div>
-          <button
-            onClick={() => {
-              adddEmployee();
-            }}
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white rounded-lg font-medium transition-colors"
-          >
-            Add
-          </button>
+          <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option>Manager</option>
+          </select>
+          <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option>Grade</option>
+          </select>
+          <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option>Department</option>
+          </select>
+          <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option>Work Location</option>
+          </select>
+          <div className="ml-auto">
+            <select className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option>Sort By</option>
+            </select>
+          </div>
         </div>
       </div>
-      <h2 className="text-2xl font-bold mb-4">Employees</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-        {filteredEmployee?.length > 0 ? (
-          filteredEmployee.map((employee) => <EmployeeCard key={employee.id} employee={employee} />)
-        ) : (
-          <p className="text-gray-500 text-red-500">No employees found.....</p>
-        )}
+
+      {/* Employee Table */}
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-3 text-left">
+                  <input type="checkbox" className="rounded" />
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">ID</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Employee Name</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Department</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Designation</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Grade</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Employee Manager</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredEmployee?.length > 0 ? (
+                filteredEmployee.map((employee, index) => (
+                  <tr key={employee._id || index} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-4">
+                      <input type="checkbox" className="rounded" />
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{index + 1}</td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold ${
+                            employee.bgColor || 'bg-blue-500'
+                          }`}
+                        >
+                          {employee.initials || getInitials(employee.name)}
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{employee.name}</div>
+                          <div className="text-sm text-gray-500">{employee.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{employee.department || '-'}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{employee.designation || '-'}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{employee.grade || '-'}</td>
+                    <td className="px-4 py-4 text-sm text-gray-900">{employee.manager || '-'}</td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => employeeDetail(employee)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          title="View Details"
+                        >
+                          <GrFormView className="text-lg" />
+                        </button>
+                        <button
+                          onClick={() => handleEdit(employee)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          title="Edit"
+                        >
+                          <FaEdit className="text-sm" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(employee._id)}
+                          className="text-red-600 hover:text-red-800 transition-colors"
+                          title="Delete"
+                        >
+                          <MdDelete className="text-sm" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="px-4 py-8 text-center text-gray-500">
+                    No employees found.....
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-700">
+              1 to {Math.min(4, filteredEmployee?.length || 0)} of {filteredEmployee?.length || 0}
+            </div>
+            <div className="flex items-center gap-2">
+              <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors">
+                ‹‹
+              </button>
+              <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors">
+                ‹
+              </button>
+              <span className="px-3 py-1 text-sm">Page 1 of 1</span>
+              <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors">
+                ›
+              </button>
+              <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors">
+                ››
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

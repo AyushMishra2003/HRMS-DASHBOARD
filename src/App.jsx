@@ -67,7 +67,7 @@ const App = () => {
     <Route path="/" element={<HomeDashboard />} />
 
     {/* Protected Dashboard Routes */}
-    <Route element={<ProtectedAuth isPrivate={true} />}>
+    {/* <Route element={<ProtectedAuth isPrivate={true} />}> */}
       <Route path="/dashboard" element={<Layout />}>
         {/* Default dashboard home */}
         <Route index element={<Home />} />
@@ -85,7 +85,7 @@ const App = () => {
         <Route path="leave" element={<EmployeeLeave />} />
         <Route path="leave/list" element={<LeaveList />} />
       </Route>
-    </Route>
+    {/* </Route> */}
 
     {/* Login Route (Unprotected) */}
     <Route element={<ProtectedAuth isPrivate={false} />}>
