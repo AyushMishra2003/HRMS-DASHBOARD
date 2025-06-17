@@ -13,12 +13,10 @@ import { Toaster } from 'sonner';
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
   <BrowserRouter>
-  <StrictMode>
-    <Toaster/>
+    {/* <Toaster/> */}
     <UserProvider>
     <App />
     </UserProvider>
-  </StrictMode>
   </BrowserRouter>
   </Provider>,
 )
