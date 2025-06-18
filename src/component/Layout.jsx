@@ -6,7 +6,6 @@ import TopHeader from './TopHeader';
 const Layout = () => {
   return (
     <div className="flex h-screen">
-      {/* Sidebar - fixed height, full height */}
       <SideBar/>
       <div className="flex flex-col flex-1">
          <TopHeader/>

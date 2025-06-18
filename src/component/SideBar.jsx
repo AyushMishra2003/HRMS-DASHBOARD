@@ -6,15 +6,15 @@ import {
   Users, 
   Clock,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Menu
 } from 'lucide-react';
 
 const SideBar = () => {
   const [expandedNav, setExpandedNav] = useState('Employee');
   const [currentPage, setCurrentPage] = useState('Dashboard');
-  
-  // Mock data for role-based rendering
-  const data = { role: "Admin" }; // You can replace this with your actual data
+   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const data = { role: "Admin" }; 
 
   const navItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [], url: "/dashboard" },
@@ -63,6 +63,7 @@ const SideBar = () => {
   const handleItemClick = (item) => {
     navigateTo(item.name);
     if (item.children.length > 0) {
+      setSidebarOpen(true)
       toggleNav(item.name);
     }
     console.log(`Navigating to: ${item.url}`);
@@ -73,19 +74,32 @@ const SideBar = () => {
     console.log(`Navigating to: ${child.url}`);
   };
 
+  const handlesidebar=()=>{
+    setSidebarOpen(!sidebarOpen)
+    setExpandedNav(null);
+  }
+
   return (
-    <div className="w-72 h-screen shadow-2xl border-r border-gray-200" style={{ backgroundColor: '#06425F' }}>
-      {/* Company Header */}
-      <div className="p-6 border-b border-gray-600">
-        <div className="flex items-center space-x-3">
+    <div className={`${sidebarOpen? 'w-64':'w-18'} h-screen shadow-2xl border-r border-gray-200`} style={{ backgroundColor: '#06425F' }}>
+    
+      <div className="px-4 py-6 border-b border-gray-600 flex justify-between">
+        <div className={` ${sidebarOpen ? 'block':'hidden'}  flex items-center space-x-3`}>
           <div className="bg-blue-500 p-2 rounded-lg shadow-lg">
             <span className="text-white font-bold text-sm">CC</span>
           </div>
           <div>
-            <p className="font-bold text-white text-base">Code Crafter Web Solution</p>
+            <p className="font-bold text-white text-base">Code Crafter</p>
             <p className="text-xs text-gray-300">Web Solutions</p>
           </div>
         </div>
+
+         <button
+            onClick={handlesidebar}
+            className="p-2 rounded-lg bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105"
+            aria-label="Toggle Sidebar"
+          >
+            <Menu size={22} />
+          </button>
       </div>
 
       {/* Navigation */}
@@ -104,9 +118,9 @@ const SideBar = () => {
               onClick={() => handleItemClick(item)}
             >
               <span className="mr-4 flex-shrink-0">{item.icon}</span>
-              <span className="flex-grow font-medium text-sm">{item.name}</span>
+              <span className={` ${sidebarOpen ? 'block':'hidden'} flex-grow font-medium text-sm`}>{item.name}</span>
               {item.children.length > 0 && (
-                <div className="transition-transform duration-200">
+                <div className={` ${sidebarOpen ? 'block':'hidden'} transition-transform duration-200`}>
                   {expandedNav === item.name ? 
                     <ChevronDown size={16} /> : 
                     <ChevronRight size={16} />

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
-// Mock data for demonstration
+ const data = { role: "Admin" }; 
 const mockData = {
   employee: {
     firstName: "John",
@@ -29,15 +29,14 @@ const mockNotifications = [
 ];
 
 const TopHeader = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+ 
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [buttonStatus, setButtonStatus] = useState(true);
-  const [timer, setTimer] = useState(28547); // Demo timer value
+  const [timer, setTimer] = useState(28547); 
   const [isOnline, setIsOnline] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update current time every minute
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -76,16 +75,10 @@ const TopHeader = () => {
       <div className="flex justify-between items-center px-4 lg:px-6 py-3">
         {/* Left Section */}
         <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105"
-            aria-label="Toggle Sidebar"
-          >
-            <Menu size={20} />
-          </button>
+         
           
           <div className="hidden md:block">
-            <h1 className="text-xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text ">
               Dashboard
             </h1>
             <p className="text-xs text-gray-500 mt-0.5">
@@ -99,7 +92,9 @@ const TopHeader = () => {
         </div>
 
         {/* Center Section - Check In/Out (Employee Only) */}
-        <div className="flex items-center">
+
+        {data.role == 'Admin' ? '' : (
+<div className="flex items-center">
           <div className="flex items-center bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
             {buttonStatus ? (
               <button
@@ -134,6 +129,8 @@ const TopHeader = () => {
             </div>
           </div>
         </div>
+        )}
+        
 
         {/* Right Section */}
         <div className="flex items-center space-x-2">
@@ -149,12 +146,12 @@ const TopHeader = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-1">
-            <button className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group">
+            {/* <button className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group">
               <Settings size={18} />
               <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                 Settings
               </span>
-            </button>
+            </button> */}
 
             {/* Notifications */}
             <div className="relative">
@@ -172,10 +169,9 @@ const TopHeader = () => {
                   Notifications
                 </span>
               </button>
-
-              {/* Notification Dropdown */}
+              
               {notificationOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl z-50 border border-gray-200 overflow-hidden">
+                <div onMouseLeave={() => setNotificationOpen(!notificationOpen)} className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl z-50 border border-gray-200 overflow-hidden">
                   <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
                     <h3 className="font-semibold text-gray-800">Notifications</h3>
                     <p className="text-xs text-gray-500 mt-0.5">{unreadCount} unread messages</p>
@@ -204,19 +200,19 @@ const TopHeader = () => {
               )}
             </div>
 
-            <button className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group">
+            {/* <button className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group">
               <Globe size={18} />
               <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                 Language
               </span>
-            </button>
+            </button> */}
 
-            <button className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group">
+            {/* <button className="p-2.5 rounded-lg hover:bg-gray-100 text-gray-600 transition-all duration-200 hover:scale-105 relative group">
               <MessageSquare size={18} />
               <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                 Messages
               </span>
-            </button>
+            </button> */}
           </div>
 
           {/* Profile Menu */}
@@ -265,8 +261,8 @@ const TopHeader = () => {
                     </div>
                   </div>
                 </div>
-
-                <div className="py-2">
+{data.role == 'Admin' ?(
+ <div className="py-2">
                   <a
                     href="#"
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -293,6 +289,8 @@ const TopHeader = () => {
                     </div>
                   </a>
                 </div>
+):''}
+               
 
                 <div className="border-t border-gray-100">
                   <button

@@ -7,14 +7,14 @@ const ProtectedAuth = ({ isPrivate }) => {
   const { data, isLoading, refetch } = useIsLoginQuery();
 
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true); // For loading indicator
+  const [loading, setLoading] = useState(true); 
 
   
 
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const response = await refetch(); // 🛠️ This triggers fresh API call
+        const response = await refetch(); 
         if (response?.data?.success) {
           console.log("✅ User is logged in.");
           if (!isPrivate) navigate("/dashboard", { replace: true });
@@ -36,7 +36,7 @@ const ProtectedAuth = ({ isPrivate }) => {
     return <div className='flex  h-[100vh] items-center justify-center'><ClipLoader/></div>
   }
 
-  return <Outlet />; // Render child routes
+  return <Outlet />; 
 };
 
 export default ProtectedAuth;

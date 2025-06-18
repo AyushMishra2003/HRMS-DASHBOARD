@@ -3,7 +3,6 @@ import DashboardLayout from './DashboardLayout'
 import Dashboard from './UserDashboard'
 import { useIsLoginQuery } from '../../rtk/login'
 import { ClipLoader } from 'react-spinners'
-
 const Home = () => {
    
   const {data,isLoading,error}=useIsLoginQuery()
@@ -22,6 +21,7 @@ const Home = () => {
   return (
     <div >
       {data?.role==="Admin"  ?  <DashboardLayout/>  :  <Dashboard data={data}/>}
+      {/* {data?.role==="Admin"  ?  <Dashboard data={data}/> : <DashboardLayout/>} */}
 
     </div>
   )

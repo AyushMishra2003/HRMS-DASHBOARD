@@ -25,51 +25,14 @@ import HomeDashboard from "./page/layput/HomeLayout";
 
 const App = () => {
 
-// const socket = io("http://localhost:6002", {
-//   withCredentials: true,
-// });
 
-// useEffect(() => {
-//   const userId = localStorage.getItem("userId");
-//      console.log("app me hu +++",userId);
-     
-  
-//   socket.on("connect", () => {
-//     console.log("✅ Socket connected", socket.id);
-//   });
-//       // Now emit your join only after connection
-//     socket.emit("join", "front end h +++");
-  
-
-//   socket.on("welcome", (notification) => {
-//     console.log("📩 New Notification:", notification);
-//     // refetch(); // ✅ This works here
-//   });
-
-//       socket.on("new-message", (notification) => {
-//       console.log("📩 New Notification:", notification);
-//       // refetch(); // ✅ This works here
-//       window.location.reload(); // This reloads the page like a browser refresh
-//     });
-
-//   return () => {
-//     // socket.off("new_notification");
-//     socket.disconnect();
-//   };
-// }, []);
-
-// 
 
   return (
 <div>
   <Routes>
-    {/* Public Landing Page */}
-    <Route path="/" element={<HomeDashboard />} />
-
-    {/* Protected Dashboard Routes */}
-    {/* <Route element={<ProtectedAuth isPrivate={true} />}> */}
+    <Route path="/home" element={<HomeDashboard />} />
+    
       <Route path="/dashboard" element={<Layout />}>
-        {/* Default dashboard home */}
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="employee/list" element={<EmployeeList />} />
@@ -87,10 +50,10 @@ const App = () => {
       </Route>
     {/* </Route> */}
 
-    {/* Login Route (Unprotected) */}
-    <Route element={<ProtectedAuth isPrivate={false} />}>
-      <Route path="/login" element={<AuthLogin />} />
-    </Route>
+    
+    {/* <Route element={<ProtectedAuth isPrivate={false} />}> */}
+      <Route path="/" element={<AuthLogin />} />
+    {/* </Route> */}
 
     {/* Catch-all redirect to HomeDashboard */}
     <Route path="*" element={<Navigate to="/" replace />} />
