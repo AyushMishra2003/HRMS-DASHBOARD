@@ -9,12 +9,14 @@ import {
   ChevronRight,
   Menu
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const SideBar = () => {
   const [expandedNav, setExpandedNav] = useState('Employee');
   const [currentPage, setCurrentPage] = useState('Dashboard');
    const [sidebarOpen, setSidebarOpen] = useState(true);
   const data = { role: "Admin" }; 
+  const navigate = useNavigate()
 
   const navItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [], url: "/dashboard" },
@@ -25,6 +27,7 @@ const SideBar = () => {
       icon: <Users size={20} />, 
       children: [
         {name:'Employee List', url:"/dashboard/employee/list"},
+        {name:'Employee Overview', url:"/dashboard/employee/overview"},
         {name:'Employee Add', url:"/dashboard/employee/add"},
         {name:'Work Type', url:"/dashboard/employee/work"},
         {name:'Employee Policy', url:"/dashboard/employee/policy"},
@@ -32,9 +35,10 @@ const SideBar = () => {
     },
     { name: 'Attendance', icon: <Clock size={20} />,
       children: [
-        ...(data?.role === "employee" ? [{name:"Attendance List", url:"/dashboard/attendance/list"}] : []),
-        ...(data?.role === "Admin" ? [{name:"Employee Attendance", url:"/dashboard/attendance/employee"}] : [])    
-      ] 
+      //  {name:"Attendance List", url:"/dashboard/attendance/list"},
+       {name:"Attendance Logs", url:"/dashboard/attendance/logs"},
+        // {name:"Employee Attendance", url:"/dashboard/attendance/employee"}  
+      ]
     },  
     { name: "Leave", icon: <Users size={20} />,
       children: [
@@ -62,6 +66,7 @@ const SideBar = () => {
 
   const handleItemClick = (item) => {
     navigateTo(item.name);
+    navigate(item.url)
     if (item.children.length > 0) {
       setSidebarOpen(true)
       toggleNav(item.name);
@@ -71,6 +76,7 @@ const SideBar = () => {
 
   const handleChildClick = (child) => {
     navigateTo(child.name);
+navigate(`${child.url}`)
     console.log(`Navigating to: ${child.url}`);
   };
 

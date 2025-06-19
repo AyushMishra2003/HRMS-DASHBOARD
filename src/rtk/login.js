@@ -22,9 +22,9 @@ export const logiDetail = createApi({
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["babu"],
-      keepUnusedDataFor: 0, 
-      refetchOnMountOrArgChange: true,
+      providesTags: ["userSession"],
+      // keepUnusedDataFor: 0, 
+      // refetchOnMountOrArgChange: true,
     }),
 
     

@@ -22,6 +22,8 @@ import { io } from "socket.io-client";
 import { useDispatch } from "react-redux";
 import React, { useEffect } from "react";
 import HomeDashboard from "./page/layput/HomeLayout";
+import AttendanceLogs from "./page/EmployeeAttendance/AttendanceLogs";
+import EmployeeOverview from "./page/Employee/EmployeeOverview";
 
 const App = () => {
 
@@ -37,6 +39,9 @@ const App = () => {
         <Route path="about" element={<About />} />
         <Route path="employee/list" element={<EmployeeList />} />
         <Route path="employee/details/:id" element={<EmployeeDetail />} />
+
+        <Route path="employee/overview" element={<EmployeeOverview />} />
+
         <Route path="employee/add" element={<EmployeeAdd />} />
         <Route path="employee/work" element={<EmployeeWorkType />} />
         <Route path="employee/work/:id" element={<EmployeeWorkAddForm />} />
@@ -44,6 +49,9 @@ const App = () => {
         <Route path="employee/policy" element={<Policy />} />
         <Route path="employee/add/policy" element={<EmployeeAddPolicy />} />
         <Route path="attendance/list" element={<AttendanceList />} />
+
+        <Route path="attendance/logs" element={<AttendanceLogs />} />
+
         <Route path="attendance/employee" element={<EmployeeAttendance />} />
         <Route path="leave" element={<EmployeeLeave />} />
         <Route path="leave/list" element={<LeaveList />} />

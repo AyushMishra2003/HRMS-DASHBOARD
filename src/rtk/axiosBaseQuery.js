@@ -21,7 +21,7 @@ const axiosBaseQuery = async ({ url, method, data }) => {
     });
 
     if (response?.data?.message) {
-      toast.success(response.data.message);
+      // toast.success(response.data.message);
     }
     return { data: method === "GET" ? response?.data?.data : response?.data };
     
@@ -30,7 +30,7 @@ const axiosBaseQuery = async ({ url, method, data }) => {
         const errorMessage = error.response?.data?.message || error.message || "Something went wrong";
       }else{
         const errorMessage = error.response?.data?.message || error.message || "Something went wrong";
-        toast.error(errorMessage);
+        // toast.error(errorMessage);
       }
       const errorMessage = error.response?.data?.message || error.message || "Something went wrong";
     return {
