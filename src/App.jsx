@@ -24,6 +24,9 @@ import React, { useEffect } from "react";
 import HomeDashboard from "./page/layput/HomeLayout";
 import AttendanceLogs from "./page/EmployeeAttendance/AttendanceLogs";
 import EmployeeOverview from "./page/Employee/EmployeeOverview";
+import LeaveLogs from "./page/LeaveList/LeaveLogs";
+import LeaveRules from "./page/LeaveList/LeaveRules";
+import AttendanceRules from "./adminPages/AttendanceRules";
 
 const App = () => {
 
@@ -51,10 +54,15 @@ const App = () => {
         <Route path="attendance/list" element={<AttendanceList />} />
 
         <Route path="attendance/logs" element={<AttendanceLogs />} />
+        <Route path="attendance/rules" element={<AttendanceRules />} />
 
         <Route path="attendance/employee" element={<EmployeeAttendance />} />
         <Route path="leave" element={<EmployeeLeave />} />
         <Route path="leave/list" element={<LeaveList />} />
+
+
+        <Route path="leave/logs" element={<LeaveLogs />} />
+        <Route path="leave/rules" element={<LeaveRules />} />
       </Route>
     {/* </Route> */}
 

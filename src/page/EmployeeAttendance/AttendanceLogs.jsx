@@ -10,6 +10,7 @@ import {
   Users
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useGetAttendanceDetailQuery } from '../../rtk/attendance';
 
 const AttendanceLogs = () => {
   const [activeView, setActiveView] = useState('table');
@@ -22,6 +23,9 @@ const AttendanceLogs = () => {
   const [selectedManager, setSelectedManager] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
+
+  const {data , isLoding} =  useGetAttendanceDetailQuery()
+  console.log(data)
   // Sample attendance data
   const attendanceData = [
     {

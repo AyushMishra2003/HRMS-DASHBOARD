@@ -35,15 +35,18 @@ const SideBar = () => {
     },
     { name: 'Attendance', icon: <Clock size={20} />,
       children: [
-      //  {name:"Attendance List", url:"/dashboard/attendance/list"},
+       {name:"Attendance List", url:"/dashboard/attendance/list"},
        {name:"Attendance Logs", url:"/dashboard/attendance/logs"},
-        // {name:"Employee Attendance", url:"/dashboard/attendance/employee"}  
+        {name:"Employee Attendance", url:"/dashboard/attendance/employee"}  ,
+        {name:"Rules", url:"/dashboard/attendance/rules"}  
       ]
     },  
     { name: "Leave", icon: <Users size={20} />,
       children: [
-        ...(data?.role === "employee" ? [{name:"Leave", url:"/dashboard/leave"}] : []),
-        ...(data?.role === "Admin" ? [{name:"Leave List", url:"/dashboard/leave/list"}] : []),
+      //  {name:"Leave", url:"/dashboard/leave"},
+      //  {name:"Leave List", url:"/dashboard/leave/list"},
+       {name:"Leave Logs", url:"/dashboard/leave/logs"},
+       {name:"Rules", url:"/dashboard/leave/rules"},
       ]  
     },
   ];
