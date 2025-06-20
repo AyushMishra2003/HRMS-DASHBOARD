@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  Search, 
-  Download, 
-  Filter, 
-  ChevronLeft, 
-  ChevronRight, 
-  Check, 
-  X, 
-  Clock, 
+import {
+  Search,
+  Download,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  X,
+  Clock,
   Calendar,
   User,
   Building2,
@@ -16,8 +16,13 @@ import {
   XCircle,
   AlertCircle
 } from 'lucide-react';
+import { useApproveLeaveMutation, useGetEmployeeLeaveQuery, useRejectLeaveMutation } from '../../rtk/leaveApi';
 
 const LeaveLogs = () => {
+  const { data: leaveData = [], isLoading } = useGetEmployeeLeaveQuery()
+ const [approveLeave] = useApproveLeaveMutation();
+  const[leaveReaject] =useRejectLeaveMutation();
+
   const [selectedYear, setSelectedYear] = useState('2025');
   const [searchQuery, setSearchQuery] = useState('');
   const [showEntries, setShowEntries] = useState(20);
@@ -26,78 +31,7 @@ const LeaveLogs = () => {
   const [departmentFilter, setDepartmentFilter] = useState('all');
 
   // Sample leave data
-  const [leaveData, setLeaveData] = useState([
-    {
-      id: 'L001',
-      employeeName: 'Rajesh Kumar',
-      employeeId: 'EMP001',
-      department: 'IT',
-      type: 'Annual Leave',
-      startDate: '2025-06-20',
-      endDate: '2025-06-22',
-      days: 3,
-      status: 'Pending',
-      reason: 'Family vacation',
-      appliedDate: '2025-06-15',
-      avatar: 'RK'
-    },
-    {
-      id: 'L002',
-      employeeName: 'Priya Sharma',
-      employeeId: 'EMP002',
-      department: 'HR',
-      type: 'Sick Leave',
-      startDate: '2025-06-18',
-      endDate: '2025-06-19',
-      days: 2,
-      status: 'Approved',
-      reason: 'Medical checkup',
-      appliedDate: '2025-06-17',
-      avatar: 'PS'
-    },
-    {
-      id: 'L003',
-      employeeName: 'Amit Singh',
-      employeeId: 'EMP003',
-      department: 'Finance',
-      type: 'Casual Leave',
-      startDate: '2025-06-25',
-      endDate: '2025-06-25',
-      days: 1,
-      status: 'Rejected',
-      reason: 'Personal work',
-      appliedDate: '2025-06-14',
-      avatar: 'AS'
-    },
-    {
-      id: 'L004',
-      employeeName: 'Sunita Patel',
-      employeeId: 'EMP004',
-      department: 'Marketing',
-      type: 'Maternity Leave',
-      startDate: '2025-07-01',
-      endDate: '2025-09-30',
-      days: 90,
-      status: 'Pending',
-      reason: 'Maternity leave',
-      appliedDate: '2025-06-10',
-      avatar: 'SP'
-    },
-    {
-      id: 'L005',
-      employeeName: 'Vikram Gupta',
-      employeeId: 'EMP005',
-      department: 'IT',
-      type: 'Annual Leave',
-      startDate: '2025-06-21',
-      endDate: '2025-06-23',
-      days: 3,
-      status: 'Approved',
-      reason: 'Wedding ceremony',
-      appliedDate: '2025-06-12',
-      avatar: 'VG'
-    }
-  ]);
+
 
   const departments = ['All', 'IT', 'HR', 'Finance', 'Marketing', 'Operations'];
   const leaveTypes = ['Annual Leave', 'Sick Leave', 'Casual Leave', 'Maternity Leave', 'Paternity Leave'];
@@ -120,25 +54,29 @@ const LeaveLogs = () => {
     }
   };
 
-  const handleApprove = (leaveId) => {
-    setLeaveData(prev => 
-      prev.map(leave => 
-        leave.id === leaveId ? { ...leave, status: 'Approved' } : leave
-      )
-    );
-  };
+const handleApprove = async (leaveId) => {
+  try {
+    console.log("Approving leaveId:", leaveId);
+    const res = await approveLeave({ id: leaveId }).unwrap(); // API call
+    console.log("Leave approved:", res);
+  } catch (error) {
+    console.error("Approval failed:", error);
+  }
+};
 
-  const handleReject = (leaveId) => {
-    setLeaveData(prev => 
-      prev.map(leave => 
-        leave.id === leaveId ? { ...leave, status: 'Rejected' } : leave
-      )
-    );
+  const handleReject = async(leaveId) => {
+     try {
+    // console.log("Approving leaveId:", leaveId);
+    const res = await leaveReaject({ id: leaveId }).unwrap(); // API call
+    console.log("Leave Rejected:", res);
+  } catch (error) {
+    console.error("failed:", error);
+  }
   };
 
   const handleBulkApprove = () => {
-    setLeaveData(prev => 
-      prev.map(leave => 
+    setLeaveData(prev =>
+      prev.map(leave =>
         selectedLeaves.includes(leave.id) ? { ...leave, status: 'Approved' } : leave
       )
     );
@@ -146,23 +84,34 @@ const LeaveLogs = () => {
   };
 
   const handleSelectLeave = (leaveId) => {
-    setSelectedLeaves(prev => 
-      prev.includes(leaveId) 
+    setSelectedLeaves(prev =>
+      prev.includes(leaveId)
         ? prev.filter(id => id !== leaveId)
         : [...prev, leaveId]
     );
   };
 
-  const filteredLeaves = leaveData.filter(leave => {
-    const matchesSearch = leave.employeeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         leave.employeeId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         leave.department.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || leave.status.toLowerCase() === statusFilter.toLowerCase();
-    const matchesDepartment = departmentFilter === 'all' || leave.department.toLowerCase() === departmentFilter.toLowerCase();
-    
+  const filteredLeaves = (leaveData || []).filter(leave => {
+    const empName = leave?.employeeId?.name?.toLowerCase() || '';
+    const empId = leave?.employeeId?._id?.slice(-4)?.toLowerCase() || '';
+    const dept = leave?.employeeId?.department?.toLowerCase() || ''; // Optional, if you have department
+
+
+    const matchesSearch =
+      empName.includes(searchQuery.toLowerCase()) ||
+      empId.includes(searchQuery.toLowerCase()) ||
+      dept.includes(searchQuery.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === 'all' || leave.status?.toLowerCase() === statusFilter.toLowerCase();
+
+    const matchesDepartment =
+      departmentFilter === 'all' || dept === departmentFilter.toLowerCase();
+
     return matchesSearch && matchesStatus && matchesDepartment;
   });
+
+  // console.log("filteredLeaves", filteredLeaves);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
@@ -187,7 +136,7 @@ const LeaveLogs = () => {
                 <p className="text-gray-600 mt-1">Manage and track employee leave applications</p>
               </div>
               <div className="flex items-center gap-3">
-                <select 
+                <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
                   className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -214,7 +163,7 @@ const LeaveLogs = () => {
                     className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-80"
                   />
                 </div>
-                
+
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -247,12 +196,12 @@ const LeaveLogs = () => {
                     Bulk Approve ({selectedLeaves.length})
                   </button>
                 )}
-                
+
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
                   <Download className="w-4 h-4" />
                   Export
                 </button>
-                
+
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <span>Show</span>
                   <select
@@ -281,7 +230,7 @@ const LeaveLogs = () => {
               <FileText className="w-8 h-8 text-blue-600" />
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -293,7 +242,7 @@ const LeaveLogs = () => {
               <AlertCircle className="w-8 h-8 text-yellow-600" />
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -305,7 +254,7 @@ const LeaveLogs = () => {
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -351,71 +300,77 @@ const LeaveLogs = () => {
               </thead>
               <tbody>
                 {filteredLeaves.length > 0 ? (
-                  filteredLeaves.map((leave) => (
-                    <tr key={leave.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="p-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedLeaves.includes(leave.id)}
-                          onChange={() => handleSelectLeave(leave.id)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="p-4 text-sm text-gray-900 font-medium">{leave.id}</td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-sm font-medium">
-                            {leave.avatar}
+                  filteredLeaves.map((leave) => {
+                    // console.log("Leave Row:", leave); 
+
+                    return (
+                      <tr key={leave._id} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="p-4">
+                          <input
+                            type="checkbox"
+                            checked={selectedLeaves.includes(leave._id)}
+                            onChange={() => handleSelectLeave(leave._id)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                        </td>
+                        <td className="p-4 text-sm text-gray-900 font-medium">{leave._id.slice(-4)}</td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-sm font-medium">
+                              {leave.employeeId?.name?.[0] || 'NA'}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">{leave.employeeId?.name}</p>
+                              <p className="text-xs text-gray-500">{leave.employeeId?._id}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">{leave.employeeName}</p>
-                            <p className="text-xs text-gray-500">{leave.employeeId}</p>
+                        </td>
+                        <td className="p-4">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-sm">
+                            <Building2 className="w-3 h-3" />
+                            {leave.department || 'NA'}
+                          </span>
+                        </td>
+                        <td className="p-4 text-sm text-gray-700">{leave.leaveType}</td>
+                        <td className="p-4 text-sm text-gray-700">{formatDate(leave.startDate)}</td>
+                        <td className="p-4 text-sm text-gray-700">{formatDate(leave.endDate)}</td>
+                        <td className="p-4 text-sm text-gray-700 font-medium">
+                          {formatDate(leave.createdAt)}
+                        </td>
+                        <td className="p-4">
+                          <span className={`inline-flex items-center gap-1 px-2 py-1 border rounded-full text-xs font-medium ${getStatusColor(leave.status)}`}>
+                            {getStatusIcon(leave.status)}
+                            {leave.status}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-2">
+                            {leave.status === 'Pending' && (
+                              <>
+                                <button
+                                  onClick={() => handleApprove(leave._id)}
+                                  className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors"
+                                  title="Approve"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleReject(leave._id)}
+                                  className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                  title="Reject"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                            <button className="p-1 text-gray-600 hover:bg-gray-50 rounded transition-colors" title="View Details">
+                              <FileText className="w-4 h-4" />
+                            </button>
                           </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-sm">
-                          <Building2 className="w-3 h-3" />
-                          {leave.department}
-                        </span>
-                      </td>
-                      <td className="p-4 text-sm text-gray-700">{leave.type}</td>
-                      <td className="p-4 text-sm text-gray-700">{formatDate(leave.startDate)}</td>
-                      <td className="p-4 text-sm text-gray-700">{formatDate(leave.endDate)}</td>
-                      <td className="p-4 text-sm text-gray-700 font-medium">{leave.days}</td>
-                      <td className="p-4">
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 border rounded-full text-xs font-medium ${getStatusColor(leave.status)}`}>
-                          {getStatusIcon(leave.status)}
-                          {leave.status}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          {leave.status === 'Pending' && (
-                            <>
-                              <button
-                                onClick={() => handleApprove(leave.id)}
-                                className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors"
-                                title="Approve"
-                              >
-                                <Check className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleReject(leave.id)}
-                                className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                                title="Reject"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
-                          <button className="p-1 text-gray-600 hover:bg-gray-50 rounded transition-colors" title="View Details">
-                            <FileText className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
                     <td colSpan="10" className="p-8 text-center text-gray-500">
@@ -424,6 +379,7 @@ const LeaveLogs = () => {
                   </tr>
                 )}
               </tbody>
+
             </table>
           </div>
 
