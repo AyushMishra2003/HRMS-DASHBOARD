@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { 
   Search, 
   Download, 
@@ -7,14 +8,16 @@ import {
   ChevronLeft, 
   ChevronRight,
   Calendar,
-  Users
+  Users,
+  User2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useGetAttendanceDetailQuery } from '../../rtk/attendance';
+import { useAttendanceFilterQuery } from "../../rtk/attendance.js";
+import { ClipLoader } from 'react-spinners';
 
 const AttendanceLogs = () => {
   const [activeView, setActiveView] = useState('table');
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 5, 19)); // June 2025
+  const [currentDate, setCurrentDate] = useState(new Date()); 
   const [searchTerm, setSearchTerm] = useState('');
   const [showEntries, setShowEntries] = useState(10);
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -23,77 +26,91 @@ const AttendanceLogs = () => {
   const [selectedManager, setSelectedManager] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
 
+  console.log(currentDate)
 
-  const {data , isLoding} =  useGetAttendanceDetailQuery()
-  console.log(data)
-  // Sample attendance data
-  const attendanceData = [
-    {
-      id: 5,
-      employeeName: '4urjet',
-      status: 'A',
-      inTime: '--',
-      outTime: '--',
-      workDuration: '--',
-      department: 'IT',
-      grade: 'A',
-      location: 'Mumbai',
-      manager: 'John Doe',
-      avatar: 'J'
-    },
-    {
-      id: 4,
-      employeeName: 'Ashish Singh',
-      status: 'A',
-      inTime: '--',
-      outTime: '--',
-      workDuration: '--',
-      department: 'HR',
-      grade: 'B',
-      location: 'Delhi',
-      manager: 'Jane Smith',
-      avatar: 'AS'
-    },
-    {
-      id: 'codc...',
-      employeeName: 'Ayush',
-      status: 'A',
-      inTime: '--',
-      outTime: '--',
-      workDuration: '--',
-      department: 'IT',
-      grade: 'A',
-      location: 'Mumbai',
-      manager: 'John Doe',
-      avatar: 'A'
-    },
-    {
-      id: 3,
-      employeeName: 'Jitendra chauhan',
-      status: 'A',
-      inTime: '--',
-      outTime: '--',
-      workDuration: '--',
-      department: 'Sales',
-      grade: 'C',
-      location: 'Pune',
-      manager: 'Mike Johnson',
-      avatar: 'J'
-    },
-    {
-      id: 2,
-      employeeName: 'Suresh Singh',
-      status: 'A',
-      inTime: '--',
-      outTime: '--',
-      workDuration: '--',
-      department: 'Marketing',
-      grade: 'B',
-      location: 'Bangalore',
-      manager: 'Sarah Wilson',
-      avatar: 'S'
+ const [filter, setFilter] = useState("all");
+    const { data : attendanceData, isLoading } = useAttendanceFilterQuery(filter);
+console.log(filter)
+
+    const handleFilterChange = (date) =>{
+      const formatedDate = date.toISOString().split('T')[0]
+      setFilter(`startDate=${formatedDate}&endDate=${formatedDate}`)
     }
-  ];
+
+useEffect(()=>{
+  handleFilterChange(currentDate)
+},[currentDate])
+
+const isToday = currentDate.toDateString() === new Date().toDateString();
+
+  // Sample attendance data
+  // const attendanceData = [
+  //   {
+  //     id: 5,
+  //     employeeName: '4urjet',
+  //     status: 'A',
+  //     inTime: '--',
+  //     outTime: '--',
+  //     workDuration: '--',
+  //     department: 'IT',
+  //     grade: 'A',
+  //     location: 'Mumbai',
+  //     manager: 'John Doe',
+  //     avatar: 'J'
+  //   },
+  //   {
+  //     id: 4,
+  //     employeeName: 'Ashish Singh',
+  //     status: 'A',
+  //     inTime: '--',
+  //     outTime: '--',
+  //     workDuration: '--',
+  //     department: 'HR',
+  //     grade: 'B',
+  //     location: 'Delhi',
+  //     manager: 'Jane Smith',
+  //     avatar: 'AS'
+  //   },
+  //   {
+  //     id: 'codc...',
+  //     employeeName: 'Ayush',
+  //     status: 'A',
+  //     inTime: '--',
+  //     outTime: '--',
+  //     workDuration: '--',
+  //     department: 'IT',
+  //     grade: 'A',
+  //     location: 'Mumbai',
+  //     manager: 'John Doe',
+  //     avatar: 'A'
+  //   },
+  //   {
+  //     id: 3,
+  //     employeeName: 'Jitendra chauhan',
+  //     status: 'A',
+  //     inTime: '--',
+  //     outTime: '--',
+  //     workDuration: '--',
+  //     department: 'Sales',
+  //     grade: 'C',
+  //     location: 'Pune',
+  //     manager: 'Mike Johnson',
+  //     avatar: 'J'
+  //   },
+  //   {
+  //     id: 2,
+  //     employeeName: 'Suresh Singh',
+  //     status: 'A',
+  //     inTime: '--',
+  //     outTime: '--',
+  //     workDuration: '--',
+  //     department: 'Marketing',
+  //     grade: 'B',
+  //     location: 'Bangalore',
+  //     manager: 'Sarah Wilson',
+  //     avatar: 'S'
+  //   }
+  // ];
 
   // Calendar data for June 2025
   const calendarData = [
@@ -139,12 +156,14 @@ const AttendanceLogs = () => {
     }
   ];
 
-  const statusCounts = {
-    present: 0,
-    absent: 5,
-    leave: 0,
-    anomaly: 0
-  };
+ const statusCounts = attendanceData.reduce((acc, cur) => {
+  const status = cur.status;
+  if (status === 'P') acc.present++;
+  else if (status === 'A') acc.absent++;
+  else if (status === 'L') acc.leave++;
+  else if (status === 'AN') acc.anomaly++;
+  return acc;
+}, { present: 0, absent: 0, leave: 0, anomaly: 0 });
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -192,13 +211,19 @@ const AttendanceLogs = () => {
   };
 
   const formatDate = (date) => {
-    return date.toLocaleDateString('en-GB');
+    // return date.toLocaleDateString('en-GB');
+    return date.toISOString().split('T')[0]
   };
 
+
+
   const navigateDate = (direction) => {
+    console.log('hit hua')
     const newDate = new Date(currentDate);
     newDate.setDate(newDate.getDate() + direction);
     setCurrentDate(newDate);
+    console.log(currentDate)
+     handleFilterChange(newDate);
   };
 
   const navigateMonth = (direction) => {
@@ -298,29 +323,36 @@ const AttendanceLogs = () => {
       </div>
 
       {/* Table */}
+      {isLoading || !attendanceData ? (
+        <div className="flex justify-center h-full">
+          <ClipLoader size={30} />
+        </div>
+      ) : 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
+              {/* <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">SRN</th> */}
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">ID</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Employee Name</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">In Time</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Out Time</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Work Duration</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Location</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Number</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {attendanceData.map((employee) => (
-              <tr key={employee.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm text-gray-900">{employee.id}</td>
+            {attendanceData.map((employee,i) => (
+              <tr key={employee._id} className="hover:bg-gray-50">
+                {/* <td className="px-4 py-3 text-sm  overflow-ellipsis text-gray-900">{i + 1}</td> */}
+                <td className="px-4 py-3 text-sm  overflow-ellipsis text-gray-900">{employee._id.slice(-5)}</td>
                 <td className="px-4 py-3">
                   <Link to='/dashboard/employee/overview' className="flex items-center">
                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
-                      {employee.avatar}
+                      {employee.avatar || <User2/>}
                     </div>
-                    <span className="text-sm text-gray-900">{employee.employeeName}</span>
+                    <span className="text-sm text-gray-900">{employee.employee.name}</span>
                   </Link>
                 </td>
                 <td className="px-4 py-3">
@@ -328,16 +360,16 @@ const AttendanceLogs = () => {
                     {employee.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{employee.inTime}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{employee.outTime}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{employee.checkIn || '--'}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{employee.checkOutTime || '--'}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{employee.workDuration}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{employee.location}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{employee.employee.mobile}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
+}
       {/* Status Summary */}
       <div className="p-4 border-t border-gray-200">
         <div className="flex flex-wrap gap-4 text-sm">
@@ -511,6 +543,13 @@ const AttendanceLogs = () => {
     );
   };
 
+if(!attendanceData || isLoading){
+  return (
+    <div className="flex justify-center h-[90vh]">
+          <ClipLoader size={30} color="blue" />
+        </div>
+  )
+}
   return (
     <div className="p-4 bg-gray-50 min-h-screen">
       {/* Header */}
@@ -530,15 +569,28 @@ const AttendanceLogs = () => {
                 type="date"
                 value={currentDate.toISOString().split('T')[0]}
                 onChange={(e) => setCurrentDate(new Date(e.target.value))}
+                max={new Date().toISOString().split('T')[0]} 
                 className="border border-gray-300 rounded px-3 py-1 text-sm"
               />
+              
               <button
                 onClick={() => navigateDate(1)}
-                className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                className={`${isToday? 'text-blue-300 cursor-not-allowed' : "text-blue-600 hover:text-blue-800"}  text-sm flex items-center gap-1`}
+               disabled={isToday}
               >
                 NEXT
                 <ChevronRight className="h-4 w-4" />
               </button>
+              {isToday ? null :(
+<button
+  onClick={() => setCurrentDate(new Date())}
+  className="text-blue-500 text-sm hover:underline"
+>
+  Today
+</button>
+              )}
+              
+
             </div>
           </div>
         </div>
