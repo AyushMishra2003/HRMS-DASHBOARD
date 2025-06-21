@@ -48,6 +48,14 @@ export const attendanceDetailApi = createApi({
       }),
       providesTags: ["attendance"],
     }),
+
+    attendanceByMonth: builder.query({
+      query: (range = "all") => ({
+        url: `/employee/attendance/all/calendar/view?month=${range}`,
+        method: "GET",
+      }),
+      providesTags: ["attendance"],
+    }),
     
     employeeAllDetail: builder.mutation({
       query: (id) => (
