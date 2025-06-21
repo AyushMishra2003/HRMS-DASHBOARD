@@ -19,6 +19,7 @@ import {
 import { useApproveLeaveMutation, useGetEmployeeLeaveQuery, useRejectLeaveMutation } from '../../rtk/leaveApi';
  import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { ClipLoader } from 'react-spinners';
 
 const LeaveLogs = () => {
   const { data: leaveData = [], isLoading } = useGetEmployeeLeaveQuery()
@@ -160,6 +161,15 @@ const exportExcell = () => {
       year: 'numeric'
     });
   };
+
+  
+    if(isLoading){
+       return(
+        <div className="flex justify-center items-center h-screen">
+            <ClipLoader size={30} color="blu"/>
+        </div>
+       )
+    }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">

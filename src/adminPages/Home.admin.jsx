@@ -14,9 +14,13 @@ import {
   MoreVertical
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import {useGetAllEmployeeQuery } from '../rtk/employeeApi';
 
 const AdminHome = () => {
+    const{data:employeeData,isLoadind} =useGetAllEmployeeQuery()
   // Sample data for charts
+  console.log("logaaaaa",employeeData);
+  
   const attendanceData = [
     { name: 'Mon', present: 85, absent: 15 },
     { name: 'Tue', present: 88, absent: 12 },
@@ -78,7 +82,7 @@ const AdminHome = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard 
           title="Total Employees" 
-          value="234" 
+          value={employeeData?.length}
           change="12.5" 
           icon={Users} 
         />
