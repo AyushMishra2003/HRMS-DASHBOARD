@@ -17,6 +17,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useApproveLeaveMutation, useGetEmployeeLeaveQuery, useRejectLeaveMutation } from '../../rtk/leaveApi';
+ import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const LeaveLogs = () => {
   const { data: leaveData = [], isLoading } = useGetEmployeeLeaveQuery()
@@ -25,14 +27,14 @@ const LeaveLogs = () => {
 
   const [selectedYear, setSelectedYear] = useState('2025');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showEntries, setShowEntries] = useState(20);
+  const [showEntries, setShowEntries] = useState(10);
   const [selectedLeaves, setSelectedLeaves] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [departmentFilter, setDepartmentFilter] = useState('all');
 
   // Sample leave data
 
-
+  
   const departments = ['All', 'IT', 'HR', 'Finance', 'Marketing', 'Operations'];
   const leaveTypes = ['Annual Leave', 'Sick Leave', 'Casual Leave', 'Maternity Leave', 'Paternity Leave'];
 
@@ -93,10 +95,9 @@ const handleApprove = async (leaveId) => {
 
   const filteredLeaves = (leaveData || []).filter(leave => {
     const empName = leave?.employeeId?.name?.toLowerCase() || '';
-    const empId = leave?.employeeId?._id?.slice(-4)?.toLowerCase() || '';
-    const dept = leave?.employeeId?.department?.toLowerCase() || ''; // Optional, if you have department
-
-
+    const empId = leave?.employeeId?._id?.toString().slice(-4).toLowerCase() || '';
+    const dept = leave?.department?.toLowerCase() || ''; // Optional, if you have department
+     const year = new Date(leave.createdAt).getFullYear().toString();
     const matchesSearch =
       empName.includes(searchQuery.toLowerCase()) ||
       empId.includes(searchQuery.toLowerCase()) ||
@@ -107,11 +108,50 @@ const handleApprove = async (leaveId) => {
 
     const matchesDepartment =
       departmentFilter === 'all' || dept === departmentFilter.toLowerCase();
-
-    return matchesSearch && matchesStatus && matchesDepartment;
+      const matchesYear =
+    selectedYear === 'all' || year === selectedYear;
+    return matchesSearch && matchesStatus && matchesDepartment &&matchesYear;
   });
 
   // console.log("filteredLeaves", filteredLeaves);
+
+
+const exportExcell = () => {
+  try {
+    // Map only necessary fields for Excel
+    const exportData = filteredLeaves.map((leave) => ({
+      Name: leave?.employeeId?.name || "",
+      Email: leave?.employeeId?.email || "",
+      Mobile: leave?.employeeId?.mobile || "",
+      Department: leave?.department || "N/A",
+      From: leave?.startDate ? new Date(leave.startDate).toLocaleDateString() : "",
+      To: leave?.endDate ? new Date(leave.endDate).toLocaleDateString() : "",
+      Reason: leave?.description || "",
+      Status: leave?.status || "",
+    }));
+
+    // Create worksheet & workbook
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Leaves");
+
+    // Generate Excel file and trigger download
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(blob, "LeaveData.xlsx");
+
+  } catch (err) {
+    console.error("Excel Export Error:", err.message);
+  }
+};
+
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
@@ -197,8 +237,10 @@ const handleApprove = async (leaveId) => {
                   </button>
                 )}
 
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-                  <Download className="w-4 h-4" />
+                <button 
+                onClick={exportExcell}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                  <Download className="w-4 h-4"  />
                   Export
                 </button>
 
@@ -300,7 +342,7 @@ const handleApprove = async (leaveId) => {
               </thead>
               <tbody>
                 {filteredLeaves.length > 0 ? (
-                  filteredLeaves.map((leave) => {
+                  filteredLeaves.slice(0,showEntries).map((leave) => {
                     // console.log("Leave Row:", leave); 
 
                     return (
@@ -313,7 +355,7 @@ const handleApprove = async (leaveId) => {
                             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                           />
                         </td>
-                        <td className="p-4 text-sm text-gray-900 font-medium">{leave._id.slice(-4)}</td>
+                        <td className="p-4 text-sm text-gray-900 font-medium">{leave.employeeId._id.slice(-4)}</td>
                         <td className="p-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-sm font-medium">
