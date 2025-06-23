@@ -15,6 +15,8 @@ import {
   Download,
   Filter
 } from 'lucide-react';
+import PersonalInfo from './EmployeeOverview/PersonalInfo';
+import WorkInfo from './EmployeeOverview/WorkInfo';
 
 const EmployeeOverview = () => {
   const [activeTab, setActiveTab] = useState('personal');
@@ -110,107 +112,107 @@ const EmployeeOverview = () => {
     { id: 'other', label: 'Other Details', icon: User }
   ];
 
-  const PersonalInfo = () => (
-    <div className="space-y-6">
-      {/* Personal Info Section */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">PERSONAL INFO</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <label className="text-sm font-medium text-gray-700">Name</label>
-            <p className="text-sm text-gray-900 mt-1">{employeeData.name || '-'}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Date of Birth</label>
-            <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.dateOfBirth || '-'}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Gender</label>
-            <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.gender || '-'}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Blood Group</label>
-            <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.bloodGroup || '-'}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Marital Status</label>
-            <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.maritalStatus || '-'}</p>
-          </div>
-        </div>
-      </div>
+  // const PersonalInfo = () => (
+  //   <div className="space-y-6">
+  //     {/* Personal Info Section */}
+  //     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+  //       <h3 className="text-lg font-semibold text-gray-900 mb-4">PERSONAL INFO</h3>
+  //       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Name</label>
+  //           <p className="text-sm text-gray-900 mt-1">{employeeData.name || '-'}</p>
+  //         </div>
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Date of Birth</label>
+  //           <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.dateOfBirth || '-'}</p>
+  //         </div>
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Gender</label>
+  //           <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.gender || '-'}</p>
+  //         </div>
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Blood Group</label>
+  //           <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.bloodGroup || '-'}</p>
+  //         </div>
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Marital Status</label>
+  //           <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.maritalStatus || '-'}</p>
+  //         </div>
+  //       </div>
+  //     </div>
 
-      {/* Contact Info Section */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">CONTACT INFO</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="text-sm font-medium text-gray-700">Official Email ID</label>
-            <p className="text-sm text-blue-600 mt-1">{employeeData.contactInfo.officialEmail}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Personal Email ID</label>
-            <p className="text-sm text-blue-600 mt-1">{employeeData.contactInfo.personalEmail}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Phone Number</label>
-            <div className="flex items-center gap-2 mt-1">
-              <p className="text-sm text-gray-900">{employeeData.contactInfo.phoneNumber}</p>
-              {employeeData.contactInfo.verified && (
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              )}
-            </div>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Alternate Phone Number</label>
-            <p className="text-sm text-gray-900 mt-1">{employeeData.contactInfo.alternatePhone || '-'}</p>
-          </div>
-        </div>
-      </div>
+  //     {/* Contact Info Section */}
+  //     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+  //       <h3 className="text-lg font-semibold text-gray-900 mb-4">CONTACT INFO</h3>
+  //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Official Email ID</label>
+  //           <p className="text-sm text-blue-600 mt-1">{employeeData.contactInfo.officialEmail}</p>
+  //         </div>
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Personal Email ID</label>
+  //           <p className="text-sm text-blue-600 mt-1">{employeeData.contactInfo.personalEmail}</p>
+  //         </div>
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Phone Number</label>
+  //           <div className="flex items-center gap-2 mt-1">
+  //             <p className="text-sm text-gray-900">{employeeData.contactInfo.phoneNumber}</p>
+  //             {employeeData.contactInfo.verified && (
+  //               <CheckCircle className="h-4 w-4 text-green-500" />
+  //             )}
+  //           </div>
+  //         </div>
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Alternate Phone Number</label>
+  //           <p className="text-sm text-gray-900 mt-1">{employeeData.contactInfo.alternatePhone || '-'}</p>
+  //         </div>
+  //       </div>
+  //     </div>
 
-      {/* Addresses Section */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">ADDRESSES</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="text-sm font-medium text-gray-700">Current Address</label>
-            <p className="text-sm text-gray-900 mt-1">{employeeData.addresses.currentAddress || '-'}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Permanent Address</label>
-            <p className="text-sm text-gray-900 mt-1">{employeeData.addresses.permanentAddress || '-'}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  //     {/* Addresses Section */}
+  //     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+  //       <h3 className="text-lg font-semibold text-gray-900 mb-4">ADDRESSES</h3>
+  //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Current Address</label>
+  //           <p className="text-sm text-gray-900 mt-1">{employeeData.addresses.currentAddress || '-'}</p>
+  //         </div>
+  //         <div>
+  //           <label className="text-sm font-medium text-gray-700">Permanent Address</label>
+  //           <p className="text-sm text-gray-900 mt-1">{employeeData.addresses.permanentAddress || '-'}</p>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 
-  const WorkInfo = () => (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">WORK INFORMATION</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="text-sm font-medium text-gray-700">Employee ID</label>
-          <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.employeeId}</p>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-700">Department</label>
-          <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.department}</p>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-700">Designation</label>
-          <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.designation}</p>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-700">Joining Date</label>
-          <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.joiningDate}</p>
-        </div>
-        <div>
-          <label className="text-sm font-medium text-gray-700">Reporting Manager</label>
-          <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.reportingManager}</p>
-        </div>
-      </div>
-    </div>
-  );
+  // const WorkInfo = () => (
+  //   <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+  //     <h3 className="text-lg font-semibold text-gray-900 mb-4">WORK INFORMATION</h3>
+  //     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+  //       <div>
+  //         <label className="text-sm font-medium text-gray-700">Employee ID</label>
+  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.employeeId}</p>
+  //       </div>
+  //       <div>
+  //         <label className="text-sm font-medium text-gray-700">Department</label>
+  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.department}</p>
+  //       </div>
+  //       <div>
+  //         <label className="text-sm font-medium text-gray-700">Designation</label>
+  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.designation}</p>
+  //       </div>
+  //       <div>
+  //         <label className="text-sm font-medium text-gray-700">Joining Date</label>
+  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.joiningDate}</p>
+  //       </div>
+  //       <div>
+  //         <label className="text-sm font-medium text-gray-700">Reporting Manager</label>
+  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.reportingManager}</p>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 
   const TeamProjects = () => (
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
