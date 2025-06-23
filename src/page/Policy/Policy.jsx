@@ -30,12 +30,12 @@ export default function Policy() {
   };
 
   const addNewPolicy = () => {
-    navigate("/employee/add/policy");
+    navigate("/dashboard/employee/add/policy");
   };
 
   // edit
   const editPolicy=(policy)=>{
-        navigate("/employee/add/policy", { state: { policyEdit: policy } });
+        navigate("/dashboard/employee/add/policy", { state: { policyEdit: policy } });
   }
 
   if (isLoading) {

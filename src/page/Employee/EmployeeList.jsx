@@ -31,13 +31,13 @@ const EmployeeList = () => {
     }
   };
 
-  const handleEdit = async (employee) => {
-    navigate('/employee/add', { state: { editEmployee: employee } });
+  const handleEdit = async (id) => {
+    navigate(`/dashboard/employee/edit/${id}`);
   };
 
   const employeeDetail = (employee) => {
     let id = employee._id;
-    navigate(`/dashboard/employee/details/${id}`, { state: { employeeData: employee } });
+    navigate(`/dashboard/employee/overview/${id}`, { state: { employeeData: employee } });
   };
 
   const adddEmployee = (e) => {
@@ -55,8 +55,8 @@ const EmployeeList = () => {
   if (error) {
     return <p className="text-center text-lg text-red-500">Error Loading Employee...</p>;
   }
-
-  const filteredEmployee = data?.filter((employee) => {
+console.log(data.all_data)
+  const filteredEmployee = data?.all_data?.filter((employee) => {
     const matchesSearch = searchQuery === '' || employee.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRole = roleFilter === '' || roleFilter === employee.role;
     return matchesSearch && matchesRole;
@@ -236,7 +236,7 @@ const EmployeeList = () => {
                           <GrFormView className="text-lg" />
                         </button>
                         <button
-                          onClick={() => handleEdit(employee)}
+                          onClick={() => handleEdit(employee?._id)}
                           className="text-blue-600 hover:text-blue-800 transition-colors"
                           title="Edit"
                         >

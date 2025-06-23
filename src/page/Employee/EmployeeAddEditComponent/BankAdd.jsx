@@ -75,9 +75,6 @@ const EmployeeBankInfo = () => {
 
   return (
     <div className="container mx-auto mt-1 p-4 bg-white shadow-lg rounded-lg pb-8">
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        {employeeData ? "Add Bank Information " : "Add Bank Information"}
-      </h2>
       <form onSubmit={onSubmit} className="space-y-4">
         {/* Email & Role */}
         {/* Name, Phone */}

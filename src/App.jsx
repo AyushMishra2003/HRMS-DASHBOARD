@@ -6,7 +6,7 @@ import EmployeeList from "./page/Employee/EmployeeList";
 import EmployeeDetail from "./page/Employee/EmployeeDetail";
 import EmployeeAdd from "./page/Employee/EmployeeAdd";
 import EmployeeWorkAddForm from "./page/Employee/viewProfile/WorkAddForm";
-import EmployeeBankInfo from "./page/Employee/viewProfile/BankAdd";
+import EmployeeBankInfo from "./page/Employee/EmployeeAddEditComponent/BankAdd";
 import Policy from "./page/Policy/Policy";
 import EmployeeAddPolicy from "./page/Policy/AddPolicy";
 import EmployeeWork from "./page/Employee/EmployeeWork";
@@ -27,6 +27,10 @@ import EmployeeOverview from "./page/Employee/EmployeeOverview";
 import LeaveLogs from "./page/LeaveList/LeaveLogs";
 import LeaveRules from "./page/LeaveList/LeaveRules";
 import AttendanceRules from "./adminPages/AttendanceRules";
+import Onboarding from "./page/Onboarding/Onboarding";
+import Recruitment from "./page/Recruitment/Recruitment";
+import Notification from "./page/Notification/Notification";
+import Payroll from "./page/PayRoll/PayRoll";
 
 const App = () => {
 
@@ -46,6 +50,7 @@ const App = () => {
         <Route path="employee/overview/:id" element={<EmployeeOverview />} />
 
         <Route path="employee/add" element={<EmployeeAdd />} />
+        <Route path="employee/edit/:id" element={<EmployeeAdd />} />
         <Route path="employee/work" element={<EmployeeWorkType />} />
         <Route path="employee/work/:id" element={<EmployeeWorkAddForm />} />
         <Route path="employee/bank/:id" element={<EmployeeBankInfo />} />
@@ -63,6 +68,11 @@ const App = () => {
 
         <Route path="leave/logs" element={<LeaveLogs />} />
         <Route path="leave/rules" element={<LeaveRules />} />
+        <Route path="onboarding" element={<Onboarding />} />
+        <Route path="onboarding" element={<Onboarding />} />
+        <Route path="recruitment" element={<Recruitment />} />
+        <Route path="payroll" element={<Payroll />} />
+        <Route path="notification" element={<Notification />} />
       </Route>
     {/* </Route> */}
 

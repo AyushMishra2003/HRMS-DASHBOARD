@@ -40,7 +40,7 @@ const AttendanceLogs = () => {
 
   if (!attendanceData || isLoading) {
     return (
-      <div className="flex justify-center h-[90vh]">
+      <div className="flex justify-center items-center h-[90vh]">
         <ClipLoader size={30} color="blue" />
       </div>
     );

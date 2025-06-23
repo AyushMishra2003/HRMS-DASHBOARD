@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   LayoutDashboard, 
   UserPlus, 
@@ -7,7 +7,12 @@ import {
   Clock,
   ChevronDown,
   ChevronRight,
-  Menu
+  Menu,
+  DollarSign,
+  Group,
+  Bell,
+  Building2,
+  IndianRupee
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,26 +23,31 @@ const SideBar = () => {
   const data = { role: "Admin" }; 
   const navigate = useNavigate()
 
+  // useEffect(() => {
+  //   if(window.innerWidth<768){
+  //     setSidebarOpen(false)
+  //   }
+  // })
   const navItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [], url: "/dashboard" },
-    { name: 'Recruitment', icon: <UserPlus size={20} />, children: [], url: "/dashboard/about" },
+    { name: 'Recruitment', icon: <UserPlus size={20} />, children: [], url: "/dashboard/recruitment" },
     { name: 'Onboarding', icon: <Rocket size={20} />, children: [], url: "/dashboard/onboarding" },
     { 
       name: 'Employee', 
       icon: <Users size={20} />, 
       children: [
+        {name:'Add New Employee', url:"/dashboard/employee/add"},
         {name:'Employee List', url:"/dashboard/employee/list"},
-        {name:'Employee Overview', url:"/dashboard/employee/overview"},
-        {name:'Employee Add', url:"/dashboard/employee/add"},
-        {name:'Work Type', url:"/dashboard/employee/work"},
+        // {name:'Employee Overview', url:"/dashboard/employee/overview"},
+        // {name:'Work Type', url:"/dashboard/employee/work"},
         {name:'Employee Policy', url:"/dashboard/employee/policy"},
       ] 
     },
     { name: 'Attendance', icon: <Clock size={20} />,
       children: [
-       {name:"Attendance List", url:"/dashboard/attendance/list"},
+      //  {name:"Attendance List", url:"/dashboard/attendance/list"},
        {name:"Attendance Logs", url:"/dashboard/attendance/logs"},
-        {name:"Employee Attendance", url:"/dashboard/attendance/employee"}  ,
+        // {name:"Employee Attendance", url:"/dashboard/attendance/employee"}  ,
         {name:"Rules", url:"/dashboard/attendance/rules"}  
       ]
     },  
@@ -49,6 +59,13 @@ const SideBar = () => {
        {name:"Rules", url:"/dashboard/leave/rules"},
       ]  
     },
+     { name: 'Payroll', icon: <IndianRupee size={20} />, children: [], url: "/dashboard/payroll" },
+     { name: 'Notification', icon: <Bell size={20} />, children: [], url: "/dashboard/notification" },
+     { name: 'About', icon: <Building2 size={20} />, children: [
+        {name:"About Company",url:"/dashboard/about"},
+        {name:"Our Term & Condition",url:"/dashboard/about"},
+        {name:"Our Policies", url:"/dashboard/about"},
+     ] },
   ];
 
   const filteredNavItems = data?.role === "Admin"
@@ -89,7 +106,7 @@ navigate(`${child.url}`)
   }
 
   return (
-    <div className={`${sidebarOpen? 'w-64':'w-18'} h-screen shadow-2xl border-r border-gray-200`} style={{ backgroundColor: '#06425F' }}>
+    <div className={`${sidebarOpen? 'w-64':'w-18'} h-screen overflow-y-auto shadow-2xl border-r border-gray-200`} style={{ backgroundColor: '#06425F' }}>
     
       <div className="px-4 py-6 border-b border-gray-600 flex justify-between">
         <div className={` ${sidebarOpen ? 'block':'hidden'}  flex items-center space-x-3`}>
@@ -117,11 +134,11 @@ navigate(`${child.url}`)
           <div key={item.name} className="mb-1">
             <div
               className={`
-                flex items-center px-4 py-3 rounded-lg cursor-pointer
+                flex items-center px-4 py-2.5 rounded-lg cursor-pointer
                 transition-all duration-200 group
                 ${currentPage === item.name 
                   ? 'bg-white bg-opacity-80 shadow-lg text-black' 
-                  : 'text-gray-300 hover:text-black hover:bg-white hover:bg-opacity-50 h'
+                  : 'text-gray-100 hover:text-black hover:bg-white hover:bg-opacity-50 h'
                 }
               `}
               onClick={() => handleItemClick(item)}
@@ -149,7 +166,7 @@ navigate(`${child.url}`)
                       transition-all duration-200
                       ${currentPage === child.name 
                         ? 'text-blue-400 bg-blue-900 bg-opacity-30 font-medium' 
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700 hover:bg-opacity-50'
+                        : 'text-gray-200 hover:text-white hover:bg-gray-700 hover:bg-opacity-50'
                       }
                     `}
                     onClick={() => handleChildClick(child)}

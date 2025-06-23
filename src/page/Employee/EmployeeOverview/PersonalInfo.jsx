@@ -66,15 +66,15 @@ const PersonalInfo = () => {
     }
   }, [data]);
 
-  const handlePersonalEdit = () => {
+  const handlePersonalEdit = (tab) => {
     // Navigate to personal info edit page
     console.log('click hua')
-    navigate(`/dashboard/employee/personal/${id}`);
+    navigate(`/dashboard/employee/edit/${id}?tab=personal`, );
   };
 
   const handleContactEdit = () => {
     // Navigate to contact info edit page  
-    navigate(`dashboard/employee/contact/${id}`);
+    navigate(`/dashboard/employee/edit/${id}?tab=address`);
   };
 
   const handleAddressEdit = () => {
@@ -106,7 +106,7 @@ const PersonalInfo = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">PERSONAL INFO</h3>
           <button
-            onClick={handlePersonalEdit}
+            onClick={()=>handlePersonalEdit('personal')}
             className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
             title="Edit Personal Information"
           >

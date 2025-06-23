@@ -14,6 +14,15 @@ export const workDetailApi = createApi({
       }),
       invalidatesTags: ['work']
     }),
+    workEdit: builder.mutation({
+      query: ({ data, id }) => ({
+        url: `/employee/work/edit/${id}`,
+        method: 'POST',
+        data,
+        credentials: 'include'
+      }),
+      invalidatesTags: ['work']
+    }),
 
     getOneEmployeeWork: builder.query({
       query: ({ id }) => (
@@ -38,4 +47,4 @@ export const workDetailApi = createApi({
     })
   })
 });
-export const { useWorkAddMutation, useGetOneEmployeeWorkQuery,useGetAllEmployeeWorkQuery } = workDetailApi;
+export const { useWorkAddMutation, useWorkEditMutation, useGetOneEmployeeWorkQuery,useGetAllEmployeeWorkQuery } = workDetailApi;

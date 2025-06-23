@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { FiEdit, FiSave, FiX } from 'react-icons/fi';
 import { useGetOneEmployeeWorkQuery } from '../../../rtk/employeeworck.js';
 import { useWorkAddMutation } from '../../../rtk/employeeworck.js';
+import { useParams } from 'react-router-dom';
 
-const WorkInfo = ({ employeeId }) => {
-  const { data: workData, isLoading, error } = useGetOneEmployeeWorkQuery({ id: employeeId });
+const WorkInfo = () => {
+  const {id} = useParams()
+  const { data: workData, isLoading, error } = useGetOneEmployeeWorkQuery({id});
   const [workAddMutation, { isLoading: isUpdating }] = useWorkAddMutation();
   
   const [isEditing, setIsEditing] = useState(false);
@@ -65,7 +67,7 @@ const WorkInfo = ({ employeeId }) => {
     try {
       // Prepare data for API call
       const updateData = {
-        id: employeeId,
+        id: id,
         department: formData.department,
         jobPosition: formData.jobPosition,
         shiftInformation: formData.shiftInformation,

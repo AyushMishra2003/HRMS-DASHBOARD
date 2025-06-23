@@ -1,33 +1,45 @@
-
-
-import React, { useState, useEffect } from 'react';
-import { 
-  User, 
-  Calendar, 
-  Mail, 
+import React, { useState, useEffect } from "react";
+import {
+  User,
+  Calendar,
+  Mail,
   Building,
-  Phone, 
-  MapPin, 
-  Heart, 
-  Lock, 
-  Image, 
+  Phone,
+  MapPin,
+  Heart,
+  Lock,
+  Image,
   X,
   Save,
   ArrowRight,
   UserPlus,
   Home,
   Award,
-} from 'lucide-react';
-import { useAddEmployeeMutation, useEmployeeEditMutation } from '../../rtk/employeeApi';
-import { useParams } from 'react-router-dom';
-import { useGetOneEmployeeQuery } from '../../rtk/employeeApi.js';
+} from "lucide-react";
+import {
+  useAddEmployeeMutation,
+  useEmployeeEditMutation,
+} from "../../rtk/employeeApi";
+import { useParams } from "react-router-dom";
+import { useGetOneEmployeeQuery } from "../../rtk/employeeApi.js";
+import WorkInfoForm from "./EmployeeAddEditComponent/WorkInfoForm.jsx";
+import EmployeeBankInfo from "./EmployeeAddEditComponent/BankAdd.jsx";
+import OtherInfoForm from "./EmployeeAddEditComponent/OtherInfoForm.jsx";
+import { useSearchParams } from 'react-router-dom';
 const EmployeeAdd = () => {
+
+const [searchParams] = useSearchParams();
+const tab = searchParams.get("tab");
+
   const { id } = useParams();
-  const [employeeEdit, { isLoading: editLoading }] = useEmployeeEditMutation({ id });
-  const [addEmployee, { isLoading, isError, isSuccess }] = useAddEmployeeMutation();
-    const { data : employeeData, error } = useGetOneEmployeeQuery({id});
-  const [activeTab, setActiveTab] = useState('personal');
-  
+  const [employeeEdit, { isLoading: editLoading }] = useEmployeeEditMutation({
+    id,
+  });
+  const [addEmployee, { isLoading, isError, isSuccess }] =
+    useAddEmployeeMutation();
+  const { data: employeeData, error } = useGetOneEmployeeQuery({ id });
+  const [activeTab, setActiveTab] = useState(tab || 'personal');
+
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -43,15 +55,15 @@ const EmployeeAdd = () => {
     maritalStatus: "",
     password: "",
     photo: null,
-    joiningDate: ""
+    joiningDate: "",
   });
 
   const tabs = [
-    { id: 'personal', name: 'Personal Information', icon: User },
-    { id: 'address', name: 'Address Details', icon: Home },
-    { id: 'work', name: 'Work Details', icon: Building, disabled: true },
-    { id: 'bank', name: 'Bank Details', icon: Award, disabled: true },
-    { id: 'other', name: 'Other Details', icon: Heart, disabled: true },
+    { id: "personal", name: "Personal Information", icon: User },
+    { id: "address", name: "Address Details", icon: Home  },
+    { id: "work", name: "Work Details", icon: Building , disabled:id?false:true},
+    { id: "bank", name: "Bank Details", icon: Award,disabled:id?false:true },
+    { id: "other", name: "Other Details", icon: Heart,disabled:id?false:true },
   ];
 
   useEffect(() => {
@@ -111,11 +123,11 @@ const EmployeeAdd = () => {
         const id = employeeData._id;
         const result = await employeeEdit({ id, formData }).unwrap();
         if (result.success) {
-          navigate("/dashboard/employee/list");
+          navigate(`/dashboard/employee/edit/:${id}`);
         }
       } else {
         const result = await addEmployee(formData).unwrap();
-        if (result.success) navigate("/dashoard/employee/list");
+        if (result.success) navigate(`/dashboard/employee/edit/:${result?.data?._id}`);
       }
     } catch (error) {
       console.error("API Error:", error);
@@ -123,16 +135,18 @@ const EmployeeAdd = () => {
   };
 
   const nextTab = () => {
-    if (activeTab === 'personal') {
-      setActiveTab('address');
+    if (activeTab === "personal") {
+      setActiveTab("address");
     }
   };
 
   const isTabComplete = (tabId) => {
     switch (tabId) {
-      case 'personal':
-        return data.name && data.workEmail && data.mobile && data.dob && data.gender;
-      case 'address':
+      case "personal":
+        return (
+          data.name && data.workEmail && data.mobile && data.dob && data.gender
+        );
+      case "address":
         return data.address && data.city && data.state;
       default:
         return false;
@@ -242,7 +256,7 @@ const EmployeeAdd = () => {
                 type="radio"
                 name="gender"
                 value="male"
-                checked={data.gender === 'male'}
+                checked={data.gender === "male"}
                 onChange={handleChange}
                 className="mr-2 text-[#06425F] focus:ring-[#06425F]"
               />
@@ -253,7 +267,7 @@ const EmployeeAdd = () => {
                 type="radio"
                 name="gender"
                 value="female"
-                checked={data.gender === 'female'}
+                checked={data.gender === "female"}
                 onChange={handleChange}
                 className="mr-2 text-[#06425F] focus:ring-[#06425F]"
               />
@@ -264,7 +278,7 @@ const EmployeeAdd = () => {
                 type="radio"
                 name="gender"
                 value="other"
-                checked={data.gender === 'other'}
+                checked={data.gender === "other"}
                 onChange={handleChange}
                 className="mr-2 text-[#06425F] focus:ring-[#06425F]"
               />
@@ -355,7 +369,7 @@ const EmployeeAdd = () => {
           required
         />
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -409,7 +423,9 @@ const EmployeeAdd = () => {
                 <h1 className="text-xl font-semibold">
                   {employeeData ? "Edit Employee" : "Add New Employee"}
                 </h1>
-                <p className="text-blue-100 text-sm">Complete the employee information</p>
+                <p className="text-blue-100 text-sm">
+                  Complete the employee information
+                </p>
               </div>
             </div>
           </div>
@@ -421,7 +437,7 @@ const EmployeeAdd = () => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
                 const isCompleted = isTabComplete(tab.id);
-                
+
                 return (
                   <button
                     key={tab.id}
@@ -429,11 +445,12 @@ const EmployeeAdd = () => {
                     disabled={tab.disabled}
                     className={`
                       flex items-center py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap
-                      ${isActive 
-                        ? 'border-[#06425F] text-[#06425F]' 
-                        : tab.disabled
-                        ? 'border-transparent text-gray-400 cursor-not-allowed'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 cursor-pointer'
+                      ${
+                        isActive
+                          ? "border-[#06425F] text-[#06425F]"
+                          : tab.disabled
+                          ? "border-transparent text-gray-400 cursor-not-allowed"
+                          : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 cursor-pointer"
                       }
                     `}
                   >
@@ -452,8 +469,11 @@ const EmployeeAdd = () => {
         {/* Form Content */}
         <div className="bg-white shadow-sm rounded-lg overflow-hidden">
           <div className="p-6">
-            {activeTab === 'personal' && renderPersonalInfo()}
-            {activeTab === 'address' && renderAddressInfo()}
+            {activeTab === "personal" && renderPersonalInfo()}
+            {activeTab === "address" && renderAddressInfo()}
+            {activeTab === "work" && <WorkInfoForm />}
+            {activeTab === "bank" && <EmployeeBankInfo />}
+            {activeTab === "other" && < OtherInfoForm/>}
           </div>
 
           {/* Action Buttons */}
@@ -466,24 +486,24 @@ const EmployeeAdd = () => {
                 <X className="h-4 w-4 mr-2" />
                 Cancel
               </button>
-              
+
               <div className="flex space-x-3">
-                {activeTab === 'personal' && (
+                {activeTab === "personal" && (
                   <button
                     type="button"
                     onClick={nextTab}
-                    disabled={!isTabComplete('personal')}
+                    disabled={!isTabComplete("personal")}
                     className="flex items-center px-4 py-2 bg-[#06425F] text-white rounded-md hover:bg-[#053649] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Next: Address
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </button>
                 )}
-                
-                {activeTab === 'address' && (
+
+                {activeTab === "address" && (
                   <button
                     onClick={onSubmit}
-                    disabled={isLoading || !isTabComplete('personal')}
+                    disabled={isLoading || !isTabComplete("personal")}
                     className="flex items-center px-6 py-2 bg-[#06425F] text-white rounded-md hover:bg-[#053649] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? (
@@ -509,6 +529,3 @@ const EmployeeAdd = () => {
 };
 
 export default EmployeeAdd;
-
-
-
