@@ -156,7 +156,7 @@ const isToday = currentDate.toDateString() === new Date().toDateString();
     }
   ];
 
- const statusCounts = attendanceData.reduce((acc, cur) => {
+ const statusCounts = attendanceData?.reduce((acc, cur) => {
   const status = cur.status;
   if (status === 'P') acc.present++;
   else if (status === 'A') acc.absent++;
@@ -324,9 +324,9 @@ const isToday = currentDate.toDateString() === new Date().toDateString();
 
       {/* Table */}
       {isLoading || !attendanceData ? (
-        <div className="flex justify-center h-full">
+        <div className="flex justify-center items-center h-screen">
           <ClipLoader size={30} />
-        </div>
+         </div>
       ) : 
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -545,7 +545,7 @@ const isToday = currentDate.toDateString() === new Date().toDateString();
 
 if(!attendanceData || isLoading){
   return (
-    <div className="flex justify-center h-[90vh]">
+    <div className="flex justify-center items-center h-screen">
           <ClipLoader size={30} color="blue" />
         </div>
   )

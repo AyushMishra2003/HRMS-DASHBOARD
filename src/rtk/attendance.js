@@ -33,6 +33,14 @@ export const attendanceDetailApi = createApi({
       providesTags: ["attendance"],
     }),
 
+    getWeeklayChar:builder.query({
+            query:()=>({
+              url:"/employee/attendance/weekly/attendance/chart",
+              method:"GET",
+            }),
+            providesTags:["attendance"],
+    }),
+
     attendanceFilter: builder.query({
       query: (range = "all") => ({
         url: `/employee/attendance/filter?range=${range}`,
@@ -58,5 +66,6 @@ export const {
   useEmployeeChekOutMutation,
   useEmployeeAllDetailMutation,
   useGetAttendanceDetailQuery,
-  useAttendanceFilterQuery
+  useAttendanceFilterQuery,
+  useGetWeeklayCharQuery
 } = attendanceDetailApi;

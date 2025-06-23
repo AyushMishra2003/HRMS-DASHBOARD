@@ -15,21 +15,26 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import {useGetAllEmployeeQuery } from '../rtk/employeeApi';
+import { useNavigate } from 'react-router-dom';
+import { useGetWeeklayCharQuery } from '../rtk/attendance';
 
 const AdminHome = () => {
-    const{data:employeeData,isLoadind} =useGetAllEmployeeQuery()
-  // Sample data for charts
-  console.log("logaaaaa",employeeData);
-  
-  const attendanceData = [
-    { name: 'Mon', present: 85, absent: 15 },
-    { name: 'Tue', present: 88, absent: 12 },
-    { name: 'Wed', present: 82, absent: 18 },
-    { name: 'Thu', present: 90, absent: 10 },
-    { name: 'Fri', present: 87, absent: 13 },
-    { name: 'Sat', present: 75, absent: 25 },
-    { name: 'Sun', present: 70, absent: 30 }
-  ];
+    const{data:employeeData,isLoading} =useGetAllEmployeeQuery()
+    const{data:weeklyCharData,isLoading:charLoading}=useGetWeeklayCharQuery()
+     const navigate=useNavigate();  
+ const attendanceData = weeklyCharData || [];
+
+     console.log("weeklyChar", weeklyCharData);
+     
+  // const attendanceData = [
+  //   { name: 'Mon', present: 85, absent: 15 },
+  //   { name: 'Tue', present: 88, absent: 12 },
+  //   { name: 'Wed', present: 82, absent: 18 },
+  //   { name: 'Thu', present: 90, absent: 10 },
+  //   { name: 'Fri', present: 87, absent: 13 },
+  //   { name: 'Sat', present: 75, absent: 25 },
+  //   { name: 'Sun', present: 70, absent: 30 }
+  // ];
 
   const performanceData = [
     { month: 'Jan', performance: 78 },
@@ -82,19 +87,19 @@ const AdminHome = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard 
           title="Total Employees" 
-          value={employeeData?.length}
+          value={employeeData?.summary?.totalEmployees}
           change="12.5" 
           icon={Users} 
         />
         <StatCard 
           title="Present Today" 
-          value="198" 
+          value={employeeData?.summary?.present}
           change="8.2" 
           icon={UserCheck} 
         />
         <StatCard 
           title="On Leave" 
-          value="18" 
+          value={employeeData?.summary?.onLeave}
           change="2.4" 
           icon={Calendar} 
           positive={false}
@@ -119,7 +124,7 @@ const AdminHome = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="name" stroke="#666" fontSize={12} />
               <YAxis stroke="#666" fontSize={12} />
-              <Bar dataKey="present" fill="#06425F" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="present" fill="#06425F" radius={[0, 0, 0, 0]} />
               <Bar dataKey="absent" fill="#e5e7eb" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -217,15 +222,21 @@ const AdminHome = () => {
       <div className="mt-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          <button className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+          <button 
+          onClick={()=> navigate("/dashboard/employee/add")}
+          className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
             <Users className="h-6 w-6 text-[#06425F] mb-2" />
             <span className="text-sm text-gray-700">Add Employee</span>
           </button>
-          <button className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+          <button
+          onClick={()=>navigate("/dashboard/leave/logs")} 
+          className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
             <Calendar className="h-6 w-6 text-[#06425F] mb-2" />
             <span className="text-sm text-gray-700">Leave Requests</span>
           </button>
-          <button className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+          <button
+          onClick={()=>navigate("/dashboard/attendance/list")} 
+          className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
             <Clock className="h-6 w-6 text-[#06425F] mb-2" />
             <span className="text-sm text-gray-700">Attendance</span>
           </button>
