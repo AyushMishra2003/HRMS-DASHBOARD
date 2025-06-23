@@ -12,7 +12,7 @@ import EmployeeAddPolicy from "./page/Policy/AddPolicy";
 import EmployeeWork from "./page/Employee/EmployeeWork";
 import EmployeeWorkType from "./page/Employee/EmployeeWork";
 import AuthLogin from "./page/Auth/Login";
-import ProtectedAuth from "./page/Auth/ProtectedAuth";
+// import ProtectedAuth from "./page/Auth/ProtectedAuth";
 import AttendanceList from "./page/IndivisualEmployee/attendanceList";
 import EmployeeAttendance from "./page/EmployeeAttendance/EmployeeAttendance";
 import EmployeeLeave from "./page/EmployeeLeave/EmployeeLeave";
@@ -43,7 +43,7 @@ const App = () => {
         <Route path="employee/list" element={<EmployeeList />} />
         <Route path="employee/details/:id" element={<EmployeeDetail />} />
 
-        <Route path="employee/overview" element={<EmployeeOverview />} />
+        <Route path="employee/overview/:id" element={<EmployeeOverview />} />
 
         <Route path="employee/add" element={<EmployeeAdd />} />
         <Route path="employee/work" element={<EmployeeWorkType />} />
@@ -72,7 +72,7 @@ const App = () => {
     {/* </Route> */}
 
     {/* Catch-all redirect to HomeDashboard */}
-    <Route path="*" element={<Navigate to="/" replace />} />
+    {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
   </Routes>
 </div>
   );

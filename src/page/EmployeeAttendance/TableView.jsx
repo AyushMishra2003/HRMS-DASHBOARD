@@ -236,7 +236,7 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
                   {employee._id.slice(-5)}
                 </td>
                 <td className="px-4 py-3">
-                  <Link to='/dashboard/employee/overview' className="flex items-center">
+                  <Link to={`/dashboard/employee/overview/${employee?._id}`} className="flex items-center">
                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
                       {employee.avatar || <User2/>}
                     </div>
