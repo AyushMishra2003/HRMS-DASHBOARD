@@ -17,14 +17,14 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useApproveLeaveMutation, useGetEmployeeLeaveQuery, useRejectLeaveMutation } from '../../rtk/leaveApi';
- import * as XLSX from "xlsx";
+import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { ClipLoader } from 'react-spinners';
 
 const LeaveLogs = () => {
   const { data: leaveData = [], isLoading } = useGetEmployeeLeaveQuery()
- const [approveLeave] = useApproveLeaveMutation();
-  const[leaveReaject] =useRejectLeaveMutation();
+  const [approveLeave] = useApproveLeaveMutation();
+  const [leaveReaject] = useRejectLeaveMutation();
 
   const [selectedYear, setSelectedYear] = useState('2025');
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,10 +32,12 @@ const LeaveLogs = () => {
   const [selectedLeaves, setSelectedLeaves] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [departmentFilter, setDepartmentFilter] = useState('all');
+  const [selectedMonth, setSelectedMonth] = useState('all');
+
 
   // Sample leave data
 
-  
+
   const departments = ['All', 'IT', 'HR', 'Finance', 'Marketing', 'Operations'];
   const leaveTypes = ['Annual Leave', 'Sick Leave', 'Casual Leave', 'Maternity Leave', 'Paternity Leave'];
 
@@ -57,24 +59,24 @@ const LeaveLogs = () => {
     }
   };
 
-const handleApprove = async (leaveId) => {
-  try {
-    console.log("Approving leaveId:", leaveId);
-    const res = await approveLeave({ id: leaveId }).unwrap(); // API call
-    console.log("Leave approved:", res);
-  } catch (error) {
-    console.error("Approval failed:", error);
-  }
-};
+  const handleApprove = async (leaveId) => {
+    try {
+      console.log("Approving leaveId:", leaveId);
+      const res = await approveLeave({ id: leaveId }).unwrap(); // API call
+      console.log("Leave approved:", res);
+    } catch (error) {
+      console.error("Approval failed:", error);
+    }
+  };
 
-  const handleReject = async(leaveId) => {
-     try {
-    // console.log("Approving leaveId:", leaveId);
-    const res = await leaveReaject({ id: leaveId }).unwrap(); // API call
-    console.log("Leave Rejected:", res);
-  } catch (error) {
-    console.error("failed:", error);
-  }
+  const handleReject = async (leaveId) => {
+    try {
+      // console.log("Approving leaveId:", leaveId);
+      const res = await leaveReaject({ id: leaveId }).unwrap(); // API call
+      console.log("Leave Rejected:", res);
+    } catch (error) {
+      console.error("failed:", error);
+    }
   };
 
   const handleBulkApprove = () => {
@@ -98,7 +100,11 @@ const handleApprove = async (leaveId) => {
     const empName = leave?.employeeId?.name?.toLowerCase() || '';
     const empId = leave?.employeeId?._id?.toString().slice(-4).toLowerCase() || '';
     const dept = leave?.department?.toLowerCase() || ''; // Optional, if you have department
-     const year = new Date(leave.createdAt).getFullYear().toString();
+    const year = new Date(leave.createdAt).getFullYear().toString();
+    const leaveDate = new Date(leave.createdAt); // ✅ Date banaya
+    // const year = leaveDate.getFullYear().toString(); // "2025"
+    const month = leaveDate.getMonth().toString();
+
     const matchesSearch =
       empName.includes(searchQuery.toLowerCase()) ||
       empId.includes(searchQuery.toLowerCase()) ||
@@ -109,49 +115,54 @@ const handleApprove = async (leaveId) => {
 
     const matchesDepartment =
       departmentFilter === 'all' || dept === departmentFilter.toLowerCase();
-      const matchesYear =
-    selectedYear === 'all' || year === selectedYear;
-    return matchesSearch && matchesStatus && matchesDepartment &&matchesYear;
+    const matchesYear =
+      selectedYear === 'all' || year === selectedYear;
+    const matchesMonth =
+      selectedMonth === 'all' || month === selectedMonth;
+
+    return matchesSearch && matchesStatus && matchesDepartment && matchesYear && matchesMonth;
   });
 
   // console.log("filteredLeaves", filteredLeaves);
 
 
-const exportExcell = () => {
-  try {
-    // Map only necessary fields for Excel
-    const exportData = filteredLeaves.map((leave) => ({
-      Name: leave?.employeeId?.name || "",
-      Email: leave?.employeeId?.email || "",
-      Mobile: leave?.employeeId?.mobile || "",
-      Department: leave?.department || "N/A",
-      From: leave?.startDate ? new Date(leave.startDate).toLocaleDateString() : "",
-      To: leave?.endDate ? new Date(leave.endDate).toLocaleDateString() : "",
-      Reason: leave?.description || "",
-      Status: leave?.status || "",
-    }));
+  const exportExcell = () => {
+    try {
+      // Map only necessary fields for Excel
+      const exportData = filteredLeaves.map((leave) => ({
+        Name: leave?.employeeId?.name || "",
+        Email: leave?.employeeId?.email || "",
+        Mobile: leave?.employeeId?.mobile || "",
+        Department: leave?.department || "N/A",
+        startDate: leave?.startDate ? new Date(leave.startDate).toLocaleDateString() : "",
+        endDate: leave?.endDate ? new Date(leave.endDate).toLocaleDateString() : "",
+        Day:activalLeave(leave?.startDate, leave?.endDate)||"",
+        applyDate:leave?.createdAt ? new Date(leave?.createdAt).toLocaleDateString():"",
+        Reason: leave?.description || "",
+        Status: leave?.status || "",
+      }));
 
-    // Create worksheet & workbook
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Leaves");
+      // Create worksheet & workbook
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Leaves");
 
-    // Generate Excel file and trigger download
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
+      // Generate Excel file and trigger download
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
 
-    const blob = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
 
-    saveAs(blob, "LeaveData.xlsx");
+      saveAs(blob, "LeaveData.xlsx");
 
-  } catch (err) {
-    console.error("Excel Export Error:", err.message);
-  }
-};
+    } catch (err) {
+      console.error("Excel Export Error:", err.message);
+    }
+  };
 
 
   const formatDate = (dateString) => {
@@ -162,14 +173,26 @@ const exportExcell = () => {
     });
   };
 
-  
-    if(isLoading){
-       return(
-        <div className="flex justify-center items-center h-screen">
-            <ClipLoader size={30} color="blu"/>
-        </div>
-       )
-    }
+  const activalLeave = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Difference in milliseconds
+    const diffTime = Math.abs(end - start);
+
+    // Convert to days
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays + 1; // +1 to include both start & end dates
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <ClipLoader size={30} color="blu" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -195,7 +218,29 @@ const exportExcell = () => {
                   <option value="2024">2024</option>
                   <option value="2023">2023</option>
                 </select>
+
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="all">All Months</option>
+                  <option value="0">January</option>
+                  <option value="1">February</option>
+                  <option value="2">March</option>
+                  <option value="3">April</option>
+                  <option value="4">May</option>
+                  <option value="5">June</option>
+                  <option value="6">July</option>
+                  <option value="7">August</option>
+                  <option value="8">September</option>
+                  <option value="9">October</option>
+                  <option value="10">November</option>
+                  <option value="11">December</option>
+                </select>
+
               </div>
+
             </div>
           </div>
 
@@ -247,10 +292,10 @@ const exportExcell = () => {
                   </button>
                 )}
 
-                <button 
-                onClick={exportExcell}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-                  <Download className="w-4 h-4"  />
+                <button
+                  onClick={exportExcell}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                  <Download className="w-4 h-4" />
                   Export
                 </button>
 
@@ -346,13 +391,14 @@ const exportExcell = () => {
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Start Date</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">End Date</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Days</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-700">Applay Date</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Status</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredLeaves.length > 0 ? (
-                  filteredLeaves.slice(0,showEntries).map((leave) => {
+                  filteredLeaves.slice(0, showEntries).map((leave) => {
                     // console.log("Leave Row:", leave); 
 
                     return (
@@ -373,7 +419,7 @@ const exportExcell = () => {
                             </div>
                             <div>
                               <p className="text-sm font-medium text-gray-900">{leave.employeeId?.name}</p>
-                              <p className="text-xs text-gray-500">{leave.employeeId?._id}</p>
+                              <p className="text-xs text-gray-500">{leave.employeeId?.email}</p>
                             </div>
                           </div>
                         </td>
@@ -386,6 +432,9 @@ const exportExcell = () => {
                         <td className="p-4 text-sm text-gray-700">{leave.leaveType}</td>
                         <td className="p-4 text-sm text-gray-700">{formatDate(leave.startDate)}</td>
                         <td className="p-4 text-sm text-gray-700">{formatDate(leave.endDate)}</td>
+                        <td className="p-4 text-sm text-gray-700 font-medium">
+                          {activalLeave(leave.startDate, leave.endDate)}
+                        </td>
                         <td className="p-4 text-sm text-gray-700 font-medium">
                           {formatDate(leave.createdAt)}
                         </td>

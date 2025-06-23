@@ -20,11 +20,14 @@ import { useGetWeeklayCharQuery } from '../rtk/attendance';
 
 const AdminHome = () => {
     const{data:employeeData,isLoading} =useGetAllEmployeeQuery()
+    console.log("summary", employeeData);
+
+
     const{data:weeklyCharData,isLoading:charLoading}=useGetWeeklayCharQuery()
-     const navigate=useNavigate();  
+    const navigate=useNavigate();  
+    
  const attendanceData = weeklyCharData || [];
 
-     console.log("weeklyChar", weeklyCharData);
      
   // const attendanceData = [
   //   { name: 'Mon', present: 85, absent: 15 },
@@ -87,19 +90,19 @@ const AdminHome = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard 
           title="Total Employees" 
-          value="Loading..."//{employeeData?.summary?.totalEmployees}
+          value={employeeData?.summary?.totalEmployees}
           change="12.5" 
           icon={Users} 
         />
         <StatCard 
           title="Present Today" 
-          value="827" //{employeeData?.summary?.present}
+          value={employeeData?.summary?.present}
           change="8.2" 
           icon={UserCheck} 
         />
         <StatCard 
           title="On Leave" 
-          value="512"   //{employeeData?.summary?.onLeave}
+          value={employeeData?.summary?.onLeave}
           change="2.4" 
           icon={Calendar} 
           positive={false}
