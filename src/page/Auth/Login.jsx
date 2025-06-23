@@ -152,7 +152,6 @@ const AuthLogin = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
-    role: "Admin",
   });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();

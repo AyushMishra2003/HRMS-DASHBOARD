@@ -87,7 +87,7 @@ const AttendanceLogs = () => {
                 </button>
               )}
             </div>
-            {/* ):null} */}
+            {/* ):null} */} 
             
           </div>
         </div>
@@ -155,7 +155,7 @@ const AttendanceLogs = () => {
           </div>
         </div>
       </div>
-<div className='w-[65rem]'>
+<div className='w-[63rem]'>
       {/* Content */}
       {activeView === 'table' ? (
         <TableView 

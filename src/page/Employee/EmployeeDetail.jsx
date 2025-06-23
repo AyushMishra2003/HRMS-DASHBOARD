@@ -14,6 +14,7 @@ const EmployeeDetail = () => {
    const [activeTab, setActiveTab] = useState('about');
    const location = useLocation();
   const { data, isLoading, error } = useGetOneEmployeeQuery({id});
+  console.log(data)
    const[employee,setEmployee]=useState({});
    useEffect(()=>{   
     if(data){

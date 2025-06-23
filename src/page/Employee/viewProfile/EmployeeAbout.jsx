@@ -117,7 +117,7 @@ export default function EmployeeAbout() {
   );
 
   const workEdit = () => {
-
+console.log('chal rha hai')
     navigate(`/employee/work/${id}`)
   };
 

@@ -17,7 +17,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useApproveLeaveMutation, useGetEmployeeLeaveQuery, useRejectLeaveMutation } from '../../rtk/leaveApi';
- import * as XLSX from "xlsx";
+//  import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { ClipLoader } from 'react-spinners';
 
@@ -117,41 +117,41 @@ const handleApprove = async (leaveId) => {
   // console.log("filteredLeaves", filteredLeaves);
 
 
-const exportExcell = () => {
-  try {
-    // Map only necessary fields for Excel
-    const exportData = filteredLeaves.map((leave) => ({
-      Name: leave?.employeeId?.name || "",
-      Email: leave?.employeeId?.email || "",
-      Mobile: leave?.employeeId?.mobile || "",
-      Department: leave?.department || "N/A",
-      From: leave?.startDate ? new Date(leave.startDate).toLocaleDateString() : "",
-      To: leave?.endDate ? new Date(leave.endDate).toLocaleDateString() : "",
-      Reason: leave?.description || "",
-      Status: leave?.status || "",
-    }));
+// const exportExcell = () => {
+//   try {
+//     // Map only necessary fields for Excel
+//     const exportData = filteredLeaves.map((leave) => ({
+//       Name: leave?.employeeId?.name || "",
+//       Email: leave?.employeeId?.email || "",
+//       Mobile: leave?.employeeId?.mobile || "",
+//       Department: leave?.department || "N/A",
+//       From: leave?.startDate ? new Date(leave.startDate).toLocaleDateString() : "",
+//       To: leave?.endDate ? new Date(leave.endDate).toLocaleDateString() : "",
+//       Reason: leave?.description || "",
+//       Status: leave?.status || "",
+//     }));
 
-    // Create worksheet & workbook
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Leaves");
+//     // Create worksheet & workbook
+//     const worksheet = XLSX.utils.json_to_sheet(exportData);
+//     const workbook = XLSX.utils.book_new();
+//     XLSX.utils.book_append_sheet(workbook, worksheet, "Leaves");
 
-    // Generate Excel file and trigger download
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
+//     // Generate Excel file and trigger download
+//     const excelBuffer = XLSX.write(workbook, {
+//       bookType: "xlsx",
+//       type: "array",
+//     });
 
-    const blob = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
+//     const blob = new Blob([excelBuffer], {
+//       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+//     });
 
-    saveAs(blob, "LeaveData.xlsx");
+//     saveAs(blob, "LeaveData.xlsx");
 
-  } catch (err) {
-    console.error("Excel Export Error:", err.message);
-  }
-};
+//   } catch (err) {
+//     console.error("Excel Export Error:", err.message);
+//   }
+// };
 
 
   const formatDate = (dateString) => {
