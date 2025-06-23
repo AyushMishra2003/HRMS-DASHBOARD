@@ -75,5 +75,6 @@ export const {
   useEmployeeAllDetailMutation,
   useGetAttendanceDetailQuery,
   useAttendanceFilterQuery,
-  useGetWeeklayCharQuery
+  useGetWeeklayCharQuery,
+  useAttendanceByMonthQuery
 } = attendanceDetailApi;
