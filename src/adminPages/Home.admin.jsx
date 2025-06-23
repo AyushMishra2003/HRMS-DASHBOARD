@@ -87,19 +87,19 @@ const AdminHome = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard 
           title="Total Employees" 
-          value={employeeData?.summary?.totalEmployees}
+          value="Loading..."//{employeeData?.summary?.totalEmployees}
           change="12.5" 
           icon={Users} 
         />
         <StatCard 
           title="Present Today" 
-          value={employeeData?.summary?.present}
+          value="827" //{employeeData?.summary?.present}
           change="8.2" 
           icon={UserCheck} 
         />
         <StatCard 
           title="On Leave" 
-          value={employeeData?.summary?.onLeave}
+          value="512"   //{employeeData?.summary?.onLeave}
           change="2.4" 
           icon={Calendar} 
           positive={false}
