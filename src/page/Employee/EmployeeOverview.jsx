@@ -13,48 +13,52 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
-  Filter
+  Filter,
+  PhoneCallIcon
 } from 'lucide-react';
 import PersonalInfo from './EmployeeOverview/PersonalInfo';
 import WorkInfo from './EmployeeOverview/WorkInfo';
-
+import { useGetOneEmployeeQuery } from '../../rtk/employeeApi.js';
+import { useParams } from 'react-router-dom';
 const EmployeeOverview = () => {
+  const { id } = useParams();
+    const { data: employeeData, isLoading, error } = useGetOneEmployeeQuery({ id });
   const [activeTab, setActiveTab] = useState('personal');
   const [logView, setLogView] = useState('daily');
   const [dateRange, setDateRange] = useState({ from: '2025-05-20', to: '2025-06-19' });
 
   // Sample employee data - will be replaced with API data
-  const employeeData = {
-    id: 'EMP001',
-    name: 'Ashish Singh',
-    email: 'ashishkumarrawat120@gmail.com',
-    status: 'Getting Started',
-    avatar: '/api/placeholder/120/120',
-    personalInfo: {
-      dateOfBirth: '',
-      gender: '',
-      bloodGroup: '',
-      maritalStatus: ''
-    },
-    contactInfo: {
-      officialEmail: 'ashishkumarrawat120@gmail.com',
-      personalEmail: 'ashishkumarrawat120@gmail.com',
-      phoneNumber: '9621891118',
-      alternatePhone: '',
-      verified: true
-    },
-    addresses: {
-      currentAddress: '',
-      permanentAddress: ''
-    },
-    workInfo: {
-      department: 'IT',
-      designation: 'Software Developer',
-      employeeId: 'EMP001',
-      joiningDate: '2025-01-15',
-      reportingManager: 'John Doe'
-    }
-  };
+  // const employeeData = {
+  //   id: 'EMP001',
+  //   name: 'Ashish Singh',
+  //   email: 'ashishkumarrawat120@gmail.com',
+  //   status: 'Getting Started',
+  //   avatar: '/api/placeholder/120/120',
+  //   personalInfo: {
+  //     dateOfBirth: '',
+  //     gender: '',
+  //     bloodGroup: '',
+  //     maritalStatus: ''
+  //   },
+  //   contactInfo: {
+  //     officialEmail: 'ashishkumarrawat120@gmail.com',
+  //     personalEmail: 'ashishkumarrawat120@gmail.com',
+  //     phoneNumber: '9621891118',
+  //     alternatePhone: '',
+  //     verified: true
+  //   },
+  //   addresses: {
+  //     currentAddress: '',
+  //     permanentAddress: ''
+  //   },
+  //   workInfo: {
+  //     department: 'IT',
+  //     designation: 'Software Developer',
+  //     employeeId: 'EMP001',
+  //     joiningDate: '2025-01-15',
+  //     reportingManager: 'John Doe'
+  //   }
+  // };
 
   // Sample attendance logs
   const attendanceLogs = [
@@ -453,28 +457,32 @@ const EmployeeOverview = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-[#4a5568] text-white p-6">
+      <div className="bg-[#06425F] text-white p-6">
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 bg-green-200 rounded-full overflow-hidden">
             <img
-              src={employeeData.avatar}
-              alt={employeeData.name}
-              className="w-full h-full object-cover"
+              src={employeeData?.employeeImage?.secure_url || employeeData?.employeeImage?.public_id }
+              alt={employeeData?.name}
+              className="w-full h-full border-2 rounded-full border-white/80 p-1 bg-[#06425F] object-cover"
               onError={(e) => {
-                e.target.src = `https://ui-avatars.com/api/?name=${employeeData.name}&background=10b981&color=fff&size=120`;
+                e.target.src = `https://ui-avatars.com/api/?name=${employeeData?.name}&background=10b981&color=fff&size=120`;
               }}
             />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">{employeeData.name}</h1>
-            <div className="flex items-center gap-2 mt-2">
+            <h1 className="text-2xl font-bold">{employeeData?.name}</h1>
+            {/* <div className="flex items-center gap-2 mt-2">
               <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
                 {employeeData.status}
               </span>
-            </div>
+            </div> */}
             <div className="flex items-center gap-2 mt-2 text-sm">
               <Mail className="h-4 w-4" />
-              <span>{employeeData.email}</span>
+              <span>{employeeData?.email}</span>
+            </div>
+            <div className="flex items-center gap-2 mt-2 text-sm">
+              <PhoneCallIcon className="h-4 w-4" />
+              <span>{employeeData?.mobile}</span>
             </div>
           </div>
         </div>
@@ -491,7 +499,7 @@ const EmployeeOverview = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600 bg-blue-50'
+                    ? 'border-[#06425F] text-[#06425F] bg-blue-50'
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >

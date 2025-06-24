@@ -28,6 +28,7 @@ const EmployeeList = () => {
     const isConfirmed = await isConfirm();
     if (isConfirmed) {
       const data = await deleteEmployee(id).unwrap();
+      alert("Employee Data Deleted! ")
     }
   };
 
