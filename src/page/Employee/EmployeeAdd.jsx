@@ -15,17 +15,20 @@ import {
   UserPlus,
   Home,
   Award,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import {
   useAddEmployeeMutation,
   useEmployeeEditMutation,
 } from "../../rtk/employeeApi";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetOneEmployeeQuery } from "../../rtk/employeeApi.js";
 import WorkInfoForm from "./EmployeeAddEditComponent/WorkInfoForm.jsx";
 import EmployeeBankInfo from "./EmployeeAddEditComponent/BankAdd.jsx";
 import OtherInfoForm from "./EmployeeAddEditComponent/OtherInfoForm.jsx";
 import { useSearchParams } from 'react-router-dom';
+import { ClipLoader } from "react-spinners";
 const EmployeeAdd = () => {
 
 const [searchParams] = useSearchParams();
@@ -39,9 +42,11 @@ const tab = searchParams.get("tab");
     useAddEmployeeMutation();
   const { data: employeeData, error } = useGetOneEmployeeQuery({ id });
   const [activeTab, setActiveTab] = useState(tab || 'personal');
-
+    const [showPassword, setShowPassword] = useState(false);
+const navigate = useNavigate()
   const [data, setData] = useState({
-    name: "",
+    fname: "",
+    lname: "",
     email: "",
     workEmail: "",
     mobile: "",
@@ -67,15 +72,17 @@ const tab = searchParams.get("tab");
   ];
 
   useEffect(() => {
+      document.querySelector("input[name='fname']")?.focus();
     if (id && employeeData) {
       setData((prev) => ({
         ...prev,
-        name: employeeData.name,
+        fname: employeeData.name,
         email: employeeData.email,
         workEmail: employeeData.workEmail,
         mobile: employeeData.mobile,
         dob: employeeData.dob,
         gender: employeeData.gender,
+        photo: employeeData?.employeeImage?.secure_url || null,
         address: employeeData.address,
         city: employeeData.city,
         state: employeeData.state,
@@ -90,6 +97,62 @@ const tab = searchParams.get("tab");
     }
   }, [employeeData, id]);
 
+useEffect(() => {
+  if (tab) {
+    setActiveTab(tab);
+  }
+}, [tab]);
+
+
+const generatePassword = () => {
+  setShowPassword(true)
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const numbers = "0123456789";
+  const symbols = "!@#$%^&*()_+";
+  const allChars = upper + lower + numbers + symbols;
+
+  let password = "";
+  password += upper[Math.floor(Math.random() * upper.length)];
+  password += lower[Math.floor(Math.random() * lower.length)];
+  password += numbers[Math.floor(Math.random() * numbers.length)];
+  password += symbols[Math.floor(Math.random() * symbols.length)];
+
+  for (let i = 4; i < 8; i++) {
+    password += allChars[Math.floor(Math.random() * allChars.length)];
+  }
+
+  return password.split('').sort(() => 0.5 - Math.random()).join('');
+};
+
+const handleCancel = () =>{
+  setData({
+    fname: "",
+    lname: "",
+    email: "",
+    workEmail: "",
+    mobile: "",
+    dob: "",
+    gender: "",
+    address: "",
+    city: "",
+    state: "",
+    qualification: "",
+    experience: "",
+    maritalStatus: "",
+    password: "",
+    photo: null,
+    joiningDate: "",
+  })
+}
+
+const getMaxDOB = () => {
+  const today = new Date();
+  today.setFullYear(today.getFullYear() - 18);
+  return today.toISOString().split("T")[0]; 
+};
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData({ ...data, [name]: value });
@@ -102,9 +165,13 @@ const tab = searchParams.get("tab");
 
   const onSubmit = async (e) => {
     try {
+      let name = data.fname
       e.preventDefault();
+      if(data.lname){
+name = data.fname + ' ' + data.lname ;
+      }
       const formData = new FormData();
-      formData.append("name", data?.name);
+      formData.append("name", name);
       formData.append("email", data?.email);
       formData.append("workEmail", data?.workEmail);
       formData.append("mobile", data?.mobile);
@@ -123,13 +190,18 @@ const tab = searchParams.get("tab");
         const id = employeeData._id;
         const result = await employeeEdit({ id, formData }).unwrap();
         if (result.success) {
-          navigate(`/dashboard/employee/edit/:${id}`);
+          alert('Employee Update Successfull !')
+          navigate(`/dashboard/employee/edit/${id}?tab=work`);
         }
       } else {
+        console.log(formData)
         const result = await addEmployee(formData).unwrap();
-        if (result.success) navigate(`/dashboard/employee/edit/:${result?.data?._id}`);
+        console.log(result)
+         alert('Employee Resigter Successfull !')
+        if (result.success) navigate(`/dashboard/employee/edit/${result?.data?._id}?tab=work`);
       }
     } catch (error) {
+      alert(error?.message || 'Internal Server Error')
       console.error("API Error:", error);
     }
   };
@@ -144,7 +216,7 @@ const tab = searchParams.get("tab");
     switch (tabId) {
       case "personal":
         return (
-          data.name && data.workEmail && data.mobile && data.dob && data.gender
+          data.fname && data.workEmail && data.mobile && data.dob && data.gender
         );
       case "address":
         return data.address && data.city && data.state;
@@ -162,8 +234,8 @@ const tab = searchParams.get("tab");
           </label>
           <input
             type="text"
-            name="name"
-            value={data.name}
+            name="fname"
+            value={data.fname}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#06425F] focus:border-transparent"
             placeholder="Enter first name"
@@ -176,6 +248,9 @@ const tab = searchParams.get("tab");
           </label>
           <input
             type="text"
+             name="lname"
+            value={data.lname}
+            onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#06425F] focus:border-transparent"
             placeholder="Enter last name"
           />
@@ -209,8 +284,9 @@ const tab = searchParams.get("tab");
             value={data.mobile}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#06425F] focus:border-transparent"
-            placeholder="Enter phone number"
+            placeholder="Enter 10 digit phone number"
             pattern="^[6789]\d{9}$"
+            maxLength="10"
             required
           />
         </div>
@@ -240,6 +316,7 @@ const tab = searchParams.get("tab");
           <input
             type="date"
             name="dob"
+            max={getMaxDOB()}
             value={data.dob}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#06425F] focus:border-transparent"
@@ -312,8 +389,21 @@ const tab = searchParams.get("tab");
           <input
             type="number"
             name="experience"
+            min={0}
+            max={50}
             value={data.experience}
-            onChange={handleChange}
+            // onChange={handleChange}
+             onChange={(e) => {
+    const value = e.target.value;
+    if (value === '' || Number(value) >= 0) {
+      handleChange(e);
+    }
+  }}
+  onKeyDown={(e) => {
+    if (e.key === '-' || e.key === 'e' || e.key === '+' || e.key === '.') {
+      e.preventDefault(); 
+    }
+  }}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#06425F] focus:border-transparent"
             placeholder="Enter years of experience"
           />
@@ -321,20 +411,36 @@ const tab = searchParams.get("tab");
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            <Lock className="inline h-4 w-4 mr-1" />
-            Password
-          </label>
-          <input
-            type="password"
-            name="password"
-            value={data.password}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#06425F] focus:border-transparent"
-            placeholder="Enter password"
-          />
-        </div>
+       <div className="relative">
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        <Lock className="inline h-4 w-4 mr-1" />
+        Password
+      </label>
+      <div className="relative flex items-center">
+        <input
+          type={showPassword ? "text" : "password"}
+          name="password"
+          value={data.password}
+          onChange={handleChange}
+          className="w-full px-3 py-2 pr-10  border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#06425F] focus:border-transparent"
+          placeholder="Enter password"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-24 text-gray-500 hover:text-gray-700"
+        >
+          {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+        </button>
+        <button
+          type="button"
+          onClick={() => setData({ ...data, password: generatePassword() })}
+          className="ml-2 text-sm text-white bg-[#06425F] px-2 py-2 rounded-md hover:bg-[#05364b]"
+        >
+          Generate
+        </button>
+      </div>
+    </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             <Image className="inline h-4 w-4 mr-1" />
@@ -405,15 +511,15 @@ const tab = searchParams.get("tab");
 
   if (isLoading || editLoading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#06425F]"></div>
-      </div>
+        <div className='flex justify-center items-center h-[90vh]'>
+                <ClipLoader/>
+            </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
         <div className="bg-white shadow-sm rounded-lg mb-6 overflow-hidden">
           <div className="bg-[#06425F] text-white px-6 py-4">
@@ -441,7 +547,12 @@ const tab = searchParams.get("tab");
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => !tab.disabled && setActiveTab(tab.id)}
+                    onClick={() => {
+        if (!tab.disabled) {
+          setActiveTab(tab.id);
+          navigate(`?tab=${tab.id}`); 
+        }
+      }}
                     disabled={tab.disabled}
                     className={`
                       flex items-center py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap
@@ -477,11 +588,14 @@ const tab = searchParams.get("tab");
           </div>
 
           {/* Action Buttons */}
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          {activeTab == "personal" || activeTab=="address"? (
+<div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+
             <div className="flex justify-between items-center">
               <button
                 type="button"
-                className="flex items-center px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                onClick={handleCancel}
+                className="flex items-center px-4 cursor-pointer py-2 text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
@@ -522,6 +636,8 @@ const tab = searchParams.get("tab");
               </div>
             </div>
           </div>
+          ): ''}
+          
         </div>
       </div>
     </div>

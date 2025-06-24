@@ -8,8 +8,6 @@ import {
   ChevronDown,
   ChevronRight,
   Menu,
-  DollarSign,
-  Group,
   Bell,
   Building2,
   IndianRupee
@@ -17,7 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const SideBar = () => {
-  const [expandedNav, setExpandedNav] = useState('Employee');
+  const [expandedNav, setExpandedNav] = useState(null);
   const [currentPage, setCurrentPage] = useState('Dashboard');
    const [sidebarOpen, setSidebarOpen] = useState(true);
   const data = { role: "Admin" }; 
@@ -165,7 +163,7 @@ navigate(`${child.url}`)
                       py-2 px-4 rounded-md text-sm cursor-pointer
                       transition-all duration-200
                       ${currentPage === child.name 
-                        ? 'text-blue-400 bg-blue-900 bg-opacity-30 font-medium' 
+                        ? 'text-black/95 bg-slate-50/90 font-medium' 
                         : 'text-gray-200 hover:text-white hover:bg-gray-700 hover:bg-opacity-50'
                       }
                     `}

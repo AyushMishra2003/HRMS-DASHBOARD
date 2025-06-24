@@ -16,8 +16,8 @@ export const workDetailApi = createApi({
     }),
     workEdit: builder.mutation({
       query: ({ data, id }) => ({
-        url: `/employee/work/edit/${id}`,
-        method: 'POST',
+        url: `/employee/work/update/${id}`,
+        method: 'PUT',
         data,
         credentials: 'include'
       }),

@@ -1,21 +1,28 @@
-import { useForm } from "react-hook-form";
-
-import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
 import {
   useBankAddMutation,
   useGetOneEmployeeBankQuery,
 } from "../../../rtk/employeeBank";
-import { useParams } from "react-router-dom";
-import { ClipLoader } from "react-spinners";
+import {
+  Banknote,
+  Hash,
+  Landmark,
+  LocateFixed,
+  Globe,
+  ScanLine,
+  XCircle,
+  Save,
+} from "lucide-react";
+
 const EmployeeBankInfo = () => {
   const { id } = useParams();
-  const [bankAdd, { isLoading, isError, isSuccess }] = useBankAddMutation();
-  const { data: bankData } = useGetOneEmployeeBankQuery({ id });
-  const location = useLocation();
-  const employeeData = location.state?.editEmployee;
-  const bankId = location.state?.bankId;
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [bankAdd, { isLoading }] = useBankAddMutation();
+  const { data: bankData } = useGetOneEmployeeBankQuery({ id });
 
   const [data, setData] = useState({
     bankName: "",
@@ -43,205 +50,170 @@ const EmployeeBankInfo = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setData({ ...data, [name]: value });
+    setData((prev) => ({ ...prev, [name]: value }));
   };
-
-  const handleChangefile = (e) => {
-    const { name } = e.target;
-    setData({ ...data, [name]: e.target.files[0] });
-  };
-
 
   const onSubmit = async (e) => {
     e.preventDefault();
-      
+    if (!/^\d{9,18}$/.test(data?.accountNumber)) {
+  alert("Account number must be 9–18 digits only")
+  return ;
+}
+if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(data?.ifscCode)) {
+  alert("Invalid IFSC format (e.g., SBIN0000123)");
+  return ;
+}
+
     try {
       const result = await bankAdd({ data, id }).unwrap();
       if (result.success) {
-        navigate(`/employee/details/${id}`);
+        navigate("?tab=other");
       }
     } catch (error) {
+      alert(error?.message || "Something went wrong");
       console.error("Failed to submit bank data:", error);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <ClipLoader size={30} color="blu" />
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto mt-1 p-4 bg-white shadow-lg rounded-lg pb-8">
-      <form onSubmit={onSubmit} className="space-y-4">
-        {/* Email & Role */}
-        {/* Name, Phone */}
-        <div className="flex gap-10">
-          <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">
-              Bank Name
-            </label>
-            <input
-              type="text"
-              onChange={handleChange}
-              name="bankName"
-              value={data.bankName}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              maxLength={20}
-              minLength={3}
-            />
-          </div>
-          <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">
-              Account Number
-            </label>
-            <input
-              type="number"
-              onChange={handleChange}
-              name="accountNumber"
-              value={data.accountNumber}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              maxLength={20}
-              minLength={3}
-            />
-          </div>
+    <div className=" rounded-lg p-6 pb-0 max-w-5xl mx-auto">
+      <h2 className="text-xl font-semibold mb-4 flex items-center">
+        {/* <Banknote className="w-5 h-5 mr-2" /> */}
+        Employee Bank Information
+      </h2>
+
+      {isLoading ? (
+        <div className="flex justify-center items-center h-32">
+          <ClipLoader size={28} color="#06425F" />
         </div>
-        <div className="flex gap-10">
-          <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">
-              Branch
-            </label>
-            <input
-              type="text"
-              onChange={handleChange}
-              name="branch"
-              value={data.branch}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              maxLength={50}
-              minLength={3}
-            />
+      ) : (
+        <form onSubmit={onSubmit} className="space-y-5">
+          {/* Row 1 */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <Landmark className="inline h-4 w-4 mr-1" />
+                Bank Name
+              </label>
+              <input
+                type="text"
+                name="bankName"
+                value={data.bankName}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#06425F]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <Hash className="inline h-4 w-4 mr-1" />
+                Account Number
+              </label>
+              <input
+                type="number"
+                name="accountNumber"
+                value={data.accountNumber}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#06425F]"
+                required
+              />
+            </div>
           </div>
 
-          <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700 ">
-              Bank code
-            </label>
-            <input
-              type="text"
-              onChange={handleChange}
-              value={data.bankCode}
-              name="bankCode"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            ></input>
+          {/* Row 2 */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <LocateFixed className="inline h-4 w-4 mr-1" />
+                Branch
+              </label>
+              <input
+                type="text"
+                name="branch"
+                value={data.branch}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#06425F]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Bank Code
+              </label>
+              <input
+                type="text"
+                name="bankCode"
+                value={data.bankCode}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#06425F]"
+              />
+            </div>
           </div>
 
-          {/* <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Role</label>
-            <select onChange={handleChange} name='role' value={data.role} className="mt-1 w-full border border-gray-300 rounded-md p-2 bg-white">
-              <option value="">Select Role</option>
-              <option value="employee">Employee</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div> */}
-        </div>
-        {/* Department, Designation */}
-        <div className="flex gap-10">
-          <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">
-              Bank Address
-            </label>
-            <input
-              type="text"
-              onChange={handleChange}
-              value={data.bankAddress}
-              name="bankAddress"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              required
-              maxLength={15}
-            />
+          {/* Row 3 */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <Globe className="inline h-4 w-4 mr-1" />
+                Country
+              </label>
+              <input
+                type="text"
+                name="country"
+                value={data.country}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#06425F]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Bank Address
+              </label>
+              <input
+                type="text"
+                name="bankAddress"
+                value={data.bankAddress}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#06425F]"
+              />
+            </div>
           </div>
-          <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">
-              Countary
-            </label>
-            <input
-              type="text"
-              onChange={handleChange}
-              value={data.country}
-              name="country"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-              required
-              maxLength={15}
-            />
-          </div>
-        </div>
 
-        {/* Salary, Joining Date */}
-        <div className="flex gap-10">
-          <div className="w-full">
-            <label className="block text-sm font-medium text-gray-700">
-              IFSC CODE
+          {/* Row 4 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              <ScanLine className="inline h-4 w-4 mr-1" />
+              IFSC Code
             </label>
             <input
               type="text"
-              onChange={handleChange}
-              value={data.ifscCode}
               name="ifscCode"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              value={data.ifscCode}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#06425F]"
             />
           </div>
-          {/* <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Work Location</label>
-            <input
-              type="text"
-              onChange={handleChange}
-              name="workLocation"
-              value={data.workLocation}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
-          </div> */}
-        </div>
 
-        {/* <div className="flex gap-10">
-          <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Joining Date</label>
-            <input
-              type="Date"
-              onChange={handleChange}
-              value={data.joiningDate}
-              name="joiningDate"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
+          {/* Buttons */}
+          <div className="flex justify-between bg-gray-50 py-3 px-2 border-t border-gray-200 gap-4 pt-4">
+           
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="flex items-center bg-gray-200 text-gray-800 px-5 py-2 rounded-md hover:bg-gray-300 transition"
+            >
+              <XCircle className="w-4 h-4 mr-2" />
+              Cancel
+            </button>
+             <button
+              type="submit"
+              className="flex items-center bg-[#06425F] text-white px-5 py-2 rounded-md hover:bg-[#04364b] transition"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Save
+            </button>
           </div>
-          <div className="w-1/2">
-            <label className="block text-sm font-medium text-gray-700">Salary</label>
-            <input
-              type="Number"
-              onChange={handleChange}
-              name="salary"
-              value={data.salary}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
-          </div>
-        </div> */}
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            className="bg-blue-600 text-white py-2 px-5 rounded-md hover:bg-blue-700 w-fit"
-          >
-            Submit
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate(-1)} // ya navigate("/your-desired-path")
-            className="bg-gray-300 text-gray-800 py-2 px-5 rounded-md hover:bg-gray-400 w-fit"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+        </form>
+      )}
     </div>
   );
 };
