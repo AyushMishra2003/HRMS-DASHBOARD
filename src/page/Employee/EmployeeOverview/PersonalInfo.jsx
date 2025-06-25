@@ -258,15 +258,11 @@ const PersonalInfo = () => {
 
         {/* Address Information */}
         <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-50 rounded-lg">
-                <MapPin className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
+            
+                  <div className="w-1 h-6 bg-blue-500 rounded-full"></div>
                 <h3 className="text-xl font-bold text-gray-900">Address Information</h3>
-                <p className="text-sm text-gray-500">Current addresses</p>
-              </div>
             </div>
             <button
               onClick={handleAddressEdit}

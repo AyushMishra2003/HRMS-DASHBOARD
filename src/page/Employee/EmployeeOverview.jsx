@@ -21,6 +21,7 @@ import WorkInfo from './EmployeeOverview/WorkInfo';
 import { useGetOneEmployeeQuery } from '../../rtk/employeeApi.js';
 import { useParams } from 'react-router-dom';
 import AttendanceInfo from './EmployeeOverview/AttendanceInfo.jsx';
+import LeaveInfo from './EmployeeOverview/LeaveInfo.jsx';
 const EmployeeOverview = () => {
   const { id } = useParams();
     const { data: employeeData, isLoading, error } = useGetOneEmployeeQuery({ id });
@@ -71,34 +72,7 @@ const EmployeeOverview = () => {
     { name: 'Attendance System', status: 'Planning', role: 'Backend Developer', completion: 25 }
   ];
 
-  // Sample leave applications
-  const leaveApplications = [
-    { id: 1, type: 'Sick Leave', from: '2025-06-10', to: '2025-06-12', days: 3, status: 'Approved', reason: 'Medical treatment' },
-    { id: 2, type: 'Casual Leave', from: '2025-05-25', to: '2025-05-26', days: 2, status: 'Pending', reason: 'Personal work' },
-    { id: 3, type: 'Annual Leave', from: '2025-04-15', to: '2025-04-20', days: 5, status: 'Approved', reason: 'Family vacation' }
-  ];
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'P': return 'bg-green-100 text-green-800';
-      case 'A': return 'bg-red-100 text-red-800';
-      case 'L': return 'bg-blue-100 text-blue-800';
-      case 'WO': return 'bg-gray-100 text-gray-800';
-      case 'AN': return 'bg-orange-100 text-orange-800';
-      case 'NA': return 'bg-gray-50 text-gray-400';
-      default: return 'bg-gray-50 text-gray-400';
-    }
-  };
-
-  const getLeaveStatusColor = (status) => {
-    switch (status) {
-      case 'Approved': return 'bg-green-100 text-green-800';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      case 'Rejected': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
+ 
   const tabs = [
     { id: 'personal', label: 'Personal', icon: User },
     { id: 'work', label: 'Work', icon: Briefcase },
@@ -243,182 +217,6 @@ const EmployeeOverview = () => {
     </div>
   );
 
-  const AttendanceSection = () => (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="p-6 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Logs</h3>
-        
-        {/* Log Type Toggle */}
-        <div className="flex border border-gray-300 rounded mb-4 w-fit">
-          <button
-            onClick={() => setLogView('daily')}
-            className={`px-4 py-2 text-sm font-medium ${
-              logView === 'daily'
-                ? 'bg-white text-gray-900 border-r border-gray-300'
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Daily Log
-          </button>
-          <button
-            onClick={() => setLogView('monthly')}
-            className={`px-4 py-2 text-sm font-medium ${
-              logView === 'monthly'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Monthly Log
-          </button>
-        </div>
-
-        {/* Date Range Selector */}
-        <div className="flex items-center gap-4 mb-4">
-          <span className="text-sm text-gray-600">Select Date Range</span>
-          <div className="flex items-center gap-2">
-            <input
-              type="date"
-              value={dateRange.from}
-              onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
-              className="border border-gray-300 rounded px-3 py-1 text-sm"
-            />
-            <span className="text-sm text-gray-600">To</span>
-            <input
-              type="date"
-              value={dateRange.to}
-              onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
-              className="border border-gray-300 rounded px-3 py-1 text-sm"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Attendance Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left">
-                <input type="checkbox" className="rounded" />
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Date</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">In Time</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Out Time</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Work Duration</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Overtime Duration</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Break Duration</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Break Time</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {attendanceLogs.map((log, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <input type="checkbox" className="rounded" />
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.date}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(log.status)}`}>
-                    {log.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">
-                  {log.status === 'AN' && log.inTime !== '--' ? (
-                    <div>
-                      <div className="text-gray-900">{log.inTime}</div>
-                      <div className="text-red-500 text-xs">05:33</div>
-                    </div>
-                  ) : log.inTime}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.outTime}</td>
-                <td className="px-4 py-3 text-sm">
-                  {log.status === 'AN' && log.workDuration !== '--' ? (
-                    <div className="text-red-500">{log.workDuration}</div>
-                  ) : (
-                    <div className="text-gray-900">{log.workDuration}</div>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.overtimeDuration}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.breakDuration}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.breakTime}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <div className="h-2 bg-gray-200 rounded-full w-64">
-              <div className="h-2 bg-gray-400 rounded-full w-32"></div>
-            </div>
-            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="text-sm text-gray-600">
-            1 to 9 of 9 | Page 1 of 1
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-sm text-gray-600">Show</span>
-          <select className="border border-gray-300 rounded px-2 py-1 text-sm">
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-          </select>
-        </div>
-
-        <div className="text-sm text-gray-600">
-          <div className="mb-2">* Status Legend:</div>
-          <div>P: Present, A: Absent, L: Leave, WO: Weekly off, H: Holiday, HL: Half day leave, WFH: Work from home, AN: Anomaly, AC: Auto Clock-out</div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const LeavesSection = () => (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">LEAVE APPLICATIONS</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Leave Type</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">From Date</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">To Date</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Days</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Reason</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {leaveApplications.map((leave) => (
-              <tr key={leave.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.type}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.from}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.to}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.days}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getLeaveStatusColor(leave.status)}`}>
-                    {leave.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.reason}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
 
   const DocumentsSection = () => (
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
@@ -440,7 +238,7 @@ const EmployeeOverview = () => {
       case 'work': return <WorkInfo />;
       case 'team': return <TeamProjects />;
       case 'attendance': return <AttendanceInfo />;
-      case 'leaves': return <LeavesSection />;
+      case 'leaves': return <LeaveInfo />;
       case 'documents': return <DocumentsSection />;
       case 'other': return <OtherDetails />;
       default: return <PersonalInfo />;
