@@ -7,6 +7,7 @@ import { bankDetailApi  } from "./employeeBank";
 import { policyApi } from "./policy";
 import { leaveApi } from "./leaveApi";
 import { notificationApi } from "./notification";
+import { docDetailApi } from "./employeeDoc";
 export const store = configureStore({
     reducer: {
         [employeeDetailApi.reducerPath]: employeeDetailApi.reducer,
@@ -17,6 +18,7 @@ export const store = configureStore({
         [policyApi.reducerPath]:policyApi.reducer,
         [leaveApi.reducerPath]:leaveApi.reducer,
         [notificationApi.reducerPath]:notificationApi.reducer,
+        [docDetailApi.reducerPath]:docDetailApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(employeeDetailApi.middleware,
@@ -24,5 +26,6 @@ export const store = configureStore({
             workDetailApi.middleware,bankDetailApi.middleware,
             policyApi.middleware,leaveApi.middleware,
             notificationApi.middleware, 
+            docDetailApi.middleware,
         ),     
 });
