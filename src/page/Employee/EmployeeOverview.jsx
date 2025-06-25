@@ -20,11 +20,12 @@ import PersonalInfo from './EmployeeOverview/PersonalInfo';
 import WorkInfo from './EmployeeOverview/WorkInfo';
 import { useGetOneEmployeeQuery } from '../../rtk/employeeApi.js';
 import { useParams } from 'react-router-dom';
+import AttendanceInfo from './EmployeeOverview/AttendanceInfo.jsx';
 const EmployeeOverview = () => {
   const { id } = useParams();
     const { data: employeeData, isLoading, error } = useGetOneEmployeeQuery({ id });
   const [activeTab, setActiveTab] = useState('personal');
-  const [logView, setLogView] = useState('daily');
+  
   const [dateRange, setDateRange] = useState({ from: '2025-05-20', to: '2025-06-19' });
 
   // Sample employee data - will be replaced with API data
@@ -61,15 +62,7 @@ const EmployeeOverview = () => {
   // };
 
   // Sample attendance logs
-  const attendanceLogs = [
-    { date: '18-06-2025', status: 'NA', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '17-06-2025', status: 'NA', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '16-06-2025', status: 'NA', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '15-06-2025', status: 'WO', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '14-06-2025', status: 'A', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '13-06-2025', status: 'A', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '12-06-2025', status: 'AN', inTime: '03:33 PM', outTime: '06:14 PM', workDuration: '0 Hours 1 Mins', overtimeDuration: '--', breakDuration: '2 Hours 39 Mins', breakTime: '1' }
-  ];
+ 
 
   // Sample team and project data
   const teamProjects = [
@@ -109,7 +102,7 @@ const EmployeeOverview = () => {
   const tabs = [
     { id: 'personal', label: 'Personal', icon: User },
     { id: 'work', label: 'Work', icon: Briefcase },
-    { id: 'team', label: 'Team & Projects', icon: Users },
+    // { id: 'team', label: 'Team & Projects', icon: Users },
     { id: 'attendance', label: 'Attendance', icon: Clock },
     { id: 'leaves', label: 'Leaves', icon: Calendar },
     { id: 'documents', label: 'Documents', icon: Briefcase },
@@ -446,7 +439,7 @@ const EmployeeOverview = () => {
       case 'personal': return <PersonalInfo />;
       case 'work': return <WorkInfo />;
       case 'team': return <TeamProjects />;
-      case 'attendance': return <AttendanceSection />;
+      case 'attendance': return <AttendanceInfo />;
       case 'leaves': return <LeavesSection />;
       case 'documents': return <DocumentsSection />;
       case 'other': return <OtherDetails />;

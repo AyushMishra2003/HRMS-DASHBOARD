@@ -66,6 +66,15 @@ export const attendanceDetailApi = createApi({
         }
       ),
     }),
+    employeeAttendance: builder.query({
+      query: ({range, id}) => (
+        {
+          url: `employee/attendance/individual/${id}?${range}`,
+          method: "GET",
+        }
+      ),
+       providesTags: ["employeeAttendance"],
+    }),
   }),
 });
 
@@ -76,5 +85,6 @@ export const {
   useGetAttendanceDetailQuery,
   useAttendanceFilterQuery,
   useGetWeeklayCharQuery,
-  useAttendanceByMonthQuery
+  useAttendanceByMonthQuery,
+  useEmployeeAttendanceQuery
 } = attendanceDetailApi;

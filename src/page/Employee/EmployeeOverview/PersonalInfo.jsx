@@ -75,7 +75,7 @@ const PersonalInfo = () => {
  
 
   const handleAddressEdit = () => {
-    navigate(`'dashboard/employee/address/${id}`);
+    navigate(`/dashboard/employee/address/${id}`);
   };
 
   const handleRetry = () => {
@@ -240,7 +240,7 @@ const PersonalInfo = () => {
           {/* Contact Details */}
           <div>
             <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <div className="w-1 h-6 bg-green-500 rounded-full"></div>
+              <div className="w-1 h-6 bg-blue-500 rounded-full"></div>
               Contact Details
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -261,16 +261,16 @@ const PersonalInfo = () => {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-purple-50 rounded-lg">
-                <MapPin className="h-6 w-6 text-purple-600" />
+                <MapPin className="h-6 w-6 text-blue-600" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900">Address Information</h3>
-                <p className="text-sm text-gray-500">Current and permanent addresses</p>
+                <p className="text-sm text-gray-500">Current addresses</p>
               </div>
             </div>
             <button
               onClick={handleAddressEdit}
-              className="flex items-center gap-2 px-4 py-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-colors border border-purple-200"
+              className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 hover:bg-purple-50 rounded-lg transition-colors border border-blue-200"
               title="Edit Address Information"
             >
               <Edit2 className="h-4 w-4" />
@@ -281,7 +281,7 @@ const PersonalInfo = () => {
           <div className="grid grid-cols-1  gap-8 mb-8">
             <div className="space-y-2">
               <h4 className="text-base font-semibold text-gray-700 flex items-center gap-2">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 Address
               </h4>
               <div className="bg-gray-50 p-4 rounded-lg">
