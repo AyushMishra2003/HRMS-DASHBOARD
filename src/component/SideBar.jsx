@@ -38,7 +38,7 @@ const SideBar = () => {
         {name:'Employee List', url:"/dashboard/employee/list"},
         // {name:'Employee Overview', url:"/dashboard/employee/overview"},
         // {name:'Work Type', url:"/dashboard/employee/work"},
-        {name:'Employee Policy', url:"/dashboard/employee/policy"},
+        // {name:'Employee Policy', url:"/dashboard/employee/policy"},
       ] 
     },
     { name: 'Attendance', icon: <Clock size={20} />,

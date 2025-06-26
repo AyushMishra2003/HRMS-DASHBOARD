@@ -31,13 +31,15 @@ import Onboarding from "./page/Onboarding/Onboarding";
 import Recruitment from "./page/Recruitment/Recruitment";
 import Notification from "./page/Notification/Notification";
 import Payroll from "./page/PayRoll/PayRoll";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
 
 
 
   return (
-<div>
+  <>
+   <ToastContainer position="top-right" autoClose={3000} />
   <Routes>
     <Route path="/home" element={<HomeDashboard />} />
     
@@ -84,7 +86,7 @@ const App = () => {
     {/* Catch-all redirect to HomeDashboard */}
     {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
   </Routes>
-</div>
+</>
   );
 };
 

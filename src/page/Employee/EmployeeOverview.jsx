@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   User, 
   Mail, 
@@ -13,206 +13,39 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
-  Filter
+  Filter,
+  PhoneCallIcon
 } from 'lucide-react';
 import PersonalInfo from './EmployeeOverview/PersonalInfo';
 import WorkInfo from './EmployeeOverview/WorkInfo';
-
+import { useGetOneEmployeeQuery } from '../../rtk/employeeApi.js';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import AttendanceInfo from './EmployeeOverview/AttendanceInfo.jsx';
+import LeaveInfo from './EmployeeOverview/LeaveInfo.jsx';
+import DocumentInfo from './EmployeeOverview/DocumentInfo.jsx';
 const EmployeeOverview = () => {
-  const [activeTab, setActiveTab] = useState('personal');
-  const [logView, setLogView] = useState('daily');
-  const [dateRange, setDateRange] = useState({ from: '2025-05-20', to: '2025-06-19' });
-
-  // Sample employee data - will be replaced with API data
-  const employeeData = {
-    id: 'EMP001',
-    name: 'Ashish Singh',
-    email: 'ashishkumarrawat120@gmail.com',
-    status: 'Getting Started',
-    avatar: '/api/placeholder/120/120',
-    personalInfo: {
-      dateOfBirth: '',
-      gender: '',
-      bloodGroup: '',
-      maritalStatus: ''
-    },
-    contactInfo: {
-      officialEmail: 'ashishkumarrawat120@gmail.com',
-      personalEmail: 'ashishkumarrawat120@gmail.com',
-      phoneNumber: '9621891118',
-      alternatePhone: '',
-      verified: true
-    },
-    addresses: {
-      currentAddress: '',
-      permanentAddress: ''
-    },
-    workInfo: {
-      department: 'IT',
-      designation: 'Software Developer',
-      employeeId: 'EMP001',
-      joiningDate: '2025-01-15',
-      reportingManager: 'John Doe'
-    }
-  };
-
-  // Sample attendance logs
-  const attendanceLogs = [
-    { date: '18-06-2025', status: 'NA', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '17-06-2025', status: 'NA', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '16-06-2025', status: 'NA', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '15-06-2025', status: 'WO', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '14-06-2025', status: 'A', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '13-06-2025', status: 'A', inTime: '--', outTime: '--', workDuration: '--', overtimeDuration: '--', breakDuration: '--', breakTime: '--' },
-    { date: '12-06-2025', status: 'AN', inTime: '03:33 PM', outTime: '06:14 PM', workDuration: '0 Hours 1 Mins', overtimeDuration: '--', breakDuration: '2 Hours 39 Mins', breakTime: '1' }
-  ];
-
-  // Sample team and project data
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get("tab");
+    const { data: employeeData, isLoading, error } = useGetOneEmployeeQuery({ id });
+  const [activeTab, setActiveTab] = useState(tab || 'personal');
+const navigate = useNavigate()
   const teamProjects = [
     { name: 'HRMS Application', status: 'In Progress', role: 'Frontend Developer', completion: 75 },
     { name: 'Employee Portal', status: 'Completed', role: 'Full Stack Developer', completion: 100 },
     { name: 'Attendance System', status: 'Planning', role: 'Backend Developer', completion: 25 }
   ];
 
-  // Sample leave applications
-  const leaveApplications = [
-    { id: 1, type: 'Sick Leave', from: '2025-06-10', to: '2025-06-12', days: 3, status: 'Approved', reason: 'Medical treatment' },
-    { id: 2, type: 'Casual Leave', from: '2025-05-25', to: '2025-05-26', days: 2, status: 'Pending', reason: 'Personal work' },
-    { id: 3, type: 'Annual Leave', from: '2025-04-15', to: '2025-04-20', days: 5, status: 'Approved', reason: 'Family vacation' }
-  ];
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'P': return 'bg-green-100 text-green-800';
-      case 'A': return 'bg-red-100 text-red-800';
-      case 'L': return 'bg-blue-100 text-blue-800';
-      case 'WO': return 'bg-gray-100 text-gray-800';
-      case 'AN': return 'bg-orange-100 text-orange-800';
-      case 'NA': return 'bg-gray-50 text-gray-400';
-      default: return 'bg-gray-50 text-gray-400';
-    }
-  };
-
-  const getLeaveStatusColor = (status) => {
-    switch (status) {
-      case 'Approved': return 'bg-green-100 text-green-800';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      case 'Rejected': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
+ 
   const tabs = [
     { id: 'personal', label: 'Personal', icon: User },
     { id: 'work', label: 'Work', icon: Briefcase },
-    { id: 'team', label: 'Team & Projects', icon: Users },
+    // { id: 'team', label: 'Team & Projects', icon: Users },
     { id: 'attendance', label: 'Attendance', icon: Clock },
     { id: 'leaves', label: 'Leaves', icon: Calendar },
     { id: 'documents', label: 'Documents', icon: Briefcase },
     { id: 'other', label: 'Other Details', icon: User }
   ];
-
-  // const PersonalInfo = () => (
-  //   <div className="space-y-6">
-  //     {/* Personal Info Section */}
-  //     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-  //       <h3 className="text-lg font-semibold text-gray-900 mb-4">PERSONAL INFO</h3>
-  //       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Name</label>
-  //           <p className="text-sm text-gray-900 mt-1">{employeeData.name || '-'}</p>
-  //         </div>
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Date of Birth</label>
-  //           <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.dateOfBirth || '-'}</p>
-  //         </div>
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Gender</label>
-  //           <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.gender || '-'}</p>
-  //         </div>
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Blood Group</label>
-  //           <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.bloodGroup || '-'}</p>
-  //         </div>
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Marital Status</label>
-  //           <p className="text-sm text-gray-900 mt-1">{employeeData.personalInfo.maritalStatus || '-'}</p>
-  //         </div>
-  //       </div>
-  //     </div>
-
-  //     {/* Contact Info Section */}
-  //     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-  //       <h3 className="text-lg font-semibold text-gray-900 mb-4">CONTACT INFO</h3>
-  //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Official Email ID</label>
-  //           <p className="text-sm text-blue-600 mt-1">{employeeData.contactInfo.officialEmail}</p>
-  //         </div>
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Personal Email ID</label>
-  //           <p className="text-sm text-blue-600 mt-1">{employeeData.contactInfo.personalEmail}</p>
-  //         </div>
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Phone Number</label>
-  //           <div className="flex items-center gap-2 mt-1">
-  //             <p className="text-sm text-gray-900">{employeeData.contactInfo.phoneNumber}</p>
-  //             {employeeData.contactInfo.verified && (
-  //               <CheckCircle className="h-4 w-4 text-green-500" />
-  //             )}
-  //           </div>
-  //         </div>
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Alternate Phone Number</label>
-  //           <p className="text-sm text-gray-900 mt-1">{employeeData.contactInfo.alternatePhone || '-'}</p>
-  //         </div>
-  //       </div>
-  //     </div>
-
-  //     {/* Addresses Section */}
-  //     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-  //       <h3 className="text-lg font-semibold text-gray-900 mb-4">ADDRESSES</h3>
-  //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Current Address</label>
-  //           <p className="text-sm text-gray-900 mt-1">{employeeData.addresses.currentAddress || '-'}</p>
-  //         </div>
-  //         <div>
-  //           <label className="text-sm font-medium text-gray-700">Permanent Address</label>
-  //           <p className="text-sm text-gray-900 mt-1">{employeeData.addresses.permanentAddress || '-'}</p>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
-
-  // const WorkInfo = () => (
-  //   <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-  //     <h3 className="text-lg font-semibold text-gray-900 mb-4">WORK INFORMATION</h3>
-  //     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-  //       <div>
-  //         <label className="text-sm font-medium text-gray-700">Employee ID</label>
-  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.employeeId}</p>
-  //       </div>
-  //       <div>
-  //         <label className="text-sm font-medium text-gray-700">Department</label>
-  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.department}</p>
-  //       </div>
-  //       <div>
-  //         <label className="text-sm font-medium text-gray-700">Designation</label>
-  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.designation}</p>
-  //       </div>
-  //       <div>
-  //         <label className="text-sm font-medium text-gray-700">Joining Date</label>
-  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.joiningDate}</p>
-  //       </div>
-  //       <div>
-  //         <label className="text-sm font-medium text-gray-700">Reporting Manager</label>
-  //         <p className="text-sm text-gray-900 mt-1">{employeeData.workInfo.reportingManager}</p>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
 
   const TeamProjects = () => (
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
@@ -246,189 +79,8 @@ const EmployeeOverview = () => {
     </div>
   );
 
-  const AttendanceSection = () => (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="p-6 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Logs</h3>
-        
-        {/* Log Type Toggle */}
-        <div className="flex border border-gray-300 rounded mb-4 w-fit">
-          <button
-            onClick={() => setLogView('daily')}
-            className={`px-4 py-2 text-sm font-medium ${
-              logView === 'daily'
-                ? 'bg-white text-gray-900 border-r border-gray-300'
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Daily Log
-          </button>
-          <button
-            onClick={() => setLogView('monthly')}
-            className={`px-4 py-2 text-sm font-medium ${
-              logView === 'monthly'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Monthly Log
-          </button>
-        </div>
 
-        {/* Date Range Selector */}
-        <div className="flex items-center gap-4 mb-4">
-          <span className="text-sm text-gray-600">Select Date Range</span>
-          <div className="flex items-center gap-2">
-            <input
-              type="date"
-              value={dateRange.from}
-              onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
-              className="border border-gray-300 rounded px-3 py-1 text-sm"
-            />
-            <span className="text-sm text-gray-600">To</span>
-            <input
-              type="date"
-              value={dateRange.to}
-              onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
-              className="border border-gray-300 rounded px-3 py-1 text-sm"
-            />
-          </div>
-        </div>
-      </div>
 
-      {/* Attendance Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left">
-                <input type="checkbox" className="rounded" />
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Date</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">In Time</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Out Time</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Work Duration</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Overtime Duration</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Break Duration</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Break Time</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {attendanceLogs.map((log, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <input type="checkbox" className="rounded" />
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.date}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(log.status)}`}>
-                    {log.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">
-                  {log.status === 'AN' && log.inTime !== '--' ? (
-                    <div>
-                      <div className="text-gray-900">{log.inTime}</div>
-                      <div className="text-red-500 text-xs">05:33</div>
-                    </div>
-                  ) : log.inTime}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.outTime}</td>
-                <td className="px-4 py-3 text-sm">
-                  {log.status === 'AN' && log.workDuration !== '--' ? (
-                    <div className="text-red-500">{log.workDuration}</div>
-                  ) : (
-                    <div className="text-gray-900">{log.workDuration}</div>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.overtimeDuration}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.breakDuration}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{log.breakTime}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <div className="h-2 bg-gray-200 rounded-full w-64">
-              <div className="h-2 bg-gray-400 rounded-full w-32"></div>
-            </div>
-            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="text-sm text-gray-600">
-            1 to 9 of 9 | Page 1 of 1
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-sm text-gray-600">Show</span>
-          <select className="border border-gray-300 rounded px-2 py-1 text-sm">
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-          </select>
-        </div>
-
-        <div className="text-sm text-gray-600">
-          <div className="mb-2">* Status Legend:</div>
-          <div>P: Present, A: Absent, L: Leave, WO: Weekly off, H: Holiday, HL: Half day leave, WFH: Work from home, AN: Anomaly, AC: Auto Clock-out</div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const LeavesSection = () => (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">LEAVE APPLICATIONS</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Leave Type</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">From Date</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">To Date</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Days</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Reason</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {leaveApplications.map((leave) => (
-              <tr key={leave.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.type}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.from}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.to}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.days}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getLeaveStatusColor(leave.status)}`}>
-                    {leave.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{leave.reason}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-
-  const DocumentsSection = () => (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">DOCUMENTS</h3>
-      <p className="text-gray-600">No documents uploaded yet.</p>
-    </div>
-  );
 
   const OtherDetails = () => (
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
@@ -442,39 +94,52 @@ const EmployeeOverview = () => {
       case 'personal': return <PersonalInfo />;
       case 'work': return <WorkInfo />;
       case 'team': return <TeamProjects />;
-      case 'attendance': return <AttendanceSection />;
-      case 'leaves': return <LeavesSection />;
-      case 'documents': return <DocumentsSection />;
+      case 'attendance': return <AttendanceInfo />;
+      case 'leaves': return <LeaveInfo />;
+      case 'documents': return <DocumentInfo />;
       case 'other': return <OtherDetails />;
       default: return <PersonalInfo />;
     }
   };
 
+  const handletab = (tabId) =>{
+    setActiveTab(tabId)
+    navigate(`/dashboard/employee/overview/${id}?tab=${tabId}`)
+  }
+useEffect(() => {
+  if (tab) {
+    setActiveTab(tab);
+  }
+}, [tab]);
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-[#4a5568] text-white p-6">
+      <div className="bg-[#06425F] text-white p-6">
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 bg-green-200 rounded-full overflow-hidden">
             <img
-              src={employeeData.avatar}
-              alt={employeeData.name}
-              className="w-full h-full object-cover"
+              src={employeeData?.employeeImage?.secure_url || employeeData?.employeeImage?.public_id }
+              alt={employeeData?.name}
+              className="w-full h-full border-2 rounded-full border-white/80 p-1 bg-[#06425F] object-cover"
               onError={(e) => {
-                e.target.src = `https://ui-avatars.com/api/?name=${employeeData.name}&background=10b981&color=fff&size=120`;
+                e.target.src = `https://ui-avatars.com/api/?name=${employeeData?.name}&background=10b981&color=fff&size=120`;
               }}
             />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">{employeeData.name}</h1>
-            <div className="flex items-center gap-2 mt-2">
+            <h1 className="text-2xl font-bold">{employeeData?.name}</h1>
+            {/* <div className="flex items-center gap-2 mt-2">
               <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
                 {employeeData.status}
               </span>
-            </div>
+            </div> */}
             <div className="flex items-center gap-2 mt-2 text-sm">
               <Mail className="h-4 w-4" />
-              <span>{employeeData.email}</span>
+              <span>{employeeData?.email}</span>
+            </div>
+            <div className="flex items-center gap-2 mt-2 text-sm">
+              <PhoneCallIcon className="h-4 w-4" />
+              <span>{employeeData?.mobile}</span>
             </div>
           </div>
         </div>
@@ -488,10 +153,10 @@ const EmployeeOverview = () => {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handletab(tab.id)}
                 className={`flex items-center gap-2 px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600 bg-blue-50'
+                    ? 'border-[#06425F] text-[#06425F] bg-blue-50'
                     : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >

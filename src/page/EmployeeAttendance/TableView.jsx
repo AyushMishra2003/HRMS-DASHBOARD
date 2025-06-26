@@ -111,7 +111,7 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
     if (!attendanceData) return [];
     return [...new Set(attendanceData.map(emp => emp.employee.manager).filter(Boolean))];
   }, [attendanceData]);
-
+ console.log(paginatedData)
   if (isLoading || !attendanceData) {
     return (
       <div className="flex justify-center h-full">
@@ -139,7 +139,7 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
             <ChevronDown className="h-4 w-4 text-gray-400" />
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <select 
               className="border border-gray-300 rounded px-3 py-1 text-sm"
               value={selectedGrade}
@@ -151,9 +151,9 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
               ))}
             </select>
             <ChevronDown className="h-4 w-4 text-gray-400" />
-          </div>
+          </div> */}
 
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <select 
               className="border border-gray-300 rounded px-3 py-1 text-sm"
               value={selectedLocation}
@@ -165,9 +165,9 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
               ))}
             </select>
             <ChevronDown className="h-4 w-4 text-gray-400" />
-          </div>
+          </div> */}
 
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <select 
               className="border border-gray-300 rounded px-3 py-1 text-sm"
               value={selectedManager}
@@ -179,7 +179,7 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
               ))}
             </select>
             <ChevronDown className="h-4 w-4 text-gray-400" />
-          </div>
+          </div> */}
 
           <div className="flex items-center gap-2">
             <select 
@@ -230,14 +230,15 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
+           
             {paginatedData.map((employee, i) => (
               <tr key={employee._id} className="hover:bg-gray-50">
                 <td className="px-4 py-3 text-sm overflow-ellipsis text-gray-900">
                   {employee._id.slice(-5)}
                 </td>
                 <td className="px-4 py-3">
-                  <Link to={`/dashboard/employee/overview/${employee?._id}`} className="flex items-center">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                  <Link to={`/dashboard/employee/overview/${employee?.employeeId}`} className="flex items-center">
+                    <div className="w-8 h-8 bg-[#06425F] rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
                       {employee.avatar || <User2/>}
                     </div>
                     <span className="text-sm text-gray-900">{employee.employee.name}</span>

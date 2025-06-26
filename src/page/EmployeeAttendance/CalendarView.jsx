@@ -204,7 +204,7 @@ const CalendarView = ({ currentDate, setCurrentDate, searchTerm, setSearchTerm }
                   </td>
                   <td className="px-4 py-3 sticky left-20 bg-white z-10 border-r border-gray-200 min-w-60">
                     <Link to={`/dashboard/employee/overview/${employee?.employeeId}`} className="flex items-center">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                      <div className="w-8 h-8 bg-[#06425F] rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
                         {employee.avatar || <User2 size={16} />}
                       </div>
                       <div>

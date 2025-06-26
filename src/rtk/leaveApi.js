@@ -72,6 +72,14 @@ export const leaveApi = createApi({
       }),
       providesTags: ["leave"],
     }),
+
+    getLeave: builder.query({
+      query: ({id , range}) => ({
+        url: `/leave/get/myleave/${id}?${range}`,
+        method: "GET",
+      }),
+      providesTags: ["employeeleave"],
+    }),
    
   }),
 });
@@ -84,5 +92,6 @@ export const {
   useLeaveUpdateMutation,
   useApproveLeaveMutation,
   useGetAllLeaveQuery,
-  useRejectLeaveMutation
+  useRejectLeaveMutation,
+  useGetLeaveQuery
 } = leaveApi;
