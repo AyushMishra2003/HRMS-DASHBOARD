@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  Search, 
-  Download, 
-  Upload, 
-  ChevronLeft, 
-  ChevronRight
-} from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import {
+  Search,
+  Download,
+  Upload,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useAttendanceFilterQuery } from "../../rtk/attendance.js";
-import { ClipLoader } from 'react-spinners';
-import TableView from './TableView.jsx'
-import CalendarView from './CalendarView.jsx'
+import { ClipLoader } from "react-spinners";
+import TableView from "./TableView.jsx";
+import CalendarView from "./CalendarView.jsx";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const AttendanceLogs = () => {
-  const [activeView, setActiveView] = useState('table');
-  const [currentDate, setCurrentDate] = useState(new Date()); 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [activeView, setActiveView] = useState("table");
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [searchTerm, setSearchTerm] = useState("");
   const [showEntries, setShowEntries] = useState(10);
 
   const [filter, setFilter] = useState("all");
   const { data: attendanceData, isLoading } = useAttendanceFilterQuery(filter);
 
   const handleFilterChange = (date) => {
-    const formatedDate = date.toISOString().split('T')[0];
+    const formatedDate = date.toISOString().split("T")[0];
     setFilter(`startDate=${formatedDate}&endDate=${formatedDate}`);
   };
 
@@ -46,33 +48,82 @@ const AttendanceLogs = () => {
     );
   }
 
+  const handleExport = () => {
+    try {
+      console.log(attendanceData)
+      // Map only necessary fields for Excel
+      const exportData = attendanceData.map((record) => ({
+        Date: record?.date ? new Date(record.date).toLocaleDateString() : "N/A",
+        Name: record?.employee?.name || "",
+        Email: record?.employee?.email || "",
+        Mobile: record?.employee?.mobile || "",
+        Status: record?.status || "N/A", 
+        CheckIn: record?.checkIn ? "Yes" : "No",
+        Leave: record?.leave ? "Yes" : "No",
+        WorkingHours: record?.workingHours || "0h 0m 0s",
+        LoginTime: record?.loginTime
+          ? new Date(record.loginTime).toLocaleTimeString()
+          : "—",
+        LogoutTime: record?.logoutTime
+          ? new Date(record.logoutTime).toLocaleTimeString()
+          : "—",
+      
+      }));
+
+      // Create worksheet & workbook
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "attendance");
+
+      // Generate Excel file and trigger download
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      saveAs(blob, `${new Date().toLocaleDateString()}_AttendanceData.xlsx`);
+    } catch (err) {
+      console.error("Excel Export Error:", err.message);
+    }
+  };
+
   return (
     <div className="p-4 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Attendance Logs</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">
+              Attendance Logs
+            </h1>
             {/* { activeView === 'table' ? ( */}
-<div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => navigateDate(-1)}
-                className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                className="text-[#06425F] hover:text-blue-800 text-sm flex items-center gap-1"
               >
                 <ChevronLeft className="h-4 w-4" />
                 PREVIOUS
               </button>
               <input
                 type="date"
-                value={currentDate.toISOString().split('T')[0]}
+                value={currentDate.toISOString().split("T")[0]}
                 onChange={(e) => setCurrentDate(new Date(e.target.value))}
-                max={new Date().toISOString().split('T')[0]} 
+                max={new Date().toISOString().split("T")[0]}
                 className="border border-gray-300 rounded px-3 py-1 text-sm"
               />
-              
+
               <button
                 onClick={() => navigateDate(1)}
-                className={`${isToday ? 'text-blue-300 cursor-not-allowed' : "text-blue-600 hover:text-blue-800"} text-sm flex items-center gap-1`}
+                className={`${
+                  isToday
+                    ? "text-[#78909b] cursor-not-allowed"
+                    : "text-[#06425F] hover:text-blue-800"
+                } text-sm flex items-center gap-1`}
                 disabled={isToday}
               >
                 NEXT
@@ -81,14 +132,13 @@ const AttendanceLogs = () => {
               {isToday ? null : (
                 <button
                   onClick={() => setCurrentDate(new Date())}
-                  className="text-blue-500 text-sm hover:underline"
+                  className="text-[#06425F] text-sm hover:underline"
                 >
                   Today
                 </button>
               )}
             </div>
-            {/* ):null} */} 
-            
+            {/* ):null} */}
           </div>
         </div>
 
@@ -96,21 +146,21 @@ const AttendanceLogs = () => {
         <div className="flex items-center justify-between">
           <div className="flex border border-gray-300 rounded">
             <button
-              onClick={() => setActiveView('table')}
+              onClick={() => setActiveView("table")}
               className={`px-4 py-2 text-sm font-medium ${
-                activeView === 'table'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                activeView === "table"
+                  ? "bg-[#06425F] text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
               Table View
             </button>
             <button
-              onClick={() => setActiveView('calendar')}
+              onClick={() => setActiveView("calendar")}
               className={`px-4 py-2 text-sm font-medium ${
-                activeView === 'calendar'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                activeView === "calendar"
+                  ? "bg-[#06425F] text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
               Calendar View
@@ -128,20 +178,23 @@ const AttendanceLogs = () => {
               />
               <Search className="h-4 w-4 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" />
             </div>
-            
-            <button className="bg-red-500 text-white px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-red-600">
+
+            {/* <button className="bg-red-500 text-white px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-red-600">
               <Download className="h-4 w-4" />
               Import
-            </button>
-            
-            <button className="bg-blue-500 text-white px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-blue-600">
+            </button> */}
+
+            <button
+              onClick={handleExport}
+              className="bg-[#06425F] text-white px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-[#06425F]"
+            >
               <Upload className="h-4 w-4" />
               Export
             </button>
-            
+
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Show</span>
-              <select 
+              <select
                 className="border border-gray-300 rounded px-2 py-1 text-sm"
                 value={showEntries}
                 onChange={(e) => setShowEntries(parseInt(e.target.value))}
@@ -155,28 +208,29 @@ const AttendanceLogs = () => {
           </div>
         </div>
       </div>
-<div className='w-[63rem]'>
-      {/* Content */}
-      {activeView === 'table' ? (
-        <TableView 
-          attendanceData={attendanceData}
-          isLoading={isLoading}
-          searchTerm={searchTerm}
-          showEntries={showEntries}
-        />
-      ) : (
-        <CalendarView 
-          currentDate={currentDate}
-          setCurrentDate={setCurrentDate}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
-      )}
-</div>
+      <div className="w-[63rem]">
+        {/* Content */}
+        {activeView === "table" ? (
+          <TableView
+            attendanceData={attendanceData}
+            isLoading={isLoading}
+            searchTerm={searchTerm}
+            showEntries={showEntries}
+          />
+        ) : (
+          <CalendarView
+            currentDate={currentDate}
+            setCurrentDate={setCurrentDate}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+        )}
+      </div>
       {/* Pagination */}
       <div className="mt-6 flex items-center justify-between">
         <div className="text-sm text-gray-600">
-          1 to {Math.min(showEntries, attendanceData?.length || 0)} of {attendanceData?.length || 0}
+          1 to {Math.min(showEntries, attendanceData?.length || 0)} of{" "}
+          {attendanceData?.length || 0}
         </div>
         <div className="flex items-center gap-2">
           <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">

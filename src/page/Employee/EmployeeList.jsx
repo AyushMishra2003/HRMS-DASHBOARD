@@ -139,9 +139,9 @@ const EmployeeList = () => {
             {/* <button className="bg-red-500 text-white px-3 py-2 rounded text-sm flex items-center gap-1 hover:bg-red-600 transition-colors">
               <span></span> Import
             </button> */}
-            <button className="bg-[#06425F] text-white px-5 py-2 rounded text-sm flex items-center gap-1 hover:bg-blue-600 transition-colors">
+            {/* <button className="bg-[#06425F] text-white px-5 py-2 rounded text-sm flex items-center gap-1 hover:bg-blue-600 transition-colors">
               <span></span> Export
-            </button>
+            </button> */}
             <div className="flex items-center gap-2 ml-4">
               <span className="text-sm text-gray-600">Show</span>
               <select className="border border-gray-300 rounded px-2 py-1 text-sm">
