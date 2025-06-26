@@ -8,6 +8,7 @@ import { store } from './rtk/store.js'
 // import { UserProvider } from './page/UseContext/useContext.jsx'
 
 import { Toaster } from 'sonner';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 createRoot(document.getElementById('root')).render(

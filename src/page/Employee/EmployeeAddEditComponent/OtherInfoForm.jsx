@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FiPlus, FiTrash2 } from 'react-icons/fi';
-import { XCircle } from 'lucide-react';
+import { FiPlus, FiTrash2, FiEye, FiEdit3, FiUpload } from 'react-icons/fi';
+import { XCircle, FileText, CheckCircle } from 'lucide-react';
 import {
   useDocAddMutation,
   useDocUpdateMutation,
@@ -24,7 +24,7 @@ const OtherInfoForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data: docData, isLoading: isFetching  , refetch} = useGetEmployeedocQuery({id});
+  const { data: docData, isLoading: isFetching, refetch } = useGetEmployeedocQuery({ id });
   const [addDoc, { isLoading: isAdding }] = useDocAddMutation();
   const [updateDoc, { isLoading: isUpdating }] = useDocUpdateMutation();
 
@@ -49,16 +49,17 @@ const OtherInfoForm = () => {
     if (!file) return;
 
     if (!allowedTypes.includes(file.type)) {
-      alert('Only PDF, JPG, PNG files are allowed');
+      toast.error('Only PDF, JPG, PNG files are allowed');
       return;
     }
 
     if (file.size > 1024 * 1024) {
-      alert('File must be under 1MB');
+      toast.error('File must be under 1MB');
       return;
     }
 
     setFiles(prev => ({ ...prev, [name]: file }));
+    toast.success(`${file.name} selected successfully`);
   };
 
   const handleCustomFieldChange = (index, type, value) => {
@@ -78,22 +79,22 @@ const OtherInfoForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!files.aadhaar) {
-      alert('Aadhaar Card is required');
+      toast.error('Aadhaar Card is required');
       return;
     }
 
     // Validate custom fields
     for (const custom of customFields) {
       if (custom.label && !custom.file) {
-        alert(`Please upload file for "${custom.label}"`);
+        toast.error(`Please upload file for "${custom.label}"`);
         return;
       }
       if (custom.file && !allowedTypes.includes(custom.file.type)) {
-        alert(`Invalid file type in "${custom.label}"`);
+        toast.error(`Invalid file type in "${custom.label}"`);
         return;
       }
       if (custom.file && custom.file.size > 1024 * 1024) {
-        alert(`File too large in "${custom.label}"`);
+        toast.error(`File too large in "${custom.label}"`);
         return;
       }
     }
@@ -118,114 +119,176 @@ const OtherInfoForm = () => {
         const form = Object.fromEntries(formData.entries())
         console.log(form)
         await updateDoc({ id, formData }).unwrap();
-        alert('Documents updated successfully!');
+        toast.success('Documents updated successfully!');
         refetch()
       } else {
         await addDoc({ id, formData }).unwrap();
-          refetch()
-        alert('Documents uploaded successfully!');
+        refetch()
+        toast.success('Documents uploaded successfully!');
       }
     } catch (err) {
-  alert(err.message ,'Upload failed. Please try again.');
+      toast.error(err.message || 'Upload failed. Please try again.');
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <h2 className="text-xl font-semibold mb-4">Upload Other Information</h2>
+    <div className="max-w-6xl mx-au">
+      <div className="border-b border-gray-200 pb-4 mb-4">
+        <h2 className="text-2xl font-bold text-gray-900">Upload Documents</h2>
+        <p className="text-gray-600 mt-1">Please upload the required documents to complete your profile</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4 grid grid-cols-2 gap-x-8">
-        {defaultFields.map((field) => (
-          <div key={field.name}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {field.label} {field.required && <span className="text-red-500">*</span>}
-            </label>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Required Documents Section */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <FileText className="w-5 h-5 mr-2 text-[#06425F]" />
+            Required Documents
+          </h3>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {defaultFields.map((field) => (
+              <div key={field.name} className="bg-white rounded-lg border border-gray-200 p-4">
+                <label className="block text-sm font-semibold text-gray-800 mb-3">
+                  {field.label} 
+                  {field.required && <span className="text-red-500 ml-1">*</span>}
+                </label>
 
-            {/* If document already exists and not editing */}
-            {files[field.name] && typeof files[field.name] === 'string' && !isEditMode ? (
-              <div className="flex gap-2 items-center">
-                <a
-                  href={files[field.name]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline text-sm"
-                >
-                  View Document
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setIsEditMode(true)}
-                  className="text-yellow-600 text-sm"
-                >
-                  Edit
-                </button>
+                {/* If document already exists and not editing */}
+                {files[field.name] && typeof files[field.name] === 'string' && !isEditMode ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-md p-3">
+                      <div className="flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                        <span className="text-sm font-medium text-green-800">Document uploaded</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <a
+                        href={files[field.name]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center px-4 py-2 bg-[#06425F] text-white text-sm font-medium rounded-md hover:bg-[#314b58] transition-colors"
+                      >
+                        <FiEye className="w-4 h-4 mr-2" />
+                        View Document
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditMode(true)}
+                        className="flex items-center justify-center px-4 py-2 bg-yellow-500 text-white text-sm font-medium rounded-md hover:bg-yellow-600 transition-colors"
+                      >
+                        <FiEdit3 className="w-4 h-4 mr-2" />
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        onChange={(e) => handleFileChange(field.name, e.target.files[0])}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-[#06425F] hover:file:bg-blue-100 border border-gray-300 rounded-md cursor-pointer"
+                      />
+                    </div>
+                    {files[field.name] instanceof File && (
+                      <div className="flex items-center bg-green-50 border border-green-200 rounded-md p-2">
+                        <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                        <p className="text-sm text-green-800 font-medium">{files[field.name].name}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            ) : (
-              <input
-                type="file"
-                accept=".pdf,image/*"
-                onChange={(e) => handleFileChange(field.name, e.target.files[0])}
-                className="block w-full border border-gray-300 px-3 py-2 rounded-md"
-              />
-            )}
-
-            {files[field.name] instanceof File && (
-              <p className="text-sm text-green-600 mt-1">{files[field.name].name}</p>
-            )}
+            ))}
           </div>
-        ))}
-
-        {/* Custom Uploads */}
-        <div className="mt-2 col-span-2">
-          <h3 className="text-lg font-semibold mb-2">Other Uploads</h3>
-          {customFields.map((field, index) => (
-            <div key={index} className="flex items-center gap-2 mb-3">
-              <input
-                type="text"
-                placeholder="Document Title"
-                value={field.label}
-                onChange={(e) => handleCustomFieldChange(index, 'label', e.target.value)}
-                className="w-1/3 px-3 py-2 border border-gray-300 rounded-md"
-              />
-              <input
-                type="file"
-                accept=".pdf,image/*"
-                onChange={(e) => handleCustomFieldChange(index, 'file', e.target.files[0])}
-                className="w-1/2 border border-gray-300 px-2 py-2 rounded-md"
-              />
-              <button
-                type="button"
-                onClick={() => removeCustomField(index)}
-                className="text-red-500"
-              >
-                <FiTrash2 className="text-lg" />
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addCustomField}
-            className="flex items-center text-blue-600 mt-2"
-          >
-            <FiPlus className="mr-1" /> Add another
-          </button>
         </div>
 
-        <div className="flex h-fit justify-between bg-gray-50 py-3 mt-4 px-2 border-t border-gray-200 gap-4 pt-4 col-span-2">
+        {/* Additional Documents Section */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <FiUpload className="w-5 h-5 mr-2 text-green-600" />
+            Additional Documents
+          </h3>
+          
+          <div className="space-y-4">
+            {customFields.map((field, index) => (
+              <div key={index} className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Document Title (e.g., Experience Certificate)"
+                      value={field.label}
+                      onChange={(e) => handleCustomFieldChange(index, 'label', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={(e) => handleCustomFieldChange(index, 'file', e.target.files[0])}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border border-gray-300 rounded-md cursor-pointer"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeCustomField(index)}
+                    className="flex items-center justify-center w-10 h-10 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                  >
+                    <FiTrash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                {field.file && (
+                  <div className="mt-3 flex items-center bg-green-50 border border-green-200 rounded-md p-2">
+                    <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+                    <p className="text-sm text-green-800 font-medium">{field.file.name}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+            
+            <button
+              type="button"
+              onClick={addCustomField}
+              className="flex items-center justify-center w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-[#06425F] transition-colors"
+            >
+              <FiPlus className="w-4 h-4 mr-2" />
+              Add Another Document
+            </button>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-between items-center pt-6 border-t border-gray-200">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex items-center bg-gray-100 text-gray-800 px-5 py-2 rounded-md hover:bg-gray-300 transition"
+            className="flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium"
           >
             <XCircle className="w-4 h-4 mr-2" />
             Cancel
           </button>
+          
           <button
             type="submit"
             disabled={isFetching || isAdding || isUpdating}
-            className="bg-[#06425F] text-white px-6 py-2 rounded-md hover:bg-[#3b5a69] disabled:opacity-50"
+            className="flex items-center px-8 py-3 bg-[#06425F] text-white rounded-md hover:bg-[#053444] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
-            {(isAdding || isUpdating) ? 'Uploading...' : 'Submit Documents'}
+            {(isAdding || isUpdating) ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Uploading...
+              </>
+            ) : (
+              <>
+                <FiUpload className="w-4 h-4 mr-2" />
+                Submit Documents
+              </>
+            )}
           </button>
         </div>
       </form>

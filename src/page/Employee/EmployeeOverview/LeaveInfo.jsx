@@ -141,7 +141,7 @@ function LeaveInfo() {
             <input
               type="date"
               value={dateRange.to}
-              max={todayStr}
+              // max={todayStr}
               onChange={(e) =>
                 setDateRange((prev) => ({ ...prev, to: e.target.value }))
               }

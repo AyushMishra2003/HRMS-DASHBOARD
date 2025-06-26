@@ -4,9 +4,9 @@ import axios from "axios";
 export const axiosInstance = axios.create({
   baseURL: "http://localhost:5000/api/v1",
   // baseURL: "https://hr-management-codecrafter-1.onrender.com/api/v1",
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
   withCredentials: true, 
 });
 
@@ -16,8 +16,13 @@ const axiosBaseQuery = async ({ url, method, data }) => {
       url,
       method,
       ...(data instanceof FormData
-        ? { data, headers: { "Content-Type": "multipart/form-data" } } 
-        : { data }),
+  ? {
+      data,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  : { data }),
     });
 
     if (response?.data?.message) {

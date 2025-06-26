@@ -1,5 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import axiosBaseQuery from './axiosBaseQuery';
+
 export const docDetailApi = createApi({
   reducerPath: 'DocApi',
   baseQuery: axiosBaseQuery,
@@ -9,41 +10,43 @@ export const docDetailApi = createApi({
       query: ({ formData, id }) => ({
         url: `/employee/document/add/${id}`,
         method: 'POST',
-        formData,
+        data: formData,
         credentials: 'include'
       }),
       invalidatesTags: ['doc']
     }),
+
     docUpdate: builder.mutation({
       query: ({ formData, id }) => ({
         url: `/employee/document/update/${id}`,
         method: 'PUT',
-        formData,
+        data: formData,
         credentials: 'include'
       }),
       invalidatesTags: ['doc']
     }),
 
     getEmployeedoc: builder.query({
-      query: ({ id }) => (
-        {
-          url: `/employee/document/get/${id}`,
-          method: 'GET'
-        }
-      ),
+      query: ({ id }) => ({
+        url: `/employee/document/get/${id}`,
+        method: 'GET'
+      }),
       providesTags: ['doc']
     }),
 
+    // Optional All-doc API
     // getAllEmployeedoc: builder.query({
-    //   query: () => (
-    //     console.log('rtk'),
-    //     {
-    //       url: `/employee/doc/allformData`,
-    //       method: 'GET'
-    //     }
-    //   ),
+    //   query: () => ({
+    //     url: `/employee/doc/allformData`,
+    //     method: 'GET'
+    //   }),
     //   providesTags: ['doc']
     // })
   })
 });
-export const { useDocAddMutation, useGetEmployeedocQuery,useDocUpdateMutation } = docDetailApi;
+
+export const {
+  useDocAddMutation,
+  useGetEmployeedocQuery,
+  useDocUpdateMutation
+} = docDetailApi;
