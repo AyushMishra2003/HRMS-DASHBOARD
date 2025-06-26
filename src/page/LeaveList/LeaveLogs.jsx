@@ -169,7 +169,7 @@ const LeaveLogs = () => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       day: '2-digit',
       month: 'short',
-      year: 'numeric'
+      // year: 'numeric'
     });
   };
 
@@ -203,7 +203,7 @@ const LeaveLogs = () => {
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                  <FileText className="w-6 h-6 text-blue-600" />
+                  <FileText className="w-6 h-6 text-[#06425F]" />
                   Leave Logs
                 </h1>
                 <p className="text-gray-600 mt-1">Manage and track employee leave applications</p>
@@ -294,7 +294,7 @@ const LeaveLogs = () => {
 
                 <button
                   onClick={exportExcell}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                  className="bg-[#06425F] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
                   <Download className="w-4 h-4" />
                   Export
                 </button>
@@ -324,7 +324,7 @@ const LeaveLogs = () => {
                 <p className="text-sm text-gray-600">Total Requests</p>
                 <p className="text-2xl font-bold text-gray-900">{leaveData.length}</p>
               </div>
-              <FileText className="w-8 h-8 text-blue-600" />
+              <FileText className="w-8 h-8 text-[#06425F]" />
             </div>
           </div>
 
@@ -366,15 +366,15 @@ const LeaveLogs = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="overflow-x-auto">
+        <div className="bg-white  rounded-lg shadow-sm border border-gray-200">
+          <div className="overflow-x-auto ">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="text-left p-4 text-sm font-medium text-gray-700">
+                  {/* <th className="text-left p-4 text-sm font-medium text-gray-700">
                     <input
                       type="checkbox"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-[#06425F] focus:ring-blue-500"
                       onChange={(e) => {
                         if (e.target.checked) {
                           setSelectedLeaves(filteredLeaves.map(l => l.id));
@@ -383,15 +383,15 @@ const LeaveLogs = () => {
                         }
                       }}
                     />
-                  </th>
+                  </th> */}
                   <th className="text-left p-4 text-sm font-medium text-gray-700">ID</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Employee</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Department</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Type</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-700">Start Date</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-700">End Date</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-700">Start</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-700">End</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Days</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-700">Applay Date</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-700">Apply</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Status</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-700">Actions</th>
                 </tr>
@@ -403,14 +403,14 @@ const LeaveLogs = () => {
 
                     return (
                       <tr key={leave._id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="p-4">
+                        {/* <td className="p-4">
                           <input
                             type="checkbox"
                             checked={selectedLeaves.includes(leave._id)}
                             onChange={() => handleSelectLeave(leave._id)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-gray-300 text-[#06425F] focus:ring-blue-500"
                           />
-                        </td>
+                        </td> */}
                         <td className="p-4 text-sm text-gray-900 font-medium">{leave.employeeId._id.slice(-4)}</td>
                         <td className="p-4">
                           <div className="flex items-center gap-3">
@@ -493,7 +493,7 @@ const LeaveLogs = () => {
               <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="px-3 py-1 bg-blue-600 text-white rounded text-sm">1</span>
+              <span className="px-3 py-1 bg-[#06425F] text-white rounded text-sm">1</span>
               <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                 <ChevronRight className="w-4 h-4" />
               </button>

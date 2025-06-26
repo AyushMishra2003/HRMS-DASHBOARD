@@ -25,7 +25,7 @@ export default function Policy() {
     const result = await isConfirm();
     if (result) {
       await deletePolicyApi({ id });
-      refetch(); // optional: refetch after deletion
+      refetch();
     }
   };
 
