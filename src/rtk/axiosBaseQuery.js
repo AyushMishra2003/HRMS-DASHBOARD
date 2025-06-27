@@ -2,7 +2,7 @@ import { toast } from "sonner";
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: "http://localhost:6002/api/v1",
   // baseURL: "https://hr-management-codecrafter-1.onrender.com/api/v1",
   // headers: {
   //   "Content-Type": "application/json",

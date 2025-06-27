@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Download,
   Filter,
-  PhoneCallIcon
+  PhoneCallIcon,
+  IndianRupee
 } from 'lucide-react';
 import PersonalInfo from './EmployeeOverview/PersonalInfo';
 import WorkInfo from './EmployeeOverview/WorkInfo';
@@ -23,6 +24,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import AttendanceInfo from './EmployeeOverview/AttendanceInfo.jsx';
 import LeaveInfo from './EmployeeOverview/LeaveInfo.jsx';
 import DocumentInfo from './EmployeeOverview/DocumentInfo.jsx';
+import SalaryInfo from './EmployeeOverview/SalaryInfo.jsx';
 const EmployeeOverview = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -44,6 +46,7 @@ const navigate = useNavigate()
     { id: 'attendance', label: 'Attendance', icon: Clock },
     { id: 'leaves', label: 'Leaves', icon: Calendar },
     { id: 'documents', label: 'Documents', icon: Briefcase },
+    { id: 'salary', label: 'Earnings', icon: IndianRupee },
     { id: 'other', label: 'Other Details', icon: User }
   ];
 
@@ -97,6 +100,7 @@ const navigate = useNavigate()
       case 'attendance': return <AttendanceInfo />;
       case 'leaves': return <LeaveInfo />;
       case 'documents': return <DocumentInfo />;
+      case 'salary': return <SalaryInfo />;
       case 'other': return <OtherDetails />;
       default: return <PersonalInfo />;
     }
