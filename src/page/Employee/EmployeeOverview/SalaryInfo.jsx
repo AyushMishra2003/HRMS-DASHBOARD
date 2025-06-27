@@ -24,6 +24,7 @@ const SalaryInfo = () => {
   
   const handleDownloadSlip = () => {
     // Download functionality
+    alert('Salary Not Paid yet')
     console.log('Downloading salary slip for:', selectedMonth);
     // You can implement actual download logic here
   };
@@ -33,7 +34,7 @@ const SalaryInfo = () => {
       case 'Paid':
         return 'text-green-600 bg-green-50';
       case 'Not Paid':
-        return 'text-red-600 bg-red-50';
+        return 'text-red-600 bg-red-500';
       case 'Pending':
         return 'text-yellow-600 bg-yellow-50';
       default:

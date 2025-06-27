@@ -12,6 +12,7 @@ import {
   Wifi,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
  const data = { role: "Admin" }; 
 const mockData = {
@@ -172,7 +173,7 @@ const TopHeader = () => {
               
               {notificationOpen && (
                 <div onMouseLeave={() => setNotificationOpen(!notificationOpen)} className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl z-50 border border-gray-200 overflow-hidden">
-                  <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
+                  <div className="px-4 py-3 border-b border-gray-300 bg-gradient-to-r from-blue-50 to-purple-50 ">
                     <h3 className="font-semibold text-gray-800">Notifications</h3>
                     <p className="text-xs text-gray-500 mt-0.5">{unreadCount} unread messages</p>
                   </div>
@@ -181,8 +182,8 @@ const TopHeader = () => {
                     {mockNotifications.map((note, index) => (
                       <div
                         key={note._id || index}
-                        className={`px-4 py-3 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors ${
-                          !note.isRead ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                        className={`px-4 py-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors ${
+                          !note.isRead ? 'bg-blue-50 border-l-4 border-l-[#06425F] rounded-lg' : ''
                         }`}
                       >
                         <p className="text-sm text-gray-700 leading-relaxed">{note.message}</p>
@@ -192,9 +193,9 @@ const TopHeader = () => {
                   </div>
                   
                   <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
-                    <button className="text-xs text-blue-600 hover:text-blue-700 font-medium">
-                      View all notifications
-                    </button>
+                    <Link to='/dashboard/notification' className="text-xs text-[#06425F] hover:text-blue-700 font-medium">
+                      View Detail notifications
+                    </Link>
                   </div>
                 </div>
               )}
