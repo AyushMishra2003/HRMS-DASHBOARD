@@ -29,7 +29,10 @@ const SideBar = () => {
   const navItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [], url: "/dashboard" },
     { name: 'Recruitment', icon: <UserPlus size={20} />, children: [], url: "/dashboard/recruitment" },
-    { name: 'Onboarding', icon: <Rocket size={20} />, children: [], url: "/dashboard/onboarding" },
+    { name: 'Onboarding', icon: <Rocket size={20} />, children: [
+      {name:'Onboard New Employee', url:"/dashboard/employee/add"},
+      {name:'Onboarding Policies', url:"/dashboard/onboarding"},
+    ]},
     { 
       name: 'Employee', 
       icon: <Users size={20} />, 

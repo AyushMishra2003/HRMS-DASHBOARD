@@ -119,6 +119,13 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
       </div>
     );
   }
+  const formatTime = (timestamp) => {
+   if(!timestamp){
+    return null
+   }
+    const date = new Date(timestamp);
+    return  date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
     <div className="bg-white rounded-lg">
@@ -249,8 +256,8 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
                     {employee.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{employee.checkIn || '--'}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{employee.checkOutTime || '--'}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{formatTime(employee?.checkIntime) || '--'}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{formatTime(employee?.checkOutTime) || '--'}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{employee.workDuration || '--'}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{employee.employee.mobile}</td>
               </tr>
