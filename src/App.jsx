@@ -32,6 +32,8 @@ import Recruitment from "./page/Recruitment/Recruitment";
 import Notification from "./page/Notification/Notification";
 import Payroll from "./page/PayRoll/PayRoll";
 import { ToastContainer } from "react-toastify";
+import Policies from "./page/About/Policies";
+import TermCondition from "./page/About/TermCondition";
 
 const App = () => {
 
@@ -75,6 +77,14 @@ const App = () => {
         <Route path="recruitment" element={<Recruitment />} />
         <Route path="payroll" element={<Payroll />} />
         <Route path="notification" element={<Notification />} />
+
+
+
+        <Route path="policies" element={<Policies/>} />
+         <Route path="term-condition" element={<TermCondition/>} />
+
+
+
       </Route>
     {/* </Route> */}
 
