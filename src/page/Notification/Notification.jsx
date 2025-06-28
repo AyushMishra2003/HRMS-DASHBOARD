@@ -10,79 +10,53 @@ import {
   Clock,
   Loader2
 } from 'lucide-react';
+import { 
+  useDeleteNotificationMutation, 
+  useGetNotificationQuery, 
+  useMarkAsReadNotificationMutation 
+} from '../../rtk/notification';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [selectedNotifications, setSelectedNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [selectAll, setSelectAll] = useState(false);
 
-  // Mock API functions - Replace with your actual API calls
-  const fetchNotifications = async () => {
-    setLoading(true);
-    try {
-      // Mock API response - replace with your actual API call
-      const mockData = [
-        {
-          id: 1,
-          title: "Leave Request Approved",
-          message: "Your leave request for March 15-17 has been approved by HR department.",
-          isRead: false,
-          timestamp: "2024-01-15T10:30:00Z",
-          type: "success"
-        },
-        {
-          id: 2,
-          title: "Salary Slip Available",
-          message: "Your salary slip for January 2024 is now available for download.",
-          isRead: true,
-          timestamp: "2024-01-14T14:20:00Z",
-          type: "info"
-        },
-        {
-          id: 3,
-          title: "Meeting Reminder",
-          message: "Team meeting scheduled for tomorrow at 2:00 PM in Conference Room A.",
-          isRead: false,
-          timestamp: "2024-01-13T16:45:00Z",
-          type: "warning"
-        },
-        {
-          id: 4,
-          title: "Document Upload Required",
-          message: "Please upload your updated PAN card document to complete your profile.",
-          isRead: false,
-          timestamp: "2024-01-12T09:15:00Z",
-          type: "error"
-        },
-        {
-          id: 5,
-          title: "Performance Review",
-          message: "Your quarterly performance review has been scheduled for next week.",
-          isRead: true,
-          timestamp: "2024-01-11T11:30:00Z",
-          type: "info"
-        }
-      ];
-      
-      setNotifications(mockData);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    } finally {
-      setLoading(false);
+  // RTK hooks
+  const { data: apiData, isLoading, error } = useGetNotificationQuery();
+  const [markAsReadMutation] = useMarkAsReadNotificationMutation();
+  const [deleteNotificationMutation] = useDeleteNotificationMutation();
+
+  useEffect(() => {
+    if (apiData && Array.isArray(apiData)) {
+      const processed = apiData.map((item) => ({
+        _id: item._id,
+        id: item._id,
+        title: item.title || 'Notification',
+        message: item.message || 'No message available',
+        isRead: item.isRead || false,
+        timestamp: item.createdAt || new Date().toISOString(),
+        type: getNotificationType(item.title),
+      }));
+      setNotifications(processed);
     }
+  }, [apiData]);
+
+  const getNotificationType = (title) => {
+    if (!title) return 'info';
+    const lower = title.toLowerCase();
+    if (lower.includes('approved') || lower.includes('success')) return 'success';
+    if (lower.includes('reminder') || lower.includes('pending')) return 'warning';
+    if (lower.includes('error') || lower.includes('failed') || lower.includes('required')) return 'error';
+    return 'info';
   };
 
   const markAsReadAPI = async (notificationIds) => {
     try {
-      // Replace with your actual API call
-      console.log('Marking as read:', notificationIds);
-      // const response = await fetch('/api/notifications/mark-read', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ ids: notificationIds })
-      // });
+      const ids = Array.isArray(notificationIds) ? notificationIds : [notificationIds];
+      for (const id of ids) {
+        await markAsReadMutation({ id }).unwrap();
+      }
       return true;
     } catch (error) {
       console.error('Error marking as read:', error);
@@ -92,13 +66,10 @@ const NotificationsPage = () => {
 
   const deleteNotificationsAPI = async (notificationIds) => {
     try {
-      // Replace with your actual API call
-      console.log('Deleting notifications:', notificationIds);
-      // const response = await fetch('/api/notifications/delete', {
-      //   method: 'DELETE',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ ids: notificationIds })
-      // });
+      const ids = Array.isArray(notificationIds) ? notificationIds : [notificationIds];
+      for (const id of ids) {
+        await deleteNotificationMutation({ id }).unwrap();
+      }
       return true;
     } catch (error) {
       console.error('Error deleting notifications:', error);
@@ -108,11 +79,10 @@ const NotificationsPage = () => {
 
   const clearAllNotificationsAPI = async () => {
     try {
-      // Replace with your actual API call
-      console.log('Clearing all notifications');
-      // const response = await fetch('/api/notifications/clear-all', {
-      //   method: 'DELETE'
-      // });
+      const allIds = notifications.map(n => n._id);
+      for (const id of allIds) {
+        await deleteNotificationMutation({ id }).unwrap();
+      }
       return true;
     } catch (error) {
       console.error('Error clearing all notifications:', error);
@@ -120,59 +90,46 @@ const NotificationsPage = () => {
     }
   };
 
-  // Load notifications on component mount
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  // Handle individual notification selection
-  const handleNotificationSelect = (notificationId) => {
-    setSelectedNotifications(prev => {
-      if (prev.includes(notificationId)) {
-        return prev.filter(id => id !== notificationId);
-      } else {
-        return [...prev, notificationId];
-      }
-    });
+  const handleNotificationSelect = (id) => {
+    setSelectedNotifications(prev => 
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
   };
 
-  // Handle select all toggle
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedNotifications([]);
     } else {
-      setSelectedNotifications(notifications.map(n => n.id));
+      setSelectedNotifications(notifications.map(n => n._id));
     }
     setSelectAll(!selectAll);
   };
 
-  // Update selectAll state when individual selections change
   useEffect(() => {
-    setSelectAll(selectedNotifications.length === notifications.length && notifications.length > 0);
+    setSelectAll(
+      selectedNotifications.length === notifications.length && notifications.length > 0
+    );
   }, [selectedNotifications, notifications]);
 
-  // Mark single notification as read
-  const handleMarkAsRead = async (notificationId) => {
+  const handleMarkAsRead = async (id) => {
     setActionLoading(true);
-    const success = await markAsReadAPI([notificationId]);
+    const success = await markAsReadAPI(id);
     if (success) {
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
+      setNotifications(prev =>
+        prev.map(n => n._id === id ? { ...n, isRead: true } : n)
       );
     }
     setActionLoading(false);
   };
 
-  // Mark selected notifications as read
   const handleMarkSelectedAsRead = async () => {
     if (selectedNotifications.length === 0) return;
-    
     setActionLoading(true);
     const success = await markAsReadAPI(selectedNotifications);
     if (success) {
-      setNotifications(prev => 
-        prev.map(n => 
-          selectedNotifications.includes(n.id) ? { ...n, isRead: true } : n
+      setNotifications(prev =>
+        prev.map(n =>
+          selectedNotifications.includes(n._id) ? { ...n, isRead: true } : n
         )
       );
       setSelectedNotifications([]);
@@ -180,22 +137,19 @@ const NotificationsPage = () => {
     setActionLoading(false);
   };
 
-  // Delete selected notifications
   const handleDeleteSelected = async () => {
     if (selectedNotifications.length === 0) return;
-    
     setActionLoading(true);
     const success = await deleteNotificationsAPI(selectedNotifications);
     if (success) {
-      setNotifications(prev => 
-        prev.filter(n => !selectedNotifications.includes(n.id))
+      setNotifications(prev =>
+        prev.filter(n => !selectedNotifications.includes(n._id))
       );
       setSelectedNotifications([]);
     }
     setActionLoading(false);
   };
 
-  // Clear all notifications
   const handleClearAll = async () => {
     setActionLoading(true);
     const success = await clearAllNotificationsAPI();
@@ -206,7 +160,6 @@ const NotificationsPage = () => {
     setActionLoading(false);
   };
 
-  // Get notification type styles
   const getNotificationTypeStyles = (type) => {
     switch (type) {
       case 'success':
@@ -220,7 +173,6 @@ const NotificationsPage = () => {
     }
   };
 
-  // Get notification icon
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'success':
@@ -234,13 +186,12 @@ const NotificationsPage = () => {
     }
   };
 
-  // Format timestamp
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-96">
         <Loader2 className="h-8 w-8 animate-spin text-[#06425F]" />
@@ -248,9 +199,20 @@ const NotificationsPage = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Notifications</h3>
+          <p className="text-gray-600">Unable to fetch notifications. Please try again later.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 max-w-5xl mx-auto bg-gray-50">
-      {/* Header */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -265,7 +227,6 @@ const NotificationsPage = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-wrap gap-2">
             {selectedNotifications.length > 0 && (
               <>
@@ -287,7 +248,7 @@ const NotificationsPage = () => {
                 </button>
               </>
             )}
-            
+
             <button
               onClick={handleClearAll}
               disabled={actionLoading || notifications.length === 0}
@@ -299,7 +260,6 @@ const NotificationsPage = () => {
           </div>
         </div>
 
-        {/* Select All */}
         {notifications.length > 0 && (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
             <button
@@ -316,7 +276,6 @@ const NotificationsPage = () => {
         )}
       </div>
 
-      {/* Notifications List */}
       <div className="grid grid-cols-2 gap-6">
         {notifications.length === 0 ? (
           <div className="bg-white col-span-2 rounded-lg border border-gray-100 p-8 text-center">
@@ -334,7 +293,6 @@ const NotificationsPage = () => {
             >
               <div className="p-4">
                 <div className="flex items-start gap-3">
-                  {/* Selection Checkbox */}
                   <button
                     onClick={() => handleNotificationSelect(notification.id)}
                     className="mt-1 flex-shrink-0"
@@ -345,12 +303,10 @@ const NotificationsPage = () => {
                     }
                   </button>
 
-                  {/* Notification Icon */}
                   <div className="flex-shrink-0 mt-1">
                     {getNotificationIcon(notification.type)}
                   </div>
 
-                  {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
@@ -373,7 +329,6 @@ const NotificationsPage = () => {
                         </div>
                       </div>
 
-                      {/* Individual Mark as Read Button */}
                       {!notification.isRead && (
                         <button
                           onClick={() => handleMarkAsRead(notification.id)}

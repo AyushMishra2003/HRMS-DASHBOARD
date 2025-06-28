@@ -20,8 +20,7 @@ const AttendanceLogs = () => {
   const [showEntries, setShowEntries] = useState(10);
 
   const [filter, setFilter] = useState("all");
-  const { data: attendanceData, isLoading } = useAttendanceFilterQuery(filter);
-
+  const { data: attendanceData,  isLoading } = useAttendanceFilterQuery(filter);
   const handleFilterChange = (date) => {
     const formatedDate = date.toISOString().split("T")[0];
     setFilter(`startDate=${formatedDate}&endDate=${formatedDate}`);

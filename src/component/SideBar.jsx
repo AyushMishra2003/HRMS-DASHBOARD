@@ -61,8 +61,8 @@ const SideBar = () => {
      { name: 'Notification', icon: <Bell size={20} />, children: [], url: "/dashboard/notification" },
      { name: 'About', icon: <Building2 size={20} />, children: [
         {name:"About Company",url:"/dashboard/about"},
-        {name:"Our Term & Condition",url:"/dashboard/about"},
-        {name:"Our Policies", url:"/dashboard/about"},
+        {name:"Our Term & Condition",url:"/dashboard/term-condition"},
+        {name:"Our Policies", url:"/dashboard/policies"},
      ] },
   ];
 
