@@ -2,19 +2,19 @@ import { toast } from "sonner";
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-<<<<<<< HEAD
+
   baseURL: "http://localhost:6002/api/v1",
   // baseURL: "https://hr-management-codecrafter-1.onrender.com/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
-=======
-  baseURL: "http://localhost:5000/api/v1",
+
+  // baseURL: "http://localhost:5000/api/v1",
   // baseURL: "https://hr-management-codecrafter-1.onrender.com/api/v1",
   // headers: {
   //   "Content-Type": "application/json",
   // },
->>>>>>> bb206d77491a9c26131ebdb75969212b5c5034a6
+
   withCredentials: true, 
 });
 

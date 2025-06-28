@@ -7,7 +7,7 @@ import { ClipLoader } from 'react-spinners';
 const Payroll = () => {
 
   const { data: employeeData, isLoading } = useGetAllEmployeeQuery()
-  const [paySalary,{isLoading:salaryPayLoading}] = usePaySalaryMutation();
+  const [paySalary, { isLoading: salaryPayLoading }] = usePaySalaryMutation();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('');
@@ -42,6 +42,33 @@ const Payroll = () => {
     );
   });
 
+  console.log(filteredData);
+  let totalSalary = 0;
+  let highestSalary = 0;
+  let highestPresentDays = 0;
+  let totalPaidCount = 0;
+
+  filteredData.forEach(emp => {
+    // Total + highest salary
+    const salaryNum = parseFloat(emp.salary);
+    if (!isNaN(salaryNum)) {
+      totalSalary += salaryNum;
+      if (salaryNum > highestSalary) highestSalary = salaryNum;
+    }
+
+    // Highest present days
+    if (emp.presentDays > highestPresentDays) highestPresentDays = emp.presentDays;
+
+    // Total paid count
+    if (emp.status && emp.status.toLowerCase() === "paid") {
+      totalPaidCount++;
+    }
+  });
+
+  // Highest present percentage (assuming 30 days)
+  let highestPercentage = ((highestPresentDays / 30) * 100).toFixed(2);
+
+
 
   const handleStatusChange = async (employee) => {
     // console.log("aaaa", employee);
@@ -61,44 +88,41 @@ const Payroll = () => {
     }
   };
 
-const StatusBadge = ({ status, employee, onStatusChange }) => {
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        className={`px-2 py-1 text-xs rounded-full font-medium ${
-          status?.toLowerCase() === 'paid'
-            ? 'bg-blue-100 text-blue-800'
-            : 'bg-red-100 text-red-800'
-        }`}
-      >
-        {status?.toLowerCase() === 'paid' ? (
-          <>
-            <CheckCircle className="w-3 h-3 inline mr-1" />
-            Paid
-          </>
-        ) : (
-          <>
-            <XCircle className="w-3 h-3 inline mr-1" />
-            Unpaid
-          </>
-        )}
-      </span>
-
-      {status?.toLowerCase() !== 'paid' && (
-        <button
-          onClick={() => handleStatusChange(employee)}
-          className="text-xs bg-blue-100 rounded-2xl px-2 py-1 text-blue-600  hover:text-blue-800"
+  const StatusBadge = ({ status, employee, onStatusChange }) => {
+    return (
+      <div className="flex items-center gap-2">
+        <span
+          className={`px-2 py-1 text-xs rounded-full font-medium ${status?.toLowerCase() === 'paid'
+              ? 'bg-blue-100 text-blue-800'
+              : 'bg-red-100 text-red-800'
+            }`}
         >
-          PayNow
-        </button>
-      )}
-    </div>
-  );
-};
+          {status?.toLowerCase() === 'paid' ? (
+            <>
+              <CheckCircle className="w-3 h-3 inline mr-1" />
+              Paid
+            </>
+          ) : (
+            <>
+              <XCircle className="w-3 h-3 inline mr-1" />
+              Unpaid
+            </>
+          )}
+        </span>
 
+        {status?.toLowerCase() !== 'paid' && (
+          <button
+            onClick={() => handleStatusChange(employee)}
+            className="text-xs bg-blue-100 rounded-2xl px-2 py-1 text-blue-600  hover:text-blue-800"
+          >
+            PayNow
+          </button>
+        )}
+      </div>
+    );
+  };
 
-
-  if (payRoleLoading) {
+  if (payRoleLoading||salaryPayLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <ClipLoader size={30} color="blue" />
@@ -116,7 +140,7 @@ const StatusBadge = ({ status, employee, onStatusChange }) => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
           <div className="bg-white p-3 rounded-lg shadow-sm border-l-4" style={{ borderLeftColor: '#06425F' }}>
             <div className="flex items-center justify-between">
               <div>
@@ -127,21 +151,21 @@ const StatusBadge = ({ status, employee, onStatusChange }) => {
             </div>
           </div>
 
-          <div className="bg-white p-3 rounded-lg shadow-sm border-l-4 border-green-500">
+           <div className="bg-white p-3 rounded-lg shadow-sm border-l-4 border-green-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">Paid</p>
-                <p className="text-lg font-bold text-green-600">{10000}</p>
+                <p className="text-lg font-bold text-green-600">{totalPaidCount}</p>
               </div>
               <CheckCircle className="w-6 h-6 text-green-500" />
             </div>
-          </div>
+          </div> 
 
           <div className="bg-white p-3 rounded-lg shadow-sm border-l-4 border-blue-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">Total Payout</p>
-                <p className="text-lg font-bold">₹{200000}</p>
+                <p className="text-lg font-bold">₹{totalSalary}</p>
               </div>
               <DollarSign className="w-6 h-6 text-blue-500" />
             </div>
@@ -151,7 +175,7 @@ const StatusBadge = ({ status, employee, onStatusChange }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">Highest Salary</p>
-                <p className="text-lg font-bold">₹{20000}</p>
+                <p className="text-lg font-bold">₹{highestSalary}</p>
               </div>
               <TrendingUp className="w-6 h-6 text-purple-500" />
             </div>
@@ -161,7 +185,7 @@ const StatusBadge = ({ status, employee, onStatusChange }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">Max Present Days</p>
-                <p className="text-lg font-bold">{30}</p>
+                <p className="text-lg font-bold">{highestPercentage}</p>
               </div>
               <Calendar className="w-6 h-6 text-orange-500" />
             </div>
@@ -207,7 +231,7 @@ const StatusBadge = ({ status, employee, onStatusChange }) => {
               </select>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-gray-400" />
               <select
                 value={sortBy}
@@ -218,7 +242,7 @@ const StatusBadge = ({ status, employee, onStatusChange }) => {
                 <option value="highestSalary">Highest Salary</option>
                 <option value="highestPresent">Highest Present Days</option>
               </select>
-            </div>
+            </div> */}
           </div>
         </div>
 
