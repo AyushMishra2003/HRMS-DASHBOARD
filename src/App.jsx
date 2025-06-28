@@ -30,8 +30,8 @@ import AttendanceRules from "./adminPages/AttendanceRules";
 import Onboarding from "./page/Onboarding/Onboarding";
 import Recruitment from "./page/Recruitment/Recruitment";
 import Notification from "./page/Notification/Notification";
-import Payroll from "./page/PayRoll/PayRoll";
 import { ToastContainer } from "react-toastify";
+import Payroll from "./page/Payroll/Payroll";
 
 const App = () => {
 

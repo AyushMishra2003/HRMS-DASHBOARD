@@ -8,6 +8,7 @@ import { policyApi } from "./policy";
 import { leaveApi } from "./leaveApi";
 import { notificationApi } from "./notification";
 import { docDetailApi } from "./employeeDoc";
+import { EmployeePayrollApi } from "./employeePayroll";
 export const store = configureStore({
     reducer: {
         [employeeDetailApi.reducerPath]: employeeDetailApi.reducer,
@@ -19,6 +20,7 @@ export const store = configureStore({
         [leaveApi.reducerPath]:leaveApi.reducer,
         [notificationApi.reducerPath]:notificationApi.reducer,
         [docDetailApi.reducerPath]:docDetailApi.reducer,
+        [EmployeePayrollApi.reducerPath]:EmployeePayrollApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(employeeDetailApi.middleware,
@@ -27,5 +29,6 @@ export const store = configureStore({
             policyApi.middleware,leaveApi.middleware,
             notificationApi.middleware, 
             docDetailApi.middleware,
+            EmployeePayrollApi.middleware,
         ),     
 });
