@@ -41,8 +41,8 @@ const App = () => {
   <>
    <ToastContainer position="top-right" autoClose={3000} />
   <Routes>
-    <Route path="/home" element={<HomeDashboard />} />
     
+    <Route path="/home" element={<HomeDashboard />} />
       <Route path="/dashboard" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
