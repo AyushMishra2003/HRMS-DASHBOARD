@@ -191,8 +191,8 @@ const AuthLogin = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e0f7fa] to-[#f1f8ff] px-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-gray-200 transition-all">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f7feff] to-[#f8fafc] px-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-lg p-8 md:p-10 border border-gray-200 transition-all">
         {/* Header */}
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-extrabold text-gray-800 mb-1">Welcome Back 👋</h1>

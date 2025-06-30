@@ -17,17 +17,23 @@ export const notificationApi = createApi({
 
     // notificationApi.js
     markAsReadNotification: builder.mutation({
-      query: (id) => (
-        console.log("mai to rtk huy",id),
-        
+      query: ({id}) => (
         {
         url: `/notification/isReade/${id}`,
-        method: "GET", // or POST if your backend supports it
+        method: "GET", 
       }),
-      invalidatesTags: ["notification"], // optional: to refetch updated notifications
+      invalidatesTags: ["notification"],
+    }),
+    deleteNotification: builder.mutation({
+      query: ({id}) => (
+        {
+        url: `/notification/delete/${id}`,
+        method: "DELETE", 
+      }),
+      invalidatesTags: ["notification"],
     }),
   }),
 });
 
-export const { useGetNotificationQuery, useMarkAsReadNotificationMutation } =
+export const { useGetNotificationQuery, useMarkAsReadNotificationMutation , useDeleteNotificationMutation } =
   notificationApi;

@@ -1,9 +1,7 @@
 import { toast } from "sonner";
 import axios from "axios";
-
+const backend_url = import.meta.env.VITE_BACKEND_URL
 export const axiosInstance = axios.create({
-
-
   baseURL: "http://localhost:6002/api/v1",
   // baseURL: "https://hr-management-codecrafter-1.onrender.com/api/v1",
   headers: {
@@ -12,13 +10,16 @@ export const axiosInstance = axios.create({
 
   // baseURL: "http://localhost:5000/api/v1",
 
-  baseURL: "http://localhost:6002/api/v1",
+  // baseURL: "http://localhost:6002/api/v1",
 
   // baseURL: "https://hr-management-codecrafter-1.onrender.com/api/v1",
   // headers: {
   //   "Content-Type": "application/json",
   // },
 
+
+  baseURL: backend_url || "http://localhost:6002/api/v1",
+  // baseURL: backend_url || "https://hr-management-codecrafter-1.onrender.com/api/v1",
   withCredentials: true, 
 });
 
