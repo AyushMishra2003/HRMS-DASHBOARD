@@ -1,6 +1,4 @@
 import React from 'react'
-import DashboardLayout from './DashboardLayout'
-import Dashboard from './UserDashboard'
 import AdminHome from '../../adminPages/Home.admin'
 const Home = () => {
 

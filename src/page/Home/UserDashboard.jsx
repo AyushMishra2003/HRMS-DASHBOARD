@@ -25,7 +25,7 @@ const Dashboard = ({ data }) => {
  
       console.log("data++",attandance);
       
-  const { setEmployeeId } = useUserContext();
+  // const { setEmployeeId } = useUserContext();
   const [notices] = useState([
     {
       id: 1,
@@ -63,7 +63,7 @@ const Dashboard = ({ data }) => {
   
   useEffect(() => {
     if (data?.id) {
-      setEmployeeId(data.id);
+      // setEmployeeId(data.id);
       setUser({
         name: data.name,
         phone_Number: data.mobile,

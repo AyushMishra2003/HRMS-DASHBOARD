@@ -136,12 +136,10 @@
 //   </div>
 // </div>
 
-  
 //   );
 // };
 
 // export default AuthLogin;
-
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -162,18 +160,17 @@ const AuthLogin = () => {
   const login = async () => {
     try {
       const response = await loginApi(data).unwrap();
-      console.log(response)
+      console.log(response);
       if (response.success) {
         localStorage.setItem("user", JSON.stringify(response.data));
         const role = response?.data?.role?.toLowerCase();
 
-if (role === "admin") {
-  navigate("/dashboard");
-} else if (role === "employee") {
-  console.log('hello')
-  navigate("/employee/dashboard");
-}
-
+        if (role === "admin") {
+          navigate("/dashboard");
+        } else if (role === "employee") {
+          console.log("hello");
+          navigate("/employee/dashboard");
+        }
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -202,13 +199,22 @@ if (role === "admin") {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f7feff] to-[#f8fafc] px-4">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-lg p-8 md:p-10 border border-gray-200 transition-all">
         <div className="mb-6 text-center">
-          <h1 className="text-3xl font-extrabold text-gray-800 mb-1">Welcome Back 👋</h1>
-          <p className="text-gray-500 text-sm">Sign in to continue to your dashboard</p>
+          <h1 className="text-3xl font-extrabold text-gray-800 mb-1">
+            Welcome Back 👋
+          </h1>
+          <p className="text-gray-500 text-sm">
+            Sign in to continue to your dashboard
+          </p>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">Email</label>
+            <label
+              htmlFor="email"
+              className="block text-base font-medium text-gray-700 mb-2"
+            >
+              Email
+            </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -224,7 +230,12 @@ if (role === "admin") {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-base font-medium text-gray-700 mb-2">Password</label>
+            <label
+              htmlFor="password"
+              className="block text-base font-medium text-gray-700 mb-2"
+            >
+              Password
+            </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -241,7 +252,11 @@ if (role === "admin") {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
               </button>
             </div>
           </div>
@@ -276,7 +291,10 @@ if (role === "admin") {
         </div>
 
         <div className="mt-8 text-center text-xs text-gray-400">
-          Developed by <span className="text-[#075271] font-semibold"><a href="https://codecrafter.co.in">Code Crafter Web Solutions</a></span>
+          Developed by{" "}
+          <span className="text-[#075271] font-semibold">
+            <a href="https://codecrafter.co.in">Code Crafter Web Solutions</a>
+          </span>
         </div>
       </div>
     </div>

@@ -23,8 +23,11 @@ import Policies from "./page/About/Policies";
 import TermCondition from "./page/About/TermCondition";
 import ProtectedAuth from "./page/Auth/ProtectedAuth";
 import Unauthorized from "./component/Unauthorized";
-import EmployeeDashboard from "./page/Employee/Dashboard/EmployeeDashboard";
 
+
+import EmployeeDashboard from "./page/Employee/Dashboard/EmployeeDashboard";
+import EmployeeLayout from "./EmployeeComponents/Employee.Layout";
+import UserDashboard from './page/Home/UserDashboard'
 const App = () => {
   return (
     <>
@@ -56,7 +59,9 @@ const App = () => {
         </Route>
 
         <Route element={<ProtectedAuth isPrivate={true} allowedRoles={["employee"]} />}>
-          <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+        <Route path='/employee/dashboard' element={<EmployeeLayout/>}>
+        <Route index element={<UserDashboard />} />
+        </Route>
         </Route>
 
         <Route element={<ProtectedAuth isPrivate={false} />}>
