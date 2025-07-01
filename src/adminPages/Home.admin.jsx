@@ -20,9 +20,6 @@ import { useGetWeeklayCharQuery } from '../rtk/attendance';
 
 const AdminHome = () => {
     const{data:employeeData,isLoading} =useGetAllEmployeeQuery()
-    console.log("summary", employeeData);
-
-
     const{data:weeklyCharData,isLoading:charLoading}=useGetWeeklayCharQuery()
     const navigate=useNavigate();  
     

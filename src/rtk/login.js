@@ -23,7 +23,7 @@ export const logiDetail = createApi({
         credentials: "include",
       }),
       providesTags: ["userSession"],
-      // keepUnusedDataFor: 0, 
+      // keepUnusedDataFor: 3000,
       // refetchOnMountOrArgChange: true,
     }),
 

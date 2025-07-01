@@ -149,11 +149,8 @@ import { useIsLoginQuery, useLoginApiMutation } from "../../rtk/login";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 
 const AuthLogin = () => {
-  const [data, setData] = useState({
-    email: "",
-    password: "",
-  });
   const [showPassword, setShowPassword] = useState(false);
+  const [data, setData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const [loginApi, { isLoading: LoginLoading }] = useLoginApiMutation();
   const { data: isLoginData, isLoading } = useIsLoginQuery();
@@ -164,44 +161,52 @@ const AuthLogin = () => {
 
   const login = async () => {
     try {
-      console.log(data);
-
       const response = await loginApi(data).unwrap();
-      console.log("response:", response);
-      if (response.success === true) {
-        navigate("/dashboard");
+      console.log(response)
+      if (response.success) {
+        localStorage.setItem("user", JSON.stringify(response.data));
+        const role = response?.data?.role?.toLowerCase();
+
+if (role === "admin") {
+  navigate("/dashboard");
+} else if (role === "employee") {
+  console.log('hello')
+  navigate("/employee/dashboard");
+}
+
       }
     } catch (error) {
       console.error("Login failed:", error);
+      navigate("/");
     }
   };
 
-  useEffect(() => {
-    if (isLoginData && !isLoading) {
-      navigate("/dashboard");
-    }
-  }, [isLoginData, isLoading, navigate]);
+  // useEffect(() => {
+  //   if (!isLoading && isLoginData) {
+  //     console.log(isLoginData)
+  //     localStorage.setItem("user", JSON.stringify(isLoginData));
+  //     if (isLoginData?.role === "Admin") navigate("/dashboard");
+  //     if (isLoginData?.role === "Employee") navigate("/employee/dashboard");
+  //   }
+  // }, [isLoginData, isLoading, navigate]);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-[#075271]" />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <Loader2 className="h-8 w-8 animate-spin text-[#075271]" />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f7feff] to-[#f8fafc] px-4">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-lg p-8 md:p-10 border border-gray-200 transition-all">
-        {/* Header */}
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-extrabold text-gray-800 mb-1">Welcome Back 👋</h1>
           <p className="text-gray-500 text-sm">Sign in to continue to your dashboard</p>
         </div>
 
-        {/* Form */}
         <div className="space-y-4">
-          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">Email</label>
             <div className="relative">
@@ -213,12 +218,11 @@ const AuthLogin = () => {
                 value={data.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#075271] focus:border-[#075271] transition-all duration-200"
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#075271] focus:border-[#075271]"
               />
             </div>
           </div>
 
-          {/* Password */}
           <div>
             <label htmlFor="password" className="block text-base font-medium text-gray-700 mb-2">Password</label>
             <div className="relative">
@@ -230,29 +234,23 @@ const AuthLogin = () => {
                 value={data.password}
                 onChange={handleChange}
                 placeholder="••••••••"
-                className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#075271] focus:border-[#075271] transition-all"
+                className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#075271] focus:border-[#075271]"
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label="Toggle password visibility"
               >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
           </div>
 
-          {/* Submit */}
           <button
             type="button"
             onClick={login}
             disabled={LoginLoading}
-            className="w-full py-3 px-4 bg-[#075271] hover:bg-[#06425f] disabled:bg-[#075271]/70 text-white text-sm font-medium rounded-lg shadow-md transition duration-200 flex items-center justify-center space-x-2 disabled:cursor-not-allowed"
+            className="w-full py-3 px-4 bg-[#075271] hover:bg-[#06425f] disabled:bg-[#075271]/70 text-white text-sm font-medium rounded-lg shadow-md flex items-center justify-center"
           >
             {LoginLoading ? (
               <>
@@ -268,7 +266,6 @@ const AuthLogin = () => {
           </button>
         </div>
 
-        {/* Bottom Links */}
         <div className="mt-6 text-sm text-center text-gray-600">
           <p>
             Forgot your password?{" "}
@@ -276,14 +273,10 @@ const AuthLogin = () => {
               Reset here
             </a>
           </p>
-          {/* <p className="mt-2">
-            Note: Use <strong>admin/employee</strong> to login
-          </p> */}
         </div>
 
-        {/* Footer */}
         <div className="mt-8 text-center text-xs text-gray-400">
-          Developed by <span className="text-[#075271] font-semibold"><a href="https:codecrafter.co.in">Code Crafter Web Solutions</a></span>
+          Developed by <span className="text-[#075271] font-semibold"><a href="https://codecrafter.co.in">Code Crafter Web Solutions</a></span>
         </div>
       </div>
     </div>

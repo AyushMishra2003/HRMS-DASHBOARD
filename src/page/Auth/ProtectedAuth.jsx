@@ -1,41 +1,49 @@
-// import { useIsLoginQuery, useLoginApiMutation } from '../../rtk/login';
-// import React, { useEffect, useState } from 'react';
-// import { data, Outlet, useNavigate } from "react-router-dom";
-// import { ClipLoader } from 'react-spinners';
+import { useIsLoginQuery } from '../../rtk/login';
+import React, { useEffect, useRef } from 'react';
+import { Outlet, useNavigate } from "react-router-dom";
+import { ClipLoader } from 'react-spinners';
 
-// const ProtectedAuth = ({ isPrivate }) => {
-//   const { data, isLoading, refetch } = useIsLoginQuery();
+const ProtectedAuth = ({ isPrivate, allowedRoles = [] }) => {
+  const { data, isLoading } = useIsLoginQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    skip: false,
+  });
 
-//   const navigate = useNavigate();
-//   const [loading, setLoading] = useState(true); 
+  const navigate = useNavigate();
+  const redirected = useRef(false); 
 
-  
+  useEffect(() => {
+    if (isLoading || redirected.current) return;
 
-//   useEffect(() => {
-//     const checkLogin = async () => {
-//       try {
-//         const response = await refetch(); 
-//         if (response?.data?.success) {
-//           console.log("✅ User is logged in.");
-//           if (!isPrivate) navigate("/dashboard", { replace: true });
-//         } else {
-//           // console.log("⛔ User is not logged in.");
-//           if (isPrivate) navigate("/login", { replace: true });
-//         }
-//       } catch (error) {
-//         if (isPrivate) navigate("/login", { replace: true });
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     checkLogin();
-//   }, [refetch]);
-  
-//   if (isLoading) {
-//     return <div className='flex  h-[100vh] items-center justify-center'><ClipLoader/></div>
-//   }
+    const user = data?.user;
+    const isLoggedIn = data?.success;
 
-//   return <Outlet />; 
-// };
+    if (isLoggedIn) {
+      if (!isPrivate) {
+        redirected.current = true;
+        if (user?.role === "admin" || "Admin") navigate("/dashboard", { replace: true });
+        else if (user?.role === "employee" || 'Employee') navigate("/employee/dashboard", { replace: true });
+      } else if (!allowedRoles.includes(user?.role)) {
+        redirected.current = true;
+        navigate("/unauthorized", { replace: true });
+      }
+    } else {
+      if (isPrivate) {
+        redirected.current = true;
+        navigate("/", { replace: true });
+      }
+    }
+  }, [isLoading, data, isPrivate, allowedRoles, navigate]);
 
-// export default ProtectedAuth;
+  if (isLoading) {
+    return (
+      <div className='flex h-[100vh] items-center justify-center'>
+        <ClipLoader />
+      </div>
+    );
+  }
+
+  return <Outlet />;
+};
+
+export default ProtectedAuth;

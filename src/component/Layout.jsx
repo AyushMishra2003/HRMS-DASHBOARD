@@ -9,8 +9,6 @@ const Layout = () => {
       <SideBar/>
       <div className="flex flex-col flex-1">
          <TopHeader/>
-
-        {/* Page Content */}
         <div className="flex-1 overflow-auto p-5 bg-gray-100">
           <Outlet />
         </div>
