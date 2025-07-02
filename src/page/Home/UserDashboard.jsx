@@ -14,18 +14,21 @@ import {
 } from "lucide-react";
 import { Quote, Target, Lightbulb, ArrowUpRight } from "lucide-react";
 
-import { useUserContext } from "../UseContext/useContext.jsx";
 import { useEffect } from "react";
 import { useGetAttendanceDetailQuery } from "../../rtk/attendance.js";
 import WorkingHoursChart from "../../page/WorkingHourChart/WorkingHoursCharts.jsx";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
+import { useUserContext } from "../UseContext/useContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = ({ data }) => {
+  const navigate = useNavigate()
   const { data: attandance, isLoading } = useGetAttendanceDetailQuery();
- 
-      console.log("data++",attandance);
       
-  // const { setEmployeeId } = useUserContext();
+  const { user:userData } = useUserContext();
+  if(!userData){
+    navigate('/')
+  }
   const [notices] = useState([
     {
       id: 1,

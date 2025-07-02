@@ -14,7 +14,10 @@ import {
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useIsLoginQuery, useIsLogoutMutation } from "../rtk/login";
-
+import { useDispatch } from "react-redux";
+ import { logiDetail } from "../rtk/login.js" 
+import { toast } from "react-toastify";
+import { useUserContext } from "../page/UseContext/useContext.jsx";
 const mockNotifications = [
   { _id: "1", message: "New task assigned to you", isRead: false },
   { _id: "2", message: "Meeting scheduled for 3 PM", isRead: false },
@@ -24,12 +27,14 @@ const mockNotifications = [
 const TopHeader = () => {
  const {data:user , isLoading, Error} = useIsLoginQuery()
  const [logoutApi , {isLoading:logOutLoading}] = useIsLogoutMutation()
+ const dispatch = useDispatch()
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [buttonStatus, setButtonStatus] = useState(true);
   const [timer, setTimer] = useState(28547); 
   const [isOnline, setIsOnline] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
+    const {setUser} = useUserContext()
 const navigate = useNavigate()
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,14 +69,20 @@ const navigate = useNavigate()
 
   const unreadCount = mockNotifications.filter(n => !n.isRead).length;
 
-  const handleLogOut = async()=>{
-const response = await logoutApi().unwrap()
-console.log(document.cookie)
-
-navigate('/')
-
-console.log(response)
-  }
+   const handleLogOut = async () => {
+     try {
+       await logoutApi().unwrap();
+   dispatch(logiDetail.util.resetApiState());
+       setUser(null);
+       localStorage.removeItem("userData");
+       navigate("/");
+       console.log("chal rha hai")
+       toast.success("Logout successful!");
+     } catch (err) {
+       toast.error(err.message || "Logout Failed. Please try again.");
+       console.error("Logout failed", err);
+     }
+   };
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
