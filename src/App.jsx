@@ -24,16 +24,25 @@ import TermCondition from "./page/About/TermCondition";
 import ProtectedAuth from "./page/Auth/ProtectedAuth";
 import Unauthorized from "./component/Unauthorized";
 
-
 import EmployeeDashboard from "./page/Employee/Dashboard/EmployeeDashboard";
 import EmployeeLayout from "./EmployeeComponents/Employee.Layout";
-import UserDashboard from './page/Home/UserDashboard'
+import UserDashboard from './page/Home/UserDashboard';
+// import HomeDashboard from './page/Home/HomeDashboard'; // Missing import add kiya
+
 const App = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-
       <Routes>
+        {/* <Route path="/home" element={<HomeDashboard />} /> */}
+        
+        <Route path="/dashboard" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="about" element={<About />} />
+          <Route path="employee/list" element={<EmployeeList />} />
+          <Route path="employee/details/:id" element={<EmployeeDetail />} />
+        </Route>
+
         <Route element={<ProtectedAuth isPrivate={true} allowedRoles={["admin"]} />}>
           <Route path="/dashboard" element={<Layout />}>
             <Route index element={<Home />} />
@@ -76,7 +85,6 @@ const App = () => {
         </Route>
 
         <Route path="/unauthorized" element={<Unauthorized />} />
-
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

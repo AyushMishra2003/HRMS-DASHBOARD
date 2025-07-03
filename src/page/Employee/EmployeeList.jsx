@@ -277,17 +277,17 @@ const EmployeeList = () => {
             </div>
             <div className="flex items-center gap-2">
               <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors">
-                ‹‹
+                
               </button>
               <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors">
-                ‹
+              
               </button>
               <span className="px-3 py-1 text-sm">Page 1 of 1</span>
               <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors">
-                ›
+              
               </button>
               <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors">
-                ››
+              
               </button>
             </div>
           </div>
