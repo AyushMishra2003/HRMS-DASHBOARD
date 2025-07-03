@@ -71,8 +71,8 @@ const Payroll = () => {
 
 
   const handleStatusChange = async (employee) => {
-    // console.log("aaaa", employee);
-    // return;
+    const isConfirmed = window.confirm("Are you sure you want to pay payment?");
+    if (!isConfirmed) return;
     const monthIndex = new Date(`${employee.month} 1, ${selectedYear}`).getMonth();
     try {
       const result = await paySalary({
@@ -93,8 +93,8 @@ const Payroll = () => {
       <div className="flex items-center gap-2">
         <span
           className={`px-2 py-1 text-xs rounded-full font-medium ${status?.toLowerCase() === 'paid'
-              ? 'bg-blue-100 text-blue-800'
-              : 'bg-red-100 text-red-800'
+            ? 'bg-blue-100 text-blue-800'
+            : 'bg-red-100 text-red-800'
             }`}
         >
           {status?.toLowerCase() === 'paid' ? (
@@ -122,7 +122,7 @@ const Payroll = () => {
     );
   };
 
-  if (payRoleLoading||salaryPayLoading) {
+  if (payRoleLoading || salaryPayLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <ClipLoader size={30} color="blue" />
@@ -151,7 +151,7 @@ const Payroll = () => {
             </div>
           </div>
 
-           <div className="bg-white p-3 rounded-lg shadow-sm border-l-4 border-green-500">
+          <div className="bg-white p-3 rounded-lg shadow-sm border-l-4 border-green-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">Paid</p>
@@ -159,7 +159,7 @@ const Payroll = () => {
               </div>
               <CheckCircle className="w-6 h-6 text-green-500" />
             </div>
-          </div> 
+          </div>
 
           <div className="bg-white p-3 rounded-lg shadow-sm border-l-4 border-blue-500">
             <div className="flex items-center justify-between">
@@ -265,7 +265,7 @@ const Payroll = () => {
                 {filteredData?.map((employee, index) => (
                   <tr key={employee.id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                     <td className="px-3 py-2">
-                      <Link to={`/dashboard/employee/overview/${employee?._id}`} className="flex items-center gap-2">
+                      <Link to={`/dashboard/employee/overview/${employee?.employeeId}`} className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium" style={{ backgroundColor: '#06425F' }}>
                           {employee.employeeName.charAt(0)}
                         </div>
