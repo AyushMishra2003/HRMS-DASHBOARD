@@ -15,7 +15,8 @@ import {
   Download,
   Filter,
   PhoneCallIcon,
-  IndianRupee
+  IndianRupee,
+  FileText
 } from 'lucide-react';
 import PersonalInfo from './EmployeeOverview/PersonalInfo';
 import WorkInfo from './EmployeeOverview/WorkInfo';
@@ -25,7 +26,7 @@ import AttendanceInfo from './EmployeeOverview/AttendanceInfo.jsx';
 import LeaveInfo from './EmployeeOverview/LeaveInfo.jsx';
 import DocumentInfo from './EmployeeOverview/DocumentInfo.jsx';
 import SalaryInfo from './EmployeeOverview/SalaryInfo.jsx';
-const EmployeeOverview = () => {
+const EmployeeOverview = ({ basePath = "/dashboard" }) => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const tab = searchParams.get("tab");
@@ -45,9 +46,9 @@ const navigate = useNavigate()
     // { id: 'team', label: 'Team & Projects', icon: Users },
     { id: 'attendance', label: 'Attendance', icon: Clock },
     { id: 'leaves', label: 'Leaves', icon: Calendar },
-    { id: 'documents', label: 'Documents', icon: Briefcase },
     { id: 'salary', label: 'Earnings', icon: IndianRupee },
-    { id: 'other', label: 'Other Details', icon: User }
+    { id: 'documents', label: 'Documents', icon: FileText },
+    // { id: 'other', label: 'Other Details', icon: User }
   ];
 
   const TeamProjects = () => (
@@ -108,7 +109,7 @@ const navigate = useNavigate()
 
   const handletab = (tabId) =>{
     setActiveTab(tabId)
-    navigate(`/dashboard/employee/overview/${id}?tab=${tabId}`)
+    navigate(`${basePath}/employee/overview/${id}?tab=${tabId}`)
   }
 useEffect(() => {
   if (tab) {
@@ -152,6 +153,7 @@ useEffect(() => {
       {/* Navigation Tabs */}
       <div className="bg-white border-b border-gray-200 sticky -top-5 z-10">
         <div className="flex overflow-x-auto">
+          {tabs.length <=0 && ('') }
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (

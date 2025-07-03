@@ -10,68 +10,58 @@ import {
   Menu,
   Bell,
   Building2,
-  IndianRupee
+  IndianRupee,
+  Paperclip,
+  FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import {useUserContext} from '../page/UseContext/useContext'
 const EmployeeSidebaar = () => {
   const [expandedNav, setExpandedNav] = useState(null);
   const [currentPage, setCurrentPage] = useState('Dashboard');
    const [sidebarOpen, setSidebarOpen] = useState(true);
-  const data = { role: "Admin" }; 
+const {user} = useUserContext()
   const navigate = useNavigate()
-
-  // useEffect(() => {
-  //   if(window.innerWidth<768){
-  //     setSidebarOpen(false)
-  //   }
-  // })
+const userData = user.employeeeData
   const navItems = [
-    { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [], url: "/dashboard" },
-    { name: 'Recruitment', icon: <UserPlus size={20} />, children: [], url: "/dashboard/recruitment" },
-    { name: 'Onboarding', icon: <Rocket size={20} />, children: [
-      {name:'Onboard New Employee', url:"/dashboard/employee/add"},
-      {name:'Onboarding Policies', url:"/dashboard/onboarding"},
-    ]},
+    { name: 'Dashboard', icon: <LayoutDashboard size={20} />, children: [], url: "/employee/dashboard" },
+  
     { 
-      name: 'Employee', 
+      name: 'My Profile', 
       icon: <Users size={20} />, 
-      children: [
-        {name:'Add New Employee', url:"/dashboard/employee/add"},
-        {name:'Employee List', url:"/dashboard/employee/list"},
-        // {name:'Employee Overview', url:"/dashboard/employee/overview"},
-        // {name:'Work Type', url:"/dashboard/employee/work"},
-        // {name:'Employee Policy', url:"/dashboard/employee/policy"},
-      ] 
+      hildren: [], url: `/employee/dashboard/employee/overview/${userData._id}?tab=parsonal` 
     },
     { name: 'Attendance', icon: <Clock size={20} />,
       children: [
       //  {name:"Attendance List", url:"/dashboard/attendance/list"},
-       {name:"Attendance Logs", url:"/dashboard/attendance/logs"},
+       {name:"Attendance Logs", url:`/employee/dashboard/employee/overview/${userData._id}?tab=attendance`},
         // {name:"Employee Attendance", url:"/dashboard/attendance/employee"}  ,
-        {name:"Rules", url:"/dashboard/attendance/rules"}  
+        // {name:"Rules", url:"/dashboard/attendance/rules"}  
       ]
     },  
     { name: "Leave", icon: <Users size={20} />,
       children: [
       //  {name:"Leave", url:"/dashboard/leave"},
       //  {name:"Leave List", url:"/dashboard/leave/list"},
-       {name:"Leave Logs", url:"/dashboard/leave/logs"},
-       {name:"Rules", url:"/dashboard/leave/rules"},
+       {name:"Leave Logs", url:`/employee/dashboard/employee/overview/${userData._id}?tab=leaves`},
+      //  {name:"Rules", url:"/dashboard/leave/rules"},
       ]  
     },
-     { name: 'Payroll', icon: <IndianRupee size={20} />, children: [], url: "/dashboard/payroll" },
-     { name: 'Notification', icon: <Bell size={20} />, children: [], url: "/dashboard/notification" },
+     { name: 'Payroll', icon: <IndianRupee size={20} />, children: [], url: `/employee/dashboard/employee/overview/${userData._id}?tab=salary` },
+     
+      { 
+      name: 'Documents', 
+      icon: <FileText size={20} />, 
+      hildren: [], url: `/employee/dashboard/employee/overview/${userData._id}?tab=documents` 
+    },
+     { name: 'Notification', icon: <Bell size={20} />, children: [], url: "/employee/dashboard/notification" },
      { name: 'About', icon: <Building2 size={20} />, children: [
-        {name:"About Company",url:"/dashboard/about"},
-        {name:"Our Term & Condition",url:"/dashboard/term-condition"},
-        {name:"Our Policies", url:"/dashboard/policies"},
+        {name:"About Company",url:"/employee/dashboard/about"},
+        {name:"Our Term & Condition",url:"/employee/dashboard/term-condition"},
+        {name:"Our Policies", url:"/employee/dashboard/policies"},
      ] },
   ];
 
-  const filteredNavItems = data?.role === "Admin"
-    ? navItems
-    : navItems.filter(item => item.name !== "Employee" && item.name !== "Recruitment");
 
   const toggleNav = (name) => {
     if (expandedNav === name) {
@@ -129,9 +119,8 @@ navigate(`${child.url}`)
           </button>
       </div>
 
-      {/* Navigation */}
       <nav className="mt-4 px-3">
-        {filteredNavItems.map((item) => (
+        {navItems.map((item) => (
           <div key={item.name} className="mb-1">
             <div
               className={`
@@ -146,7 +135,7 @@ navigate(`${child.url}`)
             >
               <span className="mr-4 flex-shrink-0">{item.icon}</span>
               <span className={` ${sidebarOpen ? 'block':'hidden'} flex-grow font-medium text-sm`}>{item.name}</span>
-              {item.children.length > 0 && (
+              {item?.children?.length > 0 && (
                 <div className={` ${sidebarOpen ? 'block':'hidden'} transition-transform duration-200`}>
                   {expandedNav === item.name ? 
                     <ChevronDown size={16} /> : 

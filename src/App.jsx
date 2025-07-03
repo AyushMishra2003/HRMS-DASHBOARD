@@ -41,6 +41,7 @@ const App = () => {
             <Route path="employee/list" element={<EmployeeList />} />
             <Route path="employee/details/:id" element={<EmployeeDetail />} />
             <Route path="employee/overview/:id" element={<EmployeeOverview />} />
+            <Route path="employee/edit/:id" element={<EmployeeAdd />} />
             <Route path="employee/add" element={<EmployeeAdd />} />
             <Route path="employee/policy" element={<Policy />} />
             <Route path="employee/add/policy" element={<EmployeeAddPolicy />} />
@@ -61,6 +62,12 @@ const App = () => {
         <Route element={<ProtectedAuth isPrivate={true} allowedRoles={["employee"]} />}>
         <Route path='/employee/dashboard' element={<EmployeeLayout/>}>
         <Route index element={<UserDashboard />} />
+        <Route path='employee/overview/:id' element={<EmployeeOverview basePath='/employee/dashboard'/>}/>
+        <Route path='notification' element={<Notification basePath='/employee/dashboard'/>}/>
+          <Route path="employee/edit/:id" element={<EmployeeAdd basePath='/employee/dashboard' />} />
+        <Route path="policies" element={<Policies />} />
+        <Route path="term-condition" element={<TermCondition />} />
+             <Route path="about" element={<About />} />
         </Route>
         </Route>
 

@@ -1,29 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { FiEdit, FiSave, FiX } from 'react-icons/fi';
-import { useGetOneEmployeeWorkQuery } from '../../../rtk/employeeworck.js';
-import { useWorkAddMutation } from '../../../rtk/employeeworck.js';
-import { useParams } from 'react-router-dom';
+import { Edit, Save, X, Building, Users, Clock, MapPin, Calendar, DollarSign, User, Briefcase, UserCheck, Home } from 'lucide-react';
 
 const WorkInfo = () => {
-  const {id} = useParams()
-  const { data: workData, isLoading, error } = useGetOneEmployeeWorkQuery({id});
-  const [workAddMutation, { isLoading: isUpdating }] = useWorkAddMutation();
+  // Mock data for demonstration - replace with actual API calls
+  const [workData, setWorkData] = useState({
+    department: 'Engineering',
+    jobPosition: 'Senior Developer',
+    shiftInformation: 'Day Shift (9 AM - 5 PM)',
+    workType: 'Full Time',
+    employeeType: 'Permanent',
+    reportingManager: 'John Smith',
+    company: 'Tech Solutions Inc',
+    workLocation: 'New York Office',
+    endDate: '',
+    joiningDate: '2023-01-15',
+    salary: '75000'
+  });
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
   
   const [isEditing, setIsEditing] = useState(false);
-  const [workInfo, setWorkInfo] = useState({
-    department: '',
-    jobPosition: '',
-    shiftInformation: '',
-    workType: '',
-    employeeType: '',
-    reportingManager: '',
-    company: '',
-    workLocation: '',
-    endDate: '',
-    joiningDate: '',
-    salary: ''
-  });
-
+  const [workInfo, setWorkInfo] = useState({});
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
@@ -38,13 +37,35 @@ const WorkInfo = () => {
         company: workData?.company || 'N/A',
         workLocation: workData?.workLocation || 'N/A',
         endDate: workData?.endDate || 'N/A',
-        joiningDate: workData?.joiningDate ? new Date(workData.joiningDate).toLocaleDateString("en-IN") : 'N/A',
+        joiningDate: workData?.joiningDate ? formatDate(workData.joiningDate) : 'N/A',
         salary: workData?.salary || 'N/A'
       };
       setWorkInfo(workDetails);
       setFormData(workDetails);
     }
   }, [workData]);
+
+  const formatDate = (dateString) => {
+    if (!dateString || dateString === 'N/A') return 'N/A';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'N/A';
+      return date.toLocaleDateString("en-IN");
+    } catch (error) {
+      return 'N/A';
+    }
+  };
+
+  const formatDateForInput = (dateString) => {
+    if (!dateString || dateString === 'N/A') return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      return '';
+    }
+  };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -64,10 +85,12 @@ const WorkInfo = () => {
   };
 
   const handleSave = async () => {
+    setIsUpdating(true);
     try {
-      // Prepare data for API call
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       const updateData = {
-        id: id,
         department: formData.department,
         jobPosition: formData.jobPosition,
         shiftInformation: formData.shiftInformation,
@@ -81,33 +104,32 @@ const WorkInfo = () => {
         salary: formData.salary
       };
 
-      await workAddMutation(updateData).unwrap();
       setWorkInfo(formData);
       setIsEditing(false);
-      // You might want to show a success message here
+      setIsUpdating(false);
     } catch (error) {
       console.error('Failed to update work information:', error);
-      // You might want to show an error message here
+      setIsUpdating(false);
     }
   };
 
   const workFields = [
-    { key: 'department', label: 'Department', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
-    { key: 'jobPosition', label: 'Job Position', icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-    { key: 'shiftInformation', label: 'Shift Information', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
-    { key: 'workType', label: 'Work Type', icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-    { key: 'employeeType', label: 'Employee Type', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
-    { key: 'reportingManager', label: 'Reporting Manager', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
-    { key: 'company', label: 'Company', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
-    { key: 'workLocation', label: 'Work Location', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-    { key: 'endDate', label: 'End Date', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
-    { key: 'joiningDate', label: 'Joining Date', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
-    { key: 'salary', label: 'Salary', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
+    { key: 'department', label: 'Department', icon: Building },
+    { key: 'jobPosition', label: 'Job Position', icon: Briefcase },
+    { key: 'shiftInformation', label: 'Shift Information', icon: Clock },
+    { key: 'workType', label: 'Work Type', icon: Users },
+    { key: 'employeeType', label: 'Employee Type', icon: User },
+    { key: 'reportingManager', label: 'Reporting Manager', icon: UserCheck },
+    { key: 'company', label: 'Company', icon: Building },
+    { key: 'workLocation', label: 'Work Location', icon: MapPin },
+    { key: 'endDate', label: 'End Date', icon: Calendar },
+    { key: 'joiningDate', label: 'Joining Date', icon: Calendar },
+    { key: 'salary', label: 'Salary', icon: DollarSign }
   ];
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-md shadow-sm p-4 mb-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-300 rounded w-1/4 mb-4"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -125,30 +147,22 @@ const WorkInfo = () => {
 
   if (error) {
     return (
-      <div className="bg-white rounded-md shadow-sm p-4 mb-4">
-        <div className="text-red-500">Error loading work information</div>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+        <div className="text-red-500 flex items-center">
+          <X className="h-5 w-5 mr-2" />
+          Error loading work information
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-md shadow-sm p-4 mb-4">
-      <div className="flex justify-between items-center mb-4">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
         <div className="flex items-center">
-          <svg
-            className="h-5 w-5 text-gray-500 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-            />
-          </svg>
-          <h3 className="text-lg font-medium">Work Information</h3>
+          <Briefcase className="h-5 w-5 text-[#06425F] mr-2" />
+          <h3 className="text-lg font-semibold text-[#06425F]">Work Information</h3>
           <div className="ml-2 h-2 w-2 bg-red-500 rounded-full"></div>
         </div>
         
@@ -156,77 +170,71 @@ const WorkInfo = () => {
           {!isEditing ? (
             <button
               onClick={handleEdit}
-              className="text-blue-500 hover:text-blue-700 transition-colors"
+              className="p-2 text-[#06425F] hover:bg-[#06425F]/10 rounded-lg transition-colors"
+              title="Edit work information"
             >
-              <FiEdit className="text-xl" />
+              <Edit className="h-4 w-4" />
             </button>
           ) : (
             <>
               <button
                 onClick={handleSave}
                 disabled={isUpdating}
-                className="text-green-500 hover:text-green-700 transition-colors disabled:opacity-50"
+                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
+                title="Save changes"
               >
-                <FiSave className="text-xl" />
+                <Save className="h-4 w-4" />
               </button>
               <button
                 onClick={handleCancel}
-                className="text-red-500 hover:text-red-700 transition-colors"
+                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title="Cancel changes"
               >
-                <FiX className="text-xl" />
+                <X className="h-4 w-4" />
               </button>
             </>
           )}
         </div>
       </div>
 
+      {/* Work Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {workFields.map((field) => (
-          <div key={field.key}>
-            <div className="text-gray-500 text-sm flex items-center mb-1">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="h-4 w-4 mr-1" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d={field.icon}
+        {workFields.map((field) => {
+          const IconComponent = field.icon;
+          return (
+            <div key={field.key} className="space-y-2">
+              <div className="flex items-center text-gray-600 text-sm">
+                <IconComponent className="h-4 w-4 mr-2 text-[#06425F]" />
+                {field.label}
+              </div>
+              
+              {isEditing ? (
+                <input
+                  type={field.key === 'salary' ? 'number' : field.key.includes('Date') ? 'date' : 'text'}
+                  value={field.key.includes('Date') && formData[field.key] !== 'N/A' 
+                    ? formatDateForInput(formData[field.key])
+                    : formData[field.key] === 'N/A' ? '' : formData[field.key]
+                  }
+                  onChange={(e) => handleInputChange(field.key, e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#06425F]/20 focus:border-[#06425F] transition-colors"
+                  placeholder={`Enter ${field.label.toLowerCase()}`}
                 />
-              </svg>
-              {field.label}
+              ) : (
+                <div className="text-gray-900 py-2 px-3 bg-gray-50 rounded-lg min-h-[40px] flex items-center">
+                  {workInfo[field.key]}
+                </div>
+              )}
             </div>
-            
-            {isEditing ? (
-              <input
-                type={field.key === 'salary' ? 'number' : field.key.includes('Date') ? 'date' : 'text'}
-                value={field.key.includes('Date') && formData[field.key] !== 'N/A' 
-                  ? new Date(formData[field.key]).toISOString().split('T')[0] 
-                  : formData[field.key] === 'N/A' ? '' : formData[field.key]
-                }
-                onChange={(e) => handleInputChange(field.key, e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={`Enter ${field.label.toLowerCase()}`}
-              />
-            ) : (
-              <div className="text-gray-900 py-2">{workInfo[field.key]}</div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
+      {/* Update Status */}
       {isUpdating && (
-        <div className="mt-4 text-center">
-          <div className="inline-flex items-center text-blue-600">
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Updating work information...
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-center text-[#06425F]">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#06425F] mr-3"></div>
+            <span className="text-sm">Updating work information...</span>
           </div>
         </div>
       )}

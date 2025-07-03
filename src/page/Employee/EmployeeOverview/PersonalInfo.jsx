@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, Edit2, User, Mail, Phone, MapPin, AlertCircle, Loader2 } from 'lucide-react';
 import { useGetOneEmployeeQuery } from '../../../rtk/employeeApi.js';
 
-const PersonalInfo = () => {
+const PersonalInfo = ({ basePath = "/dashboard" }) => {
   const { id } = useParams();
   const { data, isLoading, error, refetch } = useGetOneEmployeeQuery({ id });
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ const PersonalInfo = () => {
     if (data) {
       setPersonalData({
         name: data?.name || '',
-        dateOfBirth: data?.dateOfBirth || '15/06/2002',
+        dateOfBirth: data?.dateOfBirth || '--',
         gender: data?.gender || '',
         bloodGroup: data?.bloodGroup || '',
         maritalStatus: data?.maritalStatus || '',
@@ -68,14 +68,13 @@ const PersonalInfo = () => {
   }, [data]);
 
   const handlePersonalEdit = (tab) => {
-    console.log('click hua')
-    navigate(`/dashboard/employee/edit/${id}?tab=personal`);
+    navigate(`${basePath}/employee/edit/${id}?tab=personal`);
   };
 
  
 
   const handleAddressEdit = () => {
-    navigate(`/dashboard/employee/address/${id}`);
+    navigate(`${basePath}/employee/edit/${id}?tab=address`);
   };
 
   const handleRetry = () => {
