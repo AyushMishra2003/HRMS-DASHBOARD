@@ -1,6 +1,4 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-
 import Home from "./page/Home/Home";
 import Layout from "./component/Layout";
 import About from "./page/About/About";
@@ -11,6 +9,7 @@ import Policy from "./page/Policy/Policy";
 import EmployeeAddPolicy from "./page/Policy/AddPolicy";
 import AuthLogin from "./page/Auth/Login";
 import EmployeeAttendance from "./page/EmployeeAttendance/EmployeeAttendance";
+import { ToastContainer } from "react-toastify";
 import AttendanceLogs from "./page/EmployeeAttendance/AttendanceLogs";
 import EmployeeOverview from "./page/Employee/EmployeeOverview";
 import LeaveLogs from "./page/LeaveList/LeaveLogs";
@@ -25,18 +24,18 @@ import TermCondition from "./page/About/TermCondition";
 import ProtectedAuth from "./page/Auth/ProtectedAuth";
 import Unauthorized from "./component/Unauthorized";
 
+import EmployeeDashboard from "./page/Employee/Dashboard/EmployeeDashboard";
 import EmployeeLayout from "./EmployeeComponents/Employee.Layout";
 import UserDashboard from './page/Home/UserDashboard';
-import HomeDashboard from './page/Home/HomeDashboard'; // yeh missing tha
+// import HomeDashboard from './page/Home/HomeDashboard'; // Missing import add kiya
 
 const App = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-
       <Routes>
-        <Route path="/home" element={<HomeDashboard />} />
-
+        {/* <Route path="/home" element={<HomeDashboard />} /> */}
+        
         <Route path="/dashboard" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
@@ -69,7 +68,7 @@ const App = () => {
         </Route>
 
         <Route element={<ProtectedAuth isPrivate={true} allowedRoles={["employee"]} />}>
-          <Route path='/employee/dashboard' element={<EmployeeLayout />}>
+          <Route path="/employee/dashboard" element={<EmployeeLayout />}>
             <Route index element={<UserDashboard />} />
           </Route>
         </Route>
@@ -79,7 +78,6 @@ const App = () => {
         </Route>
 
         <Route path="/unauthorized" element={<Unauthorized />} />
-
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
