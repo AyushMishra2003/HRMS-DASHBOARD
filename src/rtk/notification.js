@@ -14,6 +14,14 @@ export const notificationApi = createApi({
       }),
       providesTags: ["notification"],
     }),
+    
+    getUserNotification: builder.query({
+      query: () => ({
+        url: `/notification/user/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["UserNotification"],
+    }),
 
     // notificationApi.js
     markAsReadNotification: builder.mutation({
@@ -35,5 +43,5 @@ export const notificationApi = createApi({
   }),
 });
 
-export const { useGetNotificationQuery, useMarkAsReadNotificationMutation , useDeleteNotificationMutation } =
+export const { useGetNotificationQuery,useGetUserNotificationQuery, useMarkAsReadNotificationMutation , useDeleteNotificationMutation } =
   notificationApi;

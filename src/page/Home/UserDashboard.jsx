@@ -14,18 +14,21 @@ import {
 } from "lucide-react";
 import { Quote, Target, Lightbulb, ArrowUpRight } from "lucide-react";
 
-import { useUserContext } from "../UseContext/useContext.jsx";
 import { useEffect } from "react";
 import { useGetAttendanceDetailQuery } from "../../rtk/attendance.js";
 import WorkingHoursChart from "../../page/WorkingHourChart/WorkingHoursCharts.jsx";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
+import { useUserContext } from "../UseContext/useContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = ({ data }) => {
+  const navigate = useNavigate()
   const { data: attandance, isLoading } = useGetAttendanceDetailQuery();
- 
-      console.log("data++",attandance);
       
-  const { setEmployeeId } = useUserContext();
+  const { user:userData } = useUserContext();
+  if(!userData){
+    navigate('/')
+  }
   const [notices] = useState([
     {
       id: 1,
@@ -63,7 +66,7 @@ const Dashboard = ({ data }) => {
   
   useEffect(() => {
     if (data?.id) {
-      setEmployeeId(data.id);
+      // setEmployeeId(data.id);
       setUser({
         name: data.name,
         phone_Number: data.mobile,
@@ -281,7 +284,7 @@ const Dashboard = ({ data }) => {
           </div>
 
           {/* Attendance Overview - Pie Chart */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-6">
             <div className="bg-white rounded-lg shadow h-full">
               <div className="border-b border-gray-200 p-4 flex items-center">
                 <PieChartIcon className="text-blue-600 mr-2" />
@@ -313,7 +316,7 @@ const Dashboard = ({ data }) => {
           </div>
 
           {/* Performance Trend Chart */}
-          <div className="lg:col-span-8">
+          {/* <div className="lg:col-span-8">
             <div className="bg-white rounded-lg shadow h-full">
               <div className="border-b border-gray-200 p-4 flex items-center">
                 <Activity className="text-blue-600 mr-2" />
@@ -334,10 +337,10 @@ const Dashboard = ({ data }) => {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Productivity By Time of Day */}
-          <div className="lg:col-span-6">
+          {/* <div className="lg:col-span-6">
             <div className="bg-white rounded-lg shadow h-full">
               <div className="border-b border-gray-200 p-4 flex items-center">
                 <Clock className="text-blue-600 mr-2" />
@@ -362,7 +365,7 @@ const Dashboard = ({ data }) => {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Weekly Working Hours */}
           <div className="lg:col-span-6">

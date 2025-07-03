@@ -1,14 +1,13 @@
-import React from 'react';
-import SideBar from './SideBar';
 import { Outlet } from 'react-router-dom';
-import TopHeader from './TopHeader';
+import EmployeeSidebaar from './Employee.SideBar';
+import EmployeeTopbar from './Employee.Topbar';
 
-const Layout = () => {
+const EmployeeLayout = () => {
   return (
     <div className="flex h-screen">
-      <SideBar/>
+      <EmployeeSidebaar/>
       <div className="flex flex-col flex-1">
-         <TopHeader/>
+         <EmployeeTopbar/>
         <div className="flex-1 overflow-auto p-5 bg-gray-100">
           <Outlet />
         </div>
@@ -17,4 +16,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default EmployeeLayout;

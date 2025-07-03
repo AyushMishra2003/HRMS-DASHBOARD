@@ -12,17 +12,12 @@ import {
   Wifi,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-
- const data = { role: "Admin" }; 
-const mockData = {
-  employee: {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@company.com"
-  }
-};
-
+import { Link, useNavigate } from "react-router-dom";
+import { useIsLoginQuery, useIsLogoutMutation } from "../rtk/login";
+import { useDispatch } from "react-redux";
+ import { logiDetail } from "../rtk/login.js" 
+import { toast } from "react-toastify";
+import { useUserContext } from "../page/UseContext/useContext.jsx";
 const mockNotifications = [
   { _id: "1", message: "New task assigned to you", isRead: false },
   { _id: "2", message: "Meeting scheduled for 3 PM", isRead: false },
@@ -30,14 +25,17 @@ const mockNotifications = [
 ];
 
 const TopHeader = () => {
- 
+ const {data:user , isLoading, Error} = useIsLoginQuery()
+ const [logoutApi , {isLoading:logOutLoading}] = useIsLogoutMutation()
+ const dispatch = useDispatch()
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [buttonStatus, setButtonStatus] = useState(true);
   const [timer, setTimer] = useState(28547); 
   const [isOnline, setIsOnline] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
-
+    const {setUser} = useUserContext()
+const navigate = useNavigate()
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -63,13 +61,28 @@ const TopHeader = () => {
   };
 
   const getInitials = () => {
-    if (mockData?.employee?.firstName && mockData?.employee?.lastName) {
-      return `${mockData.employee.firstName[0]}${mockData.employee.lastName[0]}`;
+    if (user?.name) {
+      return `${user?.name[0]}`;
     }
-    return "JD";
+    return "U";
   };
 
   const unreadCount = mockNotifications.filter(n => !n.isRead).length;
+
+   const handleLogOut = async () => {
+     try {
+       await logoutApi().unwrap();
+   dispatch(logiDetail.util.resetApiState());
+       setUser(null);
+       localStorage.removeItem("userData");
+       navigate("/");
+       console.log("chal rha hai")
+       toast.success("Logout successful!");
+     } catch (err) {
+       toast.error(err.message || "Logout Failed. Please try again.");
+       console.error("Logout failed", err);
+     }
+   };
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
@@ -94,7 +107,7 @@ const TopHeader = () => {
 
         {/* Center Section - Check In/Out (Employee Only) */}
 
-        {data.role == 'Admin' ? '' : (
+        {user?.role == 'Admin' ? '' : (
 <div className="flex items-center">
           <div className="flex items-center bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
             {buttonStatus ? (
@@ -231,9 +244,9 @@ const TopHeader = () => {
               
               <div className="ml-3 mr-2 hidden sm:block text-left">
                 <p className="text-sm font-semibold text-gray-700">
-                  {mockData?.employee?.firstName || "John"}
+                  {user?.name || 'User'}
                 </p>
-                <p className="text-xs text-gray-500">Online</p>
+                <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
               
               <ChevronDown 
@@ -254,17 +267,17 @@ const TopHeader = () => {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">
-                        {mockData?.employee?.firstName} {mockData?.employee?.lastName}
+                        {user?.name}
                       </p>
                       <p className="text-sm text-gray-500 truncate">
-                        {mockData?.employee?.email}
+                        {user?.email}
                       </p>
                     </div>
                   </div>
                 </div>
-{data.role == 'Admin' ?(
+{user.role == 'Admin' ?(
  <div className="py-2">
-                  <a
+                  {/* <a
                     href="#"
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
@@ -275,7 +288,7 @@ const TopHeader = () => {
                       <p className="font-medium">My Profile</p>
                       <p className="text-xs text-gray-500">View and edit profile</p>
                     </div>
-                  </a>
+                  </a> */}
 
                   <a
                     href="#"
@@ -285,8 +298,8 @@ const TopHeader = () => {
                       <Settings size={16} className="text-gray-600" />
                     </div>
                     <div>
-                      <p className="font-medium">Settings</p>
-                      <p className="text-xs text-gray-500">Preferences and security</p>
+                      <p className="font-medium">Changes Password</p>
+                      <p className="text-xs text-gray-500">Consider to Change Password</p>
                     </div>
                   </a>
                 </div>
@@ -295,7 +308,7 @@ const TopHeader = () => {
 
                 <div className="border-t border-gray-100">
                   <button
-                    onClick={() => alert("Logout clicked")}
+                    onClick={handleLogOut}
                     className="w-full text-left flex items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
                     <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
