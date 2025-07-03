@@ -31,7 +31,7 @@ const SideBar = () => {
     // { name: 'Recruitment', icon: <UserPlus size={20} />, children: [], url: "/dashboard/recruitment" },
     { name: 'Onboarding', icon: <Rocket size={20} />, children: [
       {name:'Onboard New Employee', url:"/dashboard/employee/add"},
-      {name:'Onboarding Policies', url:"/dashboard/onboarding"},
+      // {name:'Onboarding Policies', url:"/dashboard/onboarding"},
     ]},
     { 
       name: 'Employee', 

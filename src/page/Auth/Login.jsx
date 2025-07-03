@@ -138,14 +138,14 @@ const AuthLogin = () => {
           </button>
         </div>
 
-        <div className="mt-6 text-sm text-center text-gray-600">
+        {/* <div className="mt-6 text-sm text-center text-gray-600">
           <p>
             Forgot your password?{" "}
             <a href="#" className="text-[#075271] font-medium hover:underline">
               Reset here
             </a>
           </p>
-        </div>
+        </div> */}
 
         <div className="mt-8 text-center text-xs text-gray-400">
           Developed by{" "}

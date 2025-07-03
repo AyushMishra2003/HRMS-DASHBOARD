@@ -18,15 +18,13 @@ import { useDispatch } from "react-redux";
  import { logiDetail } from "../rtk/login.js" 
 import { toast } from "react-toastify";
 import { useUserContext } from "../page/UseContext/useContext.jsx";
-const mockNotifications = [
-  { _id: "1", message: "New task assigned to you", isRead: false },
-  { _id: "2", message: "Meeting scheduled for 3 PM", isRead: false },
-  { _id: "3", message: "Project deadline approaching", isRead: true },
-];
+import { useGetNotificationQuery } from "../rtk/notification.js";
+
 
 const TopHeader = () => {
  const {data:user , isLoading, Error} = useIsLoginQuery()
  const [logoutApi , {isLoading:logOutLoading}] = useIsLogoutMutation()
+  const { data: notificationData } = useGetNotificationQuery();
  const dispatch = useDispatch()
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
@@ -67,7 +65,7 @@ const navigate = useNavigate()
     return "U";
   };
 
-  const unreadCount = mockNotifications.filter(n => !n.isRead).length;
+  const unreadCount = notificationData.filter(n => !n.isRead).length;
 
    const handleLogOut = async () => {
      try {
@@ -83,6 +81,19 @@ const navigate = useNavigate()
        console.error("Logout failed", err);
      }
    };
+
+   function formateTime(isoString) {
+  const date = new Date(isoString);
+
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // Convert 0 to 12 for 12AM/PM
+
+  const formattedTime = `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  return formattedTime;
+}
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
@@ -192,16 +203,16 @@ const navigate = useNavigate()
                   </div>
                   
                   <div className="max-h-64 overflow-y-auto">
-                    {mockNotifications.map((note, index) => (
-                      <div
+                    {notificationData?.slice(0,4).map((note, index) => (
+                      <Link to='/dashboard/notification'
                         key={note._id || index}
-                        className={`px-4 py-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors ${
+                        className={`px-4 py-3 my-0.5 block border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors ${
                           !note.isRead ? 'bg-blue-50 border-l-4 border-l-[#06425F] rounded-lg' : ''
                         }`}
                       >
                         <p className="text-sm text-gray-700 leading-relaxed">{note.message}</p>
-                        <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
-                      </div>
+                        <p className="text-xs text-gray-400 mt-1">{formateTime(note.createdAt)}</p>
+                      </Link>
                     ))}
                   </div>
                   
@@ -290,7 +301,7 @@ const navigate = useNavigate()
                     </div>
                   </a> */}
 
-                  <a
+                  {/* <a
                     href="#"
                     className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
@@ -301,7 +312,7 @@ const navigate = useNavigate()
                       <p className="font-medium">Changes Password</p>
                       <p className="text-xs text-gray-500">Consider to Change Password</p>
                     </div>
-                  </a>
+                  </a> */}
                 </div>
 ):''}
                

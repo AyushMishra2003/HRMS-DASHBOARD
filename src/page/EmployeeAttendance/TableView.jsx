@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { ChevronDown, User2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
+import { toast } from 'react-toastify';
 
 const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -126,6 +127,16 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
     const date = new Date(timestamp);
     return  date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
+function viewLocation(latitude, longitude) {
+  if (!latitude || !longitude) {
+    toast.error("User Not Check In Yet!");
+    return;
+  }
+
+  const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+  window.open(mapUrl, '_blank');
+}
+
 
   return (
     <div className="bg-white rounded-lg">
@@ -230,10 +241,10 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">ID</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Employee Name</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">In Time</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Out Time</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Check In</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Check Out</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Work Duration</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Number</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Check In Location</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -256,10 +267,12 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
                     {employee.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-900">{formatTime(employee?.checkIntime) || '--'}</td>
+                <td className="px-4 py-3 text-sm text-gray-900">{formatTime(employee?.checkIn) || '--'}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{formatTime(employee?.checkOutTime) || '--'}</td>
                 <td className="px-4 py-3 text-sm text-gray-900">{employee.workDuration || '--'}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">{employee.employee.mobile}</td>
+                <td className="px-4 py-3 text-sm text-blue-600 cursor-pointer hover:underline"
+                onClick={()=>viewLocation(employee?.location?.coordinates[0],employee?.location?.coordinates[1])}
+                >View Map</td>
               </tr>
             ))}
           </tbody>

@@ -42,7 +42,6 @@ const Payroll = () => {
     );
   });
 
-  console.log(filteredData);
   let totalSalary = 0;
   let highestSalary = 0;
   let highestPresentDays = 0;
@@ -252,13 +251,13 @@ const Payroll = () => {
             <table className="w-full text-sm">
               <thead style={{ backgroundColor: '#06425F' }} className="text-white">
                 <tr>
-                  <th className="px-3 py-2 text-left font-medium">Employee</th>
-                  <th className="px-3 py-2 text-left font-medium">Salary</th>
-                  <th className="px-3 py-2 text-left font-medium">TotalworkinDay</th>
-                  <th className="px-3 py-2 text-left font-medium">Present</th>
-                  <th className="px-3 py-2 text-left font-medium">Absent</th>
-                  <th className="px-3 py-2 text-left font-medium">Estimate</th>
-                  <th className="px-3 py-2 text-left font-medium">Status</th>
+                  <th className="px-4 py-3 text-left font-medium">Employee</th>
+                  <th className="px-4 py-3 text-left font-medium">Salary</th>
+                  <th className="px-4 py-3 text-left font-medium">Total Work Day</th>
+                  <th className="px-4 py-3 text-left font-medium">Present</th>
+                  <th className="px-4 py-3 text-left font-medium">Absent</th>
+                  <th className="px-4 py-3 text-left font-medium">Estimate</th>
+                  <th className="px-4 py-3 text-left font-medium">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -275,7 +274,7 @@ const Payroll = () => {
                         </div>
                       </Link>
                     </td>
-                    <td className="px-3 py-2 font-medium">₹{parseInt(employee.salary).toLocaleString()}</td>
+                    <td className="px-3 py-2 font-medium">{(parseInt(employee.salary).toLocaleString()) == "NaN" ?" --":(`₹ ${parseInt(employee.salary).toLocaleString()}`)}</td>
                     <td className="px-3 py-2">
                       <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
                         {employee.totalWorkingDays} days
@@ -292,7 +291,7 @@ const Payroll = () => {
                       </span>
                     </td>
 
-                    <td className="px-3 py-2 font-medium">₹{parseInt(employee.estimate_salary).toLocaleString()}</td>
+                    <td className="px-3 py-2 font-medium">{(parseInt(employee.estimate_salary).toLocaleString()) == "NaN" ?" --":(`₹ ${parseInt(employee.estimate_salary).toLocaleString()}`)}</td>
                     <td className="px-3 py-2">
                       <StatusBadge
                         status={employee.status}
