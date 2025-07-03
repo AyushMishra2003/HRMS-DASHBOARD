@@ -8,14 +8,15 @@ export const attendanceDetailApi = createApi({
 
   endpoints: (builder) => ({
     employeeCheckIn: builder.mutation({
-      query: (id) => ({
+      query: ({payload , id}) => ({
         url: `employee/attendance/checkIn/${id}`,
         method: "POST",
+        data:payload
       }),
       invalidatesTags: ["attendance"],
     }),
     employeeChekOut: builder.mutation({
-      query: (id) => (
+      query: ({id}) => (
         console.log("rtk"),
         {
           url: `employee/attendance/checkout/${id}`,

@@ -202,7 +202,7 @@ const Dashboard = ({ data }) => {
     { name: 'Absent', value: stats.absent, color: '#EF4444' },
     { name: 'Leave', value: stats.leave, color: '#F59E0B' },
   ];
-
+console.log(userData)
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-7xl mx-auto">
@@ -214,9 +214,9 @@ const Dashboard = ({ data }) => {
                 <User size={32} className="text-blue-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
+                <h1 className="text-2xl font-bold text-gray-800">{userData?.employeeeData.name}</h1>
                 <p className="text-gray-500">
-                  ID: {user.id || 'N/A'} • {user.department} • {user.phone_Number}
+                  ID: {userData?.employeeeData?._id || 'N/A'} • {userData?.department} • {userData?.phone_Number}
                 </p>
               </div>
             </div>
@@ -283,7 +283,6 @@ const Dashboard = ({ data }) => {
             </div>
           </div>
 
-          {/* Attendance Overview - Pie Chart */}
           <div className="lg:col-span-6">
             <div className="bg-white rounded-lg shadow h-full">
               <div className="border-b border-gray-200 p-4 flex items-center">
@@ -315,57 +314,6 @@ const Dashboard = ({ data }) => {
             </div>
           </div>
 
-          {/* Performance Trend Chart */}
-          {/* <div className="lg:col-span-8">
-            <div className="bg-white rounded-lg shadow h-full">
-              <div className="border-b border-gray-200 p-4 flex items-center">
-                <Activity className="text-blue-600 mr-2" />
-                <h2 className="text-lg font-semibold">Performance Trend</h2>
-              </div>
-              <div className="p-4 h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={performanceData}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
-                    <XAxis dataKey="month" />
-                    <YAxis domain={[0, 100]} />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="score" stroke="#3B82F6" fill="#DBEAFE" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div> */}
-
-          {/* Productivity By Time of Day */}
-          {/* <div className="lg:col-span-6">
-            <div className="bg-white rounded-lg shadow h-full">
-              <div className="border-b border-gray-200 p-4 flex items-center">
-                <Clock className="text-blue-600 mr-2" />
-                <h2 className="text-lg font-semibold">Productivity By Hour</h2>
-              </div>
-              <div className="p-4 h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={productivityData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
-                    <XAxis dataKey="time" />
-                    <YAxis domain={[0, 100]} />
-                    <Tooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="productivity" 
-                      stroke="#8B5CF6" 
-                      strokeWidth={2} 
-                      dot={{ fill: '#8B5CF6', stroke: '#8B5CF6', strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div> */}
 
           {/* Weekly Working Hours */}
           <div className="lg:col-span-6">
