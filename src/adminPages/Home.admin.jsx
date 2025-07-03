@@ -11,7 +11,8 @@ import {
   Building,
   ChevronUp,
   ChevronDown,
-  MoreVertical
+  MoreVertical,
+  IndianRupee
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import {useGetAllEmployeeQuery } from '../rtk/employeeApi';
@@ -106,9 +107,9 @@ const AdminHome = () => {
         />
         <StatCard 
           title="Monthly Payroll" 
-          value="₹45.2L" 
+          value="75K" 
           change="5.7" 
-          icon={DollarSign} 
+          icon={IndianRupee} 
         />
       </div>
 
@@ -221,7 +222,7 @@ const AdminHome = () => {
       {/* Quick Actions */}
       <div className="mt-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4  gap-5">
           <button 
           onClick={()=> navigate("/dashboard/employee/add")}
           className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
@@ -235,23 +236,23 @@ const AdminHome = () => {
             <span className="text-sm text-gray-700">Leave Requests</span>
           </button>
           <button
-          onClick={()=>navigate("/dashboard/attendance/list")} 
+          onClick={()=>navigate("/dashboard/attendance/logs")} 
           className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
             <Clock className="h-6 w-6 text-[#06425F] mb-2" />
             <span className="text-sm text-gray-700">Attendance</span>
           </button>
-          <button className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-            <DollarSign className="h-6 w-6 text-[#06425F] mb-2" />
+          <button onClick={()=>{navigate("/dashboard/payroll")}} className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+            <IndianRupee className="h-6 w-6 text-[#06425F] mb-2" />
             <span className="text-sm text-gray-700">Payroll</span>
           </button>
-          <button className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+          {/* <button className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
             <Award className="h-6 w-6 text-[#06425F] mb-2" />
             <span className="text-sm text-gray-700">Performance</span>
           </button>
           <button className="flex flex-col items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
             <Building className="h-6 w-6 text-[#06425F] mb-2" />
             <span className="text-sm text-gray-700">Departments</span>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
