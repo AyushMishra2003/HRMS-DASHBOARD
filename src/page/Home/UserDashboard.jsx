@@ -284,7 +284,7 @@ const Dashboard = ({ data }) => {
           </div>
 
           {/* Attendance Overview - Pie Chart */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-6">
             <div className="bg-white rounded-lg shadow h-full">
               <div className="border-b border-gray-200 p-4 flex items-center">
                 <PieChartIcon className="text-blue-600 mr-2" />
@@ -316,7 +316,7 @@ const Dashboard = ({ data }) => {
           </div>
 
           {/* Performance Trend Chart */}
-          <div className="lg:col-span-8">
+          {/* <div className="lg:col-span-8">
             <div className="bg-white rounded-lg shadow h-full">
               <div className="border-b border-gray-200 p-4 flex items-center">
                 <Activity className="text-blue-600 mr-2" />
@@ -337,10 +337,10 @@ const Dashboard = ({ data }) => {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Productivity By Time of Day */}
-          <div className="lg:col-span-6">
+          {/* <div className="lg:col-span-6">
             <div className="bg-white rounded-lg shadow h-full">
               <div className="border-b border-gray-200 p-4 flex items-center">
                 <Clock className="text-blue-600 mr-2" />
@@ -365,7 +365,7 @@ const Dashboard = ({ data }) => {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Weekly Working Hours */}
           <div className="lg:col-span-6">

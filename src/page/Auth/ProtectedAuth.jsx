@@ -78,7 +78,6 @@ import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 
 const ProtectedAuth = ({ isPrivate = false, allowedRoles = [] }) => {
-  console.log(isPrivate , allowedRoles)
   const location = useLocation();
   const { data, isLoading, isSuccess , refetch } = useIsLoginQuery(undefined, {
     refetchOnMountOrArgChange: true,
@@ -90,14 +89,11 @@ const ProtectedAuth = ({ isPrivate = false, allowedRoles = [] }) => {
 
   useEffect(() => {
     refetch();
-    console.log(data)
   }, [location.pathname]);
 
   useEffect(() => {
-    console.log(data)
     if (!isLoading && isSuccess && data?.role) {
       const role = data?.role?.toLowerCase();
-      console.log("role",role)
       setUserRole(role);
       setReady(true);
     }
@@ -119,7 +115,6 @@ const ProtectedAuth = ({ isPrivate = false, allowedRoles = [] }) => {
 
 const isLoggedIn = Boolean(data?.role);
 
-console.log(isPrivate , isLoggedIn , userRole)
   if (isPrivate && !isLoggedIn) {
     return <Navigate to="/" replace state={{ from: location }} />;
   }
