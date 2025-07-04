@@ -227,7 +227,7 @@ name = data.fname + ' ' + data.lname ;
 
   const renderPersonalInfo = () => (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             First Name <span className="text-red-500">*</span>
@@ -382,7 +382,7 @@ name = data.fname + ' ' + data.lname ;
             <option value="unmarried">Unmarried</option>
           </select>
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Experience (Years)
           </label>
@@ -407,7 +407,7 @@ name = data.fname + ' ' + data.lname ;
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#06425F] focus:border-transparent"
             placeholder="Enter years of experience"
           />
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -598,7 +598,7 @@ name = data.fname + ' ' + data.lname ;
                 className="flex items-center px-4 cursor-pointer py-2 text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
               >
                 <X className="h-4 w-4 mr-2" />
-                Cancel
+                Reset
               </button>
 
               <div className="flex space-x-3">

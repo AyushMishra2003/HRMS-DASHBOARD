@@ -23,7 +23,8 @@ import Policies from "./page/About/Policies";
 import TermCondition from "./page/About/TermCondition";
 import ProtectedAuth from "./page/Auth/ProtectedAuth";
 import Unauthorized from "./component/Unauthorized";
-
+import GetPolicy  from  "./page/Policy/Policy"
+import EmployeeAddTerm from "./page/Term-Condition/AddTermCondition"
 import EmployeeDashboard from "./page/Employee/Dashboard/EmployeeDashboard";
 import EmployeeLayout from "./EmployeeComponents/Employee.Layout";
 import UserDashboard from './page/Home/UserDashboard';
@@ -35,7 +36,7 @@ const App = () => {
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         {/* <Route path="/home" element={<HomeDashboard />} /> */}
-        
+
         <Route path="/dashboard" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
@@ -63,21 +64,23 @@ const App = () => {
             <Route path="recruitment" element={<Recruitment />} />
             <Route path="payroll" element={<Payroll />} />
             <Route path="notification" element={<Notification />} />
-            <Route path="policies" element={<Policies />} />
-            <Route path="term-condition" element={<TermCondition />} />
+            {/* <Route path="policies" element={<GetPolicy />} />
+            <Route path="add/policies" element={<EmployeeAddPolicy />} /> */}
+            {/* <Route path="term-condition" element={<TermCondition />} />
+            <Route path="add/term-condition" element={<EmployeeAddTerm />} /> */}s
           </Route>
         </Route>
 
         <Route element={<ProtectedAuth isPrivate={true} allowedRoles={["employee"]} />}>
-        <Route path='/employee/dashboard' element={<EmployeeLayout/>}>
-        <Route index element={<UserDashboard />} />
-        <Route path='employee/overview/:id' element={<EmployeeOverview basePath='/employee/dashboard'/>}/>
-        <Route path='notification' element={<Notification basePath='/employee/dashboard'/>}/>
-          <Route path="employee/edit/:id" element={<EmployeeAdd basePath='/employee/dashboard' />} />
-        <Route path="policies" element={<Policies />} />
-        <Route path="term-condition" element={<TermCondition />} />
-             <Route path="about" element={<About />} />
-        </Route>
+          <Route path='/employee/dashboard' element={<EmployeeLayout />}>
+            <Route index element={<UserDashboard />} />
+            <Route path='employee/overview/:id' element={<EmployeeOverview basePath='/employee/dashboard' />} />
+            <Route path='notification' element={<Notification basePath='/employee/dashboard' />} />
+            <Route path="employee/edit/:id" element={<EmployeeAdd basePath='/employee/dashboard' />} />
+            <Route path="policies" element={<Policies />} />
+            <Route path="term-condition" element={<TermCondition />} />
+            <Route path="about" element={<About />} />
+          </Route>
         </Route>
 
         <Route element={<ProtectedAuth isPrivate={false} />}>

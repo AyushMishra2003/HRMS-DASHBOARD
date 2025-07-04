@@ -56,7 +56,11 @@ const EmployeeList = () => {
   if (error) {
     return <p className="text-center text-lg text-red-500">Error Loading Employee...</p>;
   }
-  const filteredEmployee = data?.all_data?.filter((employee) => {
+  
+
+     
+ 
+  const filteredEmployee = data?.filter((employee) => {
     const matchesSearch = searchQuery === '' || employee.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRole = roleFilter === '' || roleFilter === employee.role;
     return matchesSearch && matchesRole;

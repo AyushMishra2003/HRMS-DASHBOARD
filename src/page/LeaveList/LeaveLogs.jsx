@@ -20,9 +20,14 @@ import { useApproveLeaveMutation, useGetEmployeeLeaveQuery, useRejectLeaveMutati
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { ClipLoader } from 'react-spinners';
+import { data } from 'react-router-dom';
 
 const LeaveLogs = () => {
   const { data: leaveData = [], isLoading } = useGetEmployeeLeaveQuery()
+
+ 
+  
+
   const [approveLeave] = useApproveLeaveMutation();
   const [leaveReaject] = useRejectLeaveMutation();
 
@@ -82,7 +87,7 @@ const LeaveLogs = () => {
   const handleBulkApprove = () => {
     setLeaveData(prev =>
       prev.map(leave =>
-        selectedLeaves.includes(leave.id) ? { ...leave, status: 'Approved' } : leave
+        selectedLeaves.includes(leave?.id) ? { ...leave, status: 'Approved' } : leave
       )
     );
     setSelectedLeaves([]);
@@ -100,8 +105,8 @@ const LeaveLogs = () => {
     const empName = leave?.employeeId?.name?.toLowerCase() || '';
     const empId = leave?.employeeId?._id?.toString().slice(-4).toLowerCase() || '';
     const dept = leave?.department?.toLowerCase() || ''; // Optional, if you have department
-    const year = new Date(leave.createdAt).getFullYear().toString();
-    const leaveDate = new Date(leave.createdAt); // ✅ Date banaya
+    const year = new Date(leave?.createdAt).getFullYear().toString();
+    const leaveDate = new Date(leave?.createdAt); // ✅ Date banaya
     // const year = leaveDate.getFullYear().toString(); // "2025"
     const month = leaveDate.getMonth().toString();
 
@@ -111,7 +116,7 @@ const LeaveLogs = () => {
       dept.includes(searchQuery.toLowerCase());
 
     const matchesStatus =
-      statusFilter === 'all' || leave.status?.toLowerCase() === statusFilter.toLowerCase();
+      statusFilter === 'all' || leave?.status?.toLowerCase() === statusFilter.toLowerCase();
 
     const matchesDepartment =
       departmentFilter === 'all' || dept === departmentFilter.toLowerCase();
@@ -134,8 +139,8 @@ const LeaveLogs = () => {
         Email: leave?.employeeId?.email || "",
         Mobile: leave?.employeeId?.mobile || "",
         Department: leave?.department || "N/A",
-        startDate: leave?.startDate ? new Date(leave.startDate).toLocaleDateString() : "",
-        endDate: leave?.endDate ? new Date(leave.endDate).toLocaleDateString() : "",
+        startDate: leave?.startDate ? new Date(leave?.startDate).toLocaleDateString() : "",
+        endDate: leave?.endDate ? new Date(leave?.endDate).toLocaleDateString() : "",
         Day:activalLeave(leave?.startDate, leave?.endDate)||"",
         applyDate:leave?.createdAt ? new Date(leave?.createdAt).toLocaleDateString():"",
         Reason: leave?.description || "",
@@ -402,61 +407,61 @@ const LeaveLogs = () => {
                     // console.log("Leave Row:", leave); 
 
                     return (
-                      <tr key={leave._id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <tr key={leave?._id} className="border-b border-gray-100 hover:bg-gray-50">
                         {/* <td className="p-4">
                           <input
                             type="checkbox"
-                            checked={selectedLeaves.includes(leave._id)}
-                            onChange={() => handleSelectLeave(leave._id)}
+                            checked={selectedLeaves.includes(leave?._id)}
+                            onChange={() => handleSelectLeave(leave?._id)}
                             className="rounded border-gray-300 text-[#06425F] focus:ring-blue-500"
                           />
                         </td> */}
-                        <td className="p-4 text-sm text-gray-900 font-medium">{leave.employeeId._id.slice(-4)}</td>
+                        <td className="p-4 text-sm text-gray-900 font-medium">{leave?.employeeId?._id.slice(-4)}</td>
                         <td className="p-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-sm font-medium">
-                              {leave.employeeId?.name?.[0] || 'NA'}
+                              {leave?.employeeId?.name?.[0] || 'NA'}
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-gray-900">{leave.employeeId?.name}</p>
-                              <p className="text-xs text-gray-500">{leave.employeeId?.email}</p>
+                              <p className="text-sm font-medium text-gray-900">{leave?.employeeId?.name}</p>
+                              <p className="text-xs text-gray-500">{leave?.employeeId?.email}</p>
                             </div>
                           </div>
                         </td>
                         <td className="p-4">
                           <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-sm">
                             <Building2 className="w-3 h-3" />
-                            {leave.department || 'NA'}
+                            {leave?.department || 'NA'}
                           </span>
                         </td>
-                        <td className="p-4 text-sm text-gray-700">{leave.leaveType}</td>
-                        <td className="p-4 text-sm text-gray-700">{formatDate(leave.startDate)}</td>
-                        <td className="p-4 text-sm text-gray-700">{formatDate(leave.endDate)}</td>
+                        <td className="p-4 text-sm text-gray-700">{leave?.leaveType}</td>
+                        <td className="p-4 text-sm text-gray-700">{formatDate(leave?.startDate)}</td>
+                        <td className="p-4 text-sm text-gray-700">{formatDate(leave?.endDate)}</td>
                         <td className="p-4 text-sm text-gray-700 font-medium">
-                          {activalLeave(leave.startDate, leave.endDate)}
+                          {activalLeave(leave?.startDate, leave?.endDate)}
                         </td>
                         <td className="p-4 text-sm text-gray-700 font-medium">
-                          {formatDate(leave.createdAt)}
+                          {formatDate(leave?.createdAt)}
                         </td>
                         <td className="p-4">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 border rounded-full text-xs font-medium ${getStatusColor(leave.status)}`}>
-                            {getStatusIcon(leave.status)}
-                            {leave.status}
+                          <span className={`inline-flex items-center gap-1 px-2 py-1 border rounded-full text-xs font-medium ${getStatusColor(leave?.status)}`}>
+                            {getStatusIcon(leave?.status)}
+                            {leave?.status}
                           </span>
                         </td>
                         <td className="p-4">
                           <div className="flex items-center gap-2">
-                            {leave.status === 'Pending' && (
+                            {leave?.status === 'Pending' && (
                               <>
                                 <button
-                                  onClick={() => handleApprove(leave._id)}
+                                  onClick={() => handleApprove(leave?._id)}
                                   className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors"
                                   title="Approve"
                                 >
                                   <Check className="w-4 h-4" />
                                 </button>
                                 <button
-                                  onClick={() => handleReject(leave._id)}
+                                  onClick={() => handleReject(leave?._id)}
                                   className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                                   title="Reject"
                                 >

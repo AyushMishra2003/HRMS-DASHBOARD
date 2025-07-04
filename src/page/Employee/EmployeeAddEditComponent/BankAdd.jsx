@@ -137,7 +137,7 @@ if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(data?.ifscCode)) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Bank Code
+                Account Holder Name
               </label>
               <input
                 type="text"
