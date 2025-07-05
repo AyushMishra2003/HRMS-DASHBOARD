@@ -65,6 +65,11 @@ const TableView = ({ attendanceData, isLoading, searchTerm, showEntries }) => {
     return sortedData.slice(0, showEntries);
   }, [sortedData, showEntries]);
 
+
+
+
+  
+
   // Status counts
   const statusCounts = useMemo(() => {
     if (!filteredData) return { present: 0, absent: 0, leave: 0, anomaly: 0 };
@@ -136,6 +141,10 @@ function viewLocation(latitude, longitude) {
   const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
   window.open(mapUrl, '_blank');
 }
+
+
+
+console.log("bc is ",attendanceData);
 
 
   return (

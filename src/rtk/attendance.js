@@ -43,7 +43,8 @@ export const attendanceDetailApi = createApi({
     }),
 
     attendanceFilter: builder.query({
-      query: (range = "all") => ({
+      query: (range = "all") =>
+         ({
         url: `/employee/attendance/filter?${range}`,
         method: "GET",
       }),

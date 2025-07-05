@@ -15,6 +15,7 @@ import {
   useGetNotificationQuery, 
   useMarkAsReadNotificationMutation 
 } from '../../rtk/notification';
+import { data, Link } from 'react-router-dom';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -27,6 +28,12 @@ const NotificationsPage = () => {
   const [markAsReadMutation] = useMarkAsReadNotificationMutation();
   const [deleteNotificationMutation] = useDeleteNotificationMutation();
 
+
+  
+
+  
+
+
   useEffect(() => {
     if (apiData && Array.isArray(apiData)) {
       const processed = apiData.map((item) => ({
@@ -37,6 +44,7 @@ const NotificationsPage = () => {
         isRead: item.isRead || false,
         timestamp: item.createdAt || new Date().toISOString(),
         type: getNotificationType(item.title),
+        url:item?.url 
       }));
       setNotifications(processed);
     }
@@ -285,6 +293,7 @@ const NotificationsPage = () => {
           </div>
         ) : (
           notifications.map((notification) => (
+             <Link to={`/dashboard/${notification?.url}`}>
             <div
               key={notification.id}
               className={`bg-white rounded-lg border transition-all duration-200 hover:shadow-md ${
@@ -344,6 +353,7 @@ const NotificationsPage = () => {
                 </div>
               </div>
             </div>
+            </Link>
           ))
         )}
       </div>

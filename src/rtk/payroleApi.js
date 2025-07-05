@@ -17,8 +17,8 @@ export const payroleApi = createApi({
 
         paySalary: builder.mutation({
             query: (data) => ({
-                url: `/payroll/pay/salary`,   // your backend endpoint
-                method: "POST",               // use POST to create or update salary status
+                url: `/payroll/pay/salary`,   
+                method: "POST",               
                 data:data,                   
             }),
             invalidatesTags: ["payrole"],    

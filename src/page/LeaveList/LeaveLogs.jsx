@@ -21,12 +21,13 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { ClipLoader } from 'react-spinners';
 import { data } from 'react-router-dom';
+import isConfirmed from '../../component/isConfirmed';
 
 const LeaveLogs = () => {
   const { data: leaveData = [], isLoading } = useGetEmployeeLeaveQuery()
 
- 
-  
+
+
 
   const [approveLeave] = useApproveLeaveMutation();
   const [leaveReaject] = useRejectLeaveMutation();
@@ -67,8 +68,15 @@ const LeaveLogs = () => {
   const handleApprove = async (leaveId) => {
     try {
       console.log("Approving leaveId:", leaveId);
-      const res = await approveLeave({ id: leaveId }).unwrap(); // API call
-      console.log("Leave approved:", res);
+      const confirm = await isConfirmed({ description: "Are you Sure You Want to Approve" })
+
+   
+      
+      if (confirm) {
+        const res = await approveLeave({ id: leaveId }).unwrap(); // API call
+
+      }
+
     } catch (error) {
       console.error("Approval failed:", error);
     }
@@ -76,9 +84,14 @@ const LeaveLogs = () => {
 
   const handleReject = async (leaveId) => {
     try {
-      // console.log("Approving leaveId:", leaveId);
-      const res = await leaveReaject({ id: leaveId }).unwrap(); // API call
-      console.log("Leave Rejected:", res);
+
+      const confirm = await isConfirmed({ description: "Are you Sure You Want to Reject" })
+    
+      if (confirm) {
+        const res = await leaveReaject({ id: leaveId }).unwrap(); // API callF
+      }
+
+
     } catch (error) {
       console.error("failed:", error);
     }
@@ -141,8 +154,8 @@ const LeaveLogs = () => {
         Department: leave?.department || "N/A",
         startDate: leave?.startDate ? new Date(leave?.startDate).toLocaleDateString() : "",
         endDate: leave?.endDate ? new Date(leave?.endDate).toLocaleDateString() : "",
-        Day:activalLeave(leave?.startDate, leave?.endDate)||"",
-        applyDate:leave?.createdAt ? new Date(leave?.createdAt).toLocaleDateString():"",
+        Day: activalLeave(leave?.startDate, leave?.endDate) || "",
+        applyDate: leave?.createdAt ? new Date(leave?.createdAt).toLocaleDateString() : "",
         Reason: leave?.description || "",
         Status: leave?.status || "",
       }));

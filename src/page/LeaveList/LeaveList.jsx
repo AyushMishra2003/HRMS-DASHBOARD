@@ -7,7 +7,6 @@ export default function LeaveList() {
   const { data: allLeave, isLoading } = useGetEmployeeLeaveQuery();
   const [leaveApproved, { isLoading: leaveLoading }] = useApproveLeaveMutation();
   const [rejectLeave,{isLoading:rejectLoading}]=useRejectLeaveMutation()
-  console.log("bhai ye leave detail h ", allLeave);
 
   const columns = [
     { header: "Name", accessor: "name" },

@@ -95,6 +95,10 @@ const TopHeader = () => {
     return formattedTime;
   }
 
+
+  console.log(notificationData);
+  
+
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
       <div className="flex justify-between items-center px-4 lg:px-6 py-3">
@@ -206,7 +210,7 @@ const TopHeader = () => {
 
                   <div className="max-h-64 overflow-y-auto">
                     {notificationData?.slice(0, 4).map((note, index) => (
-                      <Link to='/dashboard/notification'
+                      <Link to={`/dashboard/${note?.url}`}
                         key={note._id || index}
                         className={`px-4 py-3 my-0.5 block border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors ${!note.isRead ? 'bg-blue-50 border-l-4 border-l-[#06425F] rounded-lg' : ''
                           }`}

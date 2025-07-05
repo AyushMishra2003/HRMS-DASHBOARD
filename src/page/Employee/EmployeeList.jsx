@@ -11,6 +11,9 @@ import { ClipLoader } from 'react-spinners';
 
 const EmployeeList = () => {
   const { data, isLoading, error } = useGetAllEmployeeQuery();
+
+  console.log(data);
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [deleteEmployee] = useDeleteEmployeeMutation();
@@ -60,7 +63,7 @@ const EmployeeList = () => {
 
      
  
-  const filteredEmployee = data?.filter((employee) => {
+  const filteredEmployee = data?.all_data?.filter((employee) => {
     const matchesSearch = searchQuery === '' || employee.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRole = roleFilter === '' || roleFilter === employee.role;
     return matchesSearch && matchesRole;

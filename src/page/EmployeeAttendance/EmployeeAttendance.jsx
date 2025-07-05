@@ -9,7 +9,7 @@ export default function EmployeeAttendance() {
 
   // ✅ Now passing filter value to query
   const { data, isLoading } = useAttendanceFilterQuery(filter);
-console.log(data)
+console.log("attadane is",data)
   // console.log("Theme Colors:", data);
 
   const columns = [

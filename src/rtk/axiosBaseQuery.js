@@ -4,9 +4,10 @@ const backend_url = import.meta.env.VITE_BACKEND_URL
 
 
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api/v1/",
+  baseURL: "http://localhost:6002/api/v1/",
   headers: {
     "Content-Type": "application/json",
+    "x-api-key": "ayush_don_123",
   },
   withCredentials: true,
 });
@@ -24,6 +25,9 @@ const axiosBaseQuery = async ({ url, method, data }) => {
     }
   : { data }),
     });
+
+    console.log("gandu hu mai yrr",response);
+    
 
     if (response?.data?.message) {
       // toast.success(response.data.message);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, ChevronLeft, ChevronRight, User2 } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, User2, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAttendanceByMonthQuery, useAttendanceFilterQuery } from "../../rtk/attendance.js";
 import { ClipLoader } from 'react-spinners';
@@ -7,6 +7,8 @@ import { ClipLoader } from 'react-spinners';
 const CalendarView = ({ currentDate, setCurrentDate, searchTerm, setSearchTerm }) => {
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
   
   // API call for calendar data
   const [calendarFilter, setCalendarFilter] = useState("");
@@ -51,6 +53,13 @@ const CalendarView = ({ currentDate, setCurrentDate, searchTerm, setSearchTerm }
     });
   }, [processedEmployeeData, searchTerm]);
 
+  // Set first employee as selected by default
+  useEffect(() => {
+    if (filteredEmployeeData.length > 0 && !selectedEmployee) {
+      setSelectedEmployee(filteredEmployeeData[0]);
+    }
+  }, [filteredEmployeeData, selectedEmployee]);
+
   const getCalendarStatusColor = (status) => {
     switch (status) {
       case 'P': return 'bg-green-500';
@@ -67,12 +76,36 @@ const CalendarView = ({ currentDate, setCurrentDate, searchTerm, setSearchTerm }
     }
   };
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'P': return 'Present';
+      case 'A': return 'Absent';
+      case 'L': return 'Leave';
+      case 'WO': return 'Weekly Off';
+      case 'AN': return 'Anomaly';
+      case 'H': return 'Holiday';
+      case 'WFH': return 'Work From Home';
+      case 'HD': return 'Half Day';
+      case 'ACO': return 'Auto Clock-out';
+      case 'LOP': return 'Loss of Pay';
+      default: return 'Not Available';
+    }
+  };
+
   const getDaysInMonth = (year, month) => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
+    const firstDayOfWeek = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
     
     const days = [];
+    
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < firstDayOfWeek; i++) {
+      days.push(null);
+    }
+    
+    // Add actual days of the month
     for (let i = 1; i <= daysInMonth; i++) {
       const currentDate = new Date(year, month, i);
       const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'short' });
@@ -81,9 +114,11 @@ const CalendarView = ({ currentDate, setCurrentDate, searchTerm, setSearchTerm }
       days.push({
         date: i,
         day: dayName,
-        dateKey: dateKey
+        dateKey: dateKey,
+        isToday: new Date().toDateString() === currentDate.toDateString()
       });
     }
+    
     return days;
   };
 
@@ -107,6 +142,8 @@ const CalendarView = ({ currentDate, setCurrentDate, searchTerm, setSearchTerm }
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   if (calendarLoading) {
     return (
       <div className="flex justify-center h-full">
@@ -118,14 +155,14 @@ const CalendarView = ({ currentDate, setCurrentDate, searchTerm, setSearchTerm }
   return (
     <div className="bg-white rounded-lg overflow-hidden">
       {/* Calendar Controls */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex justify-between items-center mb-4">
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-4">
             <div className="relative">
               <input
                 type="text"
-                placeholder="Name, ID, Email"
-                className="border border-gray-300 rounded px-3 py-2 pl-8 text-sm w-64"
+                placeholder="Search employees..."
+                className="border border-gray-300 rounded-lg px-4 py-2 pl-10 text-sm w-80"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -136,151 +173,194 @@ const CalendarView = ({ currentDate, setCurrentDate, searchTerm, setSearchTerm }
             <div className="flex items-center gap-2">
               <button
                 onClick={() => navigateMonth(-1)}
-                className="p-1 hover:bg-gray-100 rounded"
+                className="p-2 hover:bg-gray-100 rounded-lg"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-5 w-5" />
               </button>
-              <span className="text-sm text-gray-600">Year</span>
-              <select 
-                className="border border-gray-300 rounded px-3 py-1 text-sm"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              >
-                {Array.from({ length: 10 }, (_, i) => {
-                  const year = new Date().getFullYear() - 5 + i;
-                  return (
-                    <option key={year} value={year}>{year}</option>
-                  );
-                })}
-              </select>
+              <div className="flex items-center gap-2">
+                <select 
+                  className="border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                >
+                  {monthNames.map((month, index) => (
+                    <option key={index} value={index}>{month}</option>
+                  ))}
+                </select>
+                <select 
+                  className="border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium"
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                >
+                  {Array.from({ length: 10 }, (_, i) => {
+                    const year = new Date().getFullYear() - 5 + i;
+                    return (
+                      <option key={year} value={year}>{year}</option>
+                    );
+                  })}
+                </select>
+              </div>
               <button
                 onClick={() => navigateMonth(1)}
-                className="p-1 hover:bg-gray-100 rounded"
+                className="p-2 hover:bg-gray-100 rounded-lg"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-5 w-5" />
               </button>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Month</span>
-              <select 
-                className="border border-gray-300 rounded px-3 py-1 text-sm"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-              >
-                {monthNames.map((month, index) => (
-                  <option key={index} value={index}>{month}</option>
+          </div>
+        </div>
+
+        {/* Employee Selection */}
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-medium text-gray-700">Employee:</span>
+          <div className="relative">
+            <button
+              onClick={() => setShowEmployeeDropdown(!showEmployeeDropdown)}
+              className="flex items-center gap-3 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 min-w-80"
+            >
+              {selectedEmployee ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-[#06425F] rounded-full flex items-center justify-center text-white text-sm font-medium">
+                    {selectedEmployee.avatar}
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium text-gray-900">{selectedEmployee.employeeName}</div>
+                    <div className="text-xs text-gray-500">{selectedEmployee.email}</div>
+                  </div>
+                </div>
+              ) : (
+                <span className="text-gray-500">Select an employee</span>
+              )}
+              <ChevronDown className="h-4 w-4 text-gray-400 ml-auto" />
+            </button>
+            
+            {showEmployeeDropdown && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+                {filteredEmployeeData.map((employee) => (
+                  <button
+                    key={employee.employeeId}
+                    onClick={() => {
+                      setSelectedEmployee(employee);
+                      setShowEmployeeDropdown(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-left"
+                  >
+                    <div className="w-8 h-8 bg-[#06425F] rounded-full flex items-center justify-center text-white text-sm font-medium">
+                      {employee.avatar}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{employee.employeeName}</div>
+                      <div className="text-xs text-gray-500">{employee.email}</div>
+                    </div>
+                  </button>
                 ))}
-              </select>
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Calendar Table with Horizontal Scroll */}
-      <div className="overflow-x-auto" style={{ maxWidth: 'calc(100vw - 280px)' }}>
-        <table className="w-full min-w-max">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 sticky left-0 bg-gray-50 z-20 border-r border-gray-200 min-w-20">
-                ID
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 sticky left-20 bg-gray-50 z-20 min-w-60 border-r border-gray-200">
-                Employee Name
-              </th>
-              {days.map((day, index) => (
-                <th key={index} className="px-2 py-3 text-center text-xs font-medium text-gray-700 min-w-12">
-                  <div>{day.date}</div>
-                  <div className="text-gray-500">{day.day}</div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredEmployeeData.length > 0 ? (
-              filteredEmployeeData.map((employee) => (
-                <tr key={employee.employeeId} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm text-gray-900 sticky left-0 bg-white z-10 border-r border-gray-200 min-w-20">
-                    {employee.id}
-                  </td>
-                  <td className="px-4 py-3 sticky left-20 bg-white z-10 border-r border-gray-200 min-w-60">
-                    <Link to={`/dashboard/employee/overview/${employee?.employeeId}`} className="flex items-center">
-                      <div className="w-8 h-8 bg-[#06425F] rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
-                        {employee.avatar || <User2 size={16} />}
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-900 font-medium">{employee.employeeName}</div>
-                        <div className="text-xs text-gray-500">{employee.email}</div>
-                      </div>
-                    </Link>
-                  </td>
-                  {days.map((day, index) => {
-                    const attendanceStatus = employee.attendance[day.dateKey];
-                    return (
-                      <td key={index} className="px-2 py-3 text-center min-w-12">
-                        <div className={`w-8 h-8 rounded flex items-center justify-center text-xs font-medium ${
+      {/* Calendar Header */}
+      <div className="p-6 border-b border-gray-200">
+        <h2 className="text-3xl font-bold text-gray-900 text-center">
+          {monthNames[selectedMonth]} {selectedYear}
+        </h2>
+      </div>
+
+      {/* Calendar Grid */}
+      <div className="p-6">
+        {/* Days of Week Header */}
+        <div className="grid grid-cols-7 gap-2 mb-4">
+          {weekDays.map((day) => (
+            <div key={day} className="p-4 text-center text-sm font-semibold text-gray-700 bg-gray-50 rounded-lg">
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar Days Grid */}
+        <div className="grid grid-cols-7 gap-2">
+          {days.map((day, index) => {
+            const attendanceStatus = day && selectedEmployee ? selectedEmployee.attendance[day.dateKey] : null;
+            
+            return (
+              <div 
+                key={index} 
+                className={`h-20 border-2 rounded-lg p-3 ${
+                  day ? 'bg-white hover:bg-gray-50' : 'bg-gray-50'
+                } ${
+                  day && day.isToday ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                }`}
+              >
+                {day ? (
+                  <div className="h-full flex flex-col">
+                    {/* Date */}
+                    <div className="text-lg font-bold text-gray-900 mb-1">
+                      {day.date}
+                    </div>
+                    
+                    {/* Attendance Status */}
+                    {selectedEmployee && (
+                      <div className="flex-1 flex items-center justify-center">
+                        <div className={`w-12 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                           attendanceStatus && attendanceStatus !== 'NA'
                             ? getCalendarStatusColor(attendanceStatus) + ' text-white'
-                            : 'bg-gray-100 text-gray-400'
+                            : 'bg-gray-200 text-gray-500'
                         }`}>
                           {attendanceStatus && attendanceStatus !== 'NA' ? attendanceStatus : 'NA'}
                         </div>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={days.length + 2} className="px-4 py-8 text-center text-gray-500">
-                  {searchTerm ? 'No employees found matching your search.' : 'No attendance data available for this month.'}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Legend */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex flex-wrap gap-4 text-sm">
-          <div className="flex items-center gap-1">
+      <div className="p-6 border-t border-gray-200">
+        <h3 className="text-sm font-medium text-gray-900 mb-3">Attendance Legend</h3>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-green-500 rounded"></div>
             <span>Present (P)</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-red-400 rounded"></div>
             <span>Absent (A)</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-blue-400 rounded"></div>
             <span>Leave (L)</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-gray-400 rounded"></div>
             <span>Weekly Off (WO)</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-purple-400 rounded"></div>
             <span>Holiday (H)</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-cyan-400 rounded"></div>
             <span>Work From Home (WFH)</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-orange-400 rounded"></div>
             <span>Anomaly (AN)</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-red-600 rounded"></div>
             <span>Auto Clock-out (ACO)</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-red-500 rounded"></div>
             <span>LOP</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-4 h-4 bg-gray-100 rounded"></div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-gray-200 rounded"></div>
             <span>Not Available (NA)</span>
           </div>
         </div>

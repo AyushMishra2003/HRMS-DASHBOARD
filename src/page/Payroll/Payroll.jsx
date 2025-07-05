@@ -4,16 +4,18 @@ import { Link } from 'react-router-dom'
 import { useGetAllEmployeeQuery } from '../../rtk/employeeApi';
 import { useGetPayroleListQuery, usePaySalaryMutation } from '../../rtk/payroleApi';
 import { ClipLoader } from 'react-spinners';
+import isConfirmed from '../../component/isConfirmed';
 const Payroll = () => {
 
   const { data: employeeData, isLoading } = useGetAllEmployeeQuery()
   const [paySalary, { isLoading: salaryPayLoading }] = usePaySalaryMutation();
+  const [loading, setLoading] = useState(false)
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [editingStatus, setEditingStatus] = useState(null);
   const [selectedYear, setSelectedYear] = useState("2025");
-  const { data: payrollData, isLoading: payRoleLoading } = useGetPayroleListQuery(selectedYear);
+  const { data: payrollData, isLoading: payRoleLoading ,isFetching,refetch} = useGetPayroleListQuery(selectedYear);
 
 
   const months = [
@@ -70,22 +72,37 @@ const Payroll = () => {
 
 
   const handleStatusChange = async (employee) => {
-    const isConfirmed = window.confirm("Are you sure you want to pay payment?");
-    if (!isConfirmed) return;
-    const monthIndex = new Date(`${employee.month} 1, ${selectedYear}`).getMonth();
+    
+    const confirm=await isConfirmed({description:"Are you sure you want to pay payment?"})
+    if (!confirm) return;
+    const monthIndex = new Date(`${employee?.month} 1, ${selectedYear}`).getMonth();
     try {
+      setLoading(true)
       const result = await paySalary({
-        employeeId: employee.employeeId,
+        employeeId: employee?.employeeId,
         year: selectedYear,
         month: monthIndex,
         isPaid: true, // or false if unpaid
-        paidAmount: employee.estimate_salary,
+        paidAmount: employee?.estimate_salary,
       }).unwrap();
-      console.log("result000", result);
+
+      console.log(result);
+      if(result?.success){
+          refetch()
+          setLoading(false)
+      }
+      
     } catch (error) {
+      setLoading(false)
       console.error("Payment update failed", error.message);
     }
   };
+
+
+
+
+
+  
 
   const StatusBadge = ({ status, employee, onStatusChange }) => {
     return (
@@ -108,26 +125,39 @@ const Payroll = () => {
             </>
           )}
         </span>
-
-        {status?.toLowerCase() !== 'paid' && (
-          <button
-            onClick={() => handleStatusChange(employee)}
-            className="text-xs bg-blue-100 rounded-2xl px-2 py-1 text-blue-600  hover:text-blue-800"
-          >
-            PayNow
-          </button>
+        {loading ? (
+          <p>loading.....</p>
+        ) : (
+          status?.toLowerCase() !== 'paid' && (
+            <button
+              onClick={() => handleStatusChange(employee)}
+              className="text-xs bg-blue-100 rounded-2xl px-2 py-1 text-blue-600 hover:text-blue-800"
+            >
+              PayNow
+            </button>
+          )
         )}
+
+
       </div>
     );
   };
 
-  if (payRoleLoading || salaryPayLoading) {
+  if (payRoleLoading || salaryPayLoading || isFetching) {
     return (
       <div className="flex justify-center items-center h-screen">
         <ClipLoader size={30} color="blue" />
       </div>
     );
   }
+
+
+  
+
+
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-50" style={{ color: '#06425F' }}>
@@ -245,65 +275,69 @@ const Payroll = () => {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead style={{ backgroundColor: '#06425F' }} className="text-white">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium">Employee</th>
-                  <th className="px-4 py-3 text-left font-medium">Salary</th>
-                  <th className="px-4 py-3 text-left font-medium">Total Work Day</th>
-                  <th className="px-4 py-3 text-left font-medium">Present</th>
-                  <th className="px-4 py-3 text-left font-medium">Absent</th>
-                  <th className="px-4 py-3 text-left font-medium">Estimate</th>
-                  <th className="px-4 py-3 text-left font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData?.map((employee, index) => (
-                  <tr key={employee.id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                    <td className="px-3 py-2">
-                      <Link to={`/dashboard/employee/overview/${employee?.employeeId}`} className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium" style={{ backgroundColor: '#06425F' }}>
-                          {employee.employeeName.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-medium">{employee.employeeName}</p>
-                          <p className="text-xs text-gray-500">{employee.email}</p>
-                        </div>
-                      </Link>
-                    </td>
-                    <td className="px-3 py-2 font-medium">{(parseInt(employee.salary).toLocaleString()) == "NaN" ?" --":(`₹ ${parseInt(employee.salary).toLocaleString()}`)}</td>
-                    <td className="px-3 py-2">
-                      <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
-                        {employee.totalWorkingDays} days
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
-                        {employee.presentDays} days
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
-                        {employee.absentDays} days
-                      </span>
-                    </td>
-
-                    <td className="px-3 py-2 font-medium">{(parseInt(employee.estimate_salary).toLocaleString()) == "NaN" ?" --":(`₹ ${parseInt(employee.estimate_salary).toLocaleString()}`)}</td>
-                    <td className="px-3 py-2">
-                      <StatusBadge
-                        status={employee.status}
-                        employee={employee}
-                      />
-                    </td>
+        {isFetching ? <p>Loading...</p> : (
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead style={{ backgroundColor: '#06425F' }} className="text-white">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-medium">Employee</th>
+                    <th className="px-4 py-3 text-left font-medium">Salary</th>
+                    <th className="px-4 py-3 text-left font-medium">Total Work Day</th>
+                    <th className="px-4 py-3 text-left font-medium">Present</th>
+                    <th className="px-4 py-3 text-left font-medium">Absent</th>
+                    <th className="px-4 py-3 text-left font-medium">Estimate</th>
+                    <th className="px-4 py-3 text-left font-medium">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredData?.map((employee, index) => (
+                    <tr key={employee?.id} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                      <td className="px-3 py-2">
+                        <Link to={`/dashboard/employee/overview/${employee?.employeeId}`} className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium" style={{ backgroundColor: '#06425F' }}>
+                            {employee?.employeeName.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-medium">{employee?.employeeName}</p>
+                            <p className="text-xs text-gray-500">{employee?.email}</p>
+                          </div>
+                        </Link>
+                      </td>
+                      <td className="px-3 py-2 font-medium">{(parseInt(employee?.salary).toLocaleString()) == "NaN" ? " --" : (`₹ ${parseInt(employee?.salary).toLocaleString()}`)}</td>
+                      <td className="px-3 py-2">
+                        <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
+                          {employee?.totalWorkingDays} days
+                        </span>
+                      </td>
+                      <td className="px-3 py-2">
+                        <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                          {employee?.presentDays} days
+                        </span>
+                      </td>
+                      <td className="px-3 py-2">
+                        <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">
+                          {employee?.absentDays} days
+                        </span>
+                      </td>
+
+                      <td className="px-3 py-2 font-medium">{(parseInt(employee?.estimate_salary).toLocaleString()) == "NaN" ? " --" : (`₹ ${parseInt(employee?.estimate_salary).toLocaleString()}`)}</td>
+                      <td className="px-3 py-2">
+                        <StatusBadge
+                          status={employee?.status}
+                          employee={employee}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Table */}
+
 
         {filteredData?.length === 0 && (
           <div className="text-center py-8 text-gray-500">

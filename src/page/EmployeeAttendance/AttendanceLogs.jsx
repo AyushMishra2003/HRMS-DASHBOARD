@@ -90,6 +90,11 @@ const AttendanceLogs = () => {
     }
   };
 
+
+
+  console.log("mc is",attendanceData);
+  
+
   return (
     <div className="p-4 bg-gray-50 min-h-screen">
       {/* Header */}
@@ -187,7 +192,7 @@ const AttendanceLogs = () => {
               onClick={handleExport}
               className="bg-[#06425F] text-white px-4 py-2 rounded text-sm flex items-center gap-2 hover:bg-[#06425F]"
             >
-              <Upload className="h-4 w-4" />
+          <Download className="w-4 h-4" />
               Export
             </button>
 
